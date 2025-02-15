@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --primary: #a4ff66;
+  --normal: #a4a4a4;
+  --foreground: #171717;
+  --dangerous: #d73434;
+}
+
+/* Apply dark mode styles automatically when html.dark is present */
+html.dark {
+  --background: #0a0a0a;
+  --primary: #a4ff66;
+  --foreground: #ededed;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+html {
+  scroll-behavior: smooth;
+}
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 0; /* Adjust scrollbar width */
+}
+
+::-webkit-scrollbar-track {
+  background: #111; /* Dark track background */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #444; /* Scrollbar color */
+  border-radius: 10px; /* Rounded corners */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4a4a4a; /* Slightly lighter when hovered */
+}
