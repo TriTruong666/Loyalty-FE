@@ -4,6 +4,7 @@ import { Inter, Open_Sans, Montserrat } from "next/font/google"; // Import Googl
 import "./globals.css";
 import QueryProvider from "./components/QueryProvider";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { ThemeProvider } from "./components/ThemeProvider";
 
 const interFont = Inter({
   subsets: ["latin"],
@@ -36,8 +37,10 @@ export default function RootLayout({
       >
         <Provider>
           <QueryProvider>
-            <ReactQueryDevtools initialIsOpen={false} />
-            <div>{children}</div>
+            <ThemeProvider>
+              <ReactQueryDevtools initialIsOpen={false} />
+              <div>{children}</div>
+            </ThemeProvider>
           </QueryProvider>
         </Provider>
       </body>
