@@ -2,8 +2,8 @@
 import { Toaster } from "react-hot-toast";
 import { Suspense } from "react";
 import DashboardSidebar from "../components/DashboardSidebar";
-import DashboardLoadingLayout from "./loading";
 import DashboardHeader from "../components/DashboardHeader";
+import DashboardLoadingLayout from "./loading";
 
 export default function DashboardLayout({
   children,
@@ -11,8 +11,6 @@ export default function DashboardLayout({
   return (
     <div className="flex min-h-screen relative overflow-hidden">
       <Toaster position="top-center" reverseOrder={false} />
-      {/* <AddProductModal />
-      <AddAccountModal /> */}
       <DashboardSidebar />
       <div className="flex flex-col w-[calc(100vw-270px)] h-screen">
         <DashboardHeader />

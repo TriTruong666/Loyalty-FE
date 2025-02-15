@@ -6,10 +6,11 @@ import { BsBellFill } from "react-icons/bs";
 import { IoIosSettings } from "react-icons/io";
 import { FaShoppingCart } from "react-icons/fa";
 import Image from "next/image";
+
 export default function DashboardHeader() {
   return (
     <div className="flex justify-between border-b border-gray-400-40 py-4 px-[30px]">
-      <SearchBar />
+      {/* <SearchBar /> */}
       <MainBar />
     </div>
   );
@@ -22,12 +23,14 @@ function SearchBar() {
     "Danh mục nhãn hàng...",
   ];
 
-  const [placeholder, setPlaceholder] = useState("");
+  const [placeholder, setPlaceholder] = useState(placeholderTexts[0]); // Set initial value directly
   const [index, setIndex] = useState(0);
   const [charIndex, setCharIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
+    if (typeof document === "undefined") return; // Prevent server-side execution
+
     const currentText = placeholderTexts[index];
     const typingSpeed = isDeleting ? 50 : 100;
     const delayBeforeDeleting = 4000;
@@ -70,20 +73,20 @@ function MainBar() {
         <p className="text-[12px] text-[#34C724]">Verified</p>
       </div>
       {/* Notification Icon with Badge */}
-      <div className="relative px-4 border-l-[2px]">
+      <div className="relative px-4 border-l border-gray-300">
         <BsBellFill className="text-[20px]" />
         <span className="absolute -top-1 left-[30px] bg-red-500 text-white text-[8px] px-[6px] py-[1px] rounded-full font-bold">
           10
         </span>
       </div>
       {/* Cart Icon with Badge */}
-      <div className="relative px-4 border-l-[2px]">
+      <div className="relative px-4 border-l border-gray-300">
         <FaShoppingCart className="text-[20px]" />
         <span className="absolute -top-1 left-[30px] bg-red-500 text-white text-[8px] px-[6px] py-[1px] rounded-full font-bold">
           5
         </span>
       </div>
-      <div className="px-4 border-l-[2px]">
+      <div className="px-4 border-l border-gray-300">
         <IoIosSettings className="text-[20px]" />
       </div>
       {/* Avatar */}
@@ -97,11 +100,12 @@ function MainBar() {
           </p>
         </div>
         <Image
-          alt=""
+          alt="User Avatar"
           src="/woman-1.jpg"
           width={40}
           height={40}
           className="w-[40px] h-[40px] object-cover rounded-full"
+          priority
         />
       </div>
     </div>
