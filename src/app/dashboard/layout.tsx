@@ -4,6 +4,8 @@ import { Suspense } from "react";
 import DashboardSidebar from "../components/DashboardSidebar";
 import DashboardHeader from "../components/DashboardHeader";
 import DashboardLoadingLayout from "./loading";
+import AddProductModal from "../components/AddProductModal";
+import AddAccountModal from "../components/AddAccountModal";
 
 export default function DashboardLayout({
   children,
@@ -11,6 +13,8 @@ export default function DashboardLayout({
   return (
     <div className="flex min-h-screen relative overflow-hidden">
       <Toaster position="top-center" reverseOrder={false} />
+      <AddProductModal />
+      <AddAccountModal />
       <DashboardSidebar />
       <div className="flex flex-col w-[calc(100vw-270px)] h-screen">
         <DashboardHeader />

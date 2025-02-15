@@ -2,7 +2,7 @@
 import LoginHeader from "./components/LoginHeader";
 import { MdEmail } from "react-icons/md";
 import { FaKey } from "react-icons/fa";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { FaCircleCheck } from "react-icons/fa6";
 import Image from "next/image";
@@ -14,7 +14,7 @@ export default function Home() {
   const progressState = useAtomValue(loginProgressState);
   return (
     <>
-      <div className="font-inter font-medium relative w-screen h-screen overflow-hidden">
+      <div className="font-inter font-light relative w-screen h-screen overflow-hidden">
         <LoginHeader />
         {progressState === 1 && (
           <div className="flex h-full">
@@ -257,7 +257,7 @@ function EmailVerification() {
       </button>
       <div className="max-w-md text-center mb-[90px]">
         <p className="text-normal text-sm">
-          We've sent a 6-digit code to{" "}
+          We&apos;ve sent a 6-digit code to{" "}
           <span className="text-primary">email123@gmail.com</span>. Enter OTP to
           verify your ownership and continue.
         </p>
@@ -268,7 +268,7 @@ function EmailVerification() {
           spam folder.
         </p>
         <p className="text-normal text-[11px]">
-          Didn't get it?{" "}
+          Didn&apos;t get it?{" "}
           <span className="text-white cursor-pointer hover:underline">
             Resend Email.
           </span>

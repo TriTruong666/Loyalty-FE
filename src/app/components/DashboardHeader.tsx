@@ -10,7 +10,7 @@ import Image from "next/image";
 export default function DashboardHeader() {
   return (
     <div className="flex justify-between border-b border-gray-400-40 py-4 px-[30px]">
-      {/* <SearchBar /> */}
+      <SearchBar />
       <MainBar />
     </div>
   );
@@ -23,14 +23,12 @@ function SearchBar() {
     "Danh mục nhãn hàng...",
   ];
 
-  const [placeholder, setPlaceholder] = useState(placeholderTexts[0]); // Set initial value directly
+  const [placeholder, setPlaceholder] = useState("");
   const [index, setIndex] = useState(0);
   const [charIndex, setCharIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    if (typeof document === "undefined") return; // Prevent server-side execution
-
     const currentText = placeholderTexts[index];
     const typingSpeed = isDeleting ? 50 : 100;
     const delayBeforeDeleting = 4000;
