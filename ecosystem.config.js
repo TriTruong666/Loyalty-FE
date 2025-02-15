@@ -12,9 +12,9 @@ module.exports = {
 
       path: "/var/frontends/loyaltyfe",
 
-      "post-setup": "npm install && npm run build && npm run start",
+      "post-setup": "npm install && npm run build",
 
-      "post-deploy": "pm2 startOrRestart ecosystem.config.js --env production",
+      "post-deploy": "npm run start && pm2 reload loyalty-demo",
     },
   },
 };
