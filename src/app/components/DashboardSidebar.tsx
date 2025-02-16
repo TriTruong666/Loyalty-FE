@@ -29,7 +29,7 @@ export default function DashboardSidebar() {
           />
         </div>
         <div className="py-2">
-          <UserMenu />
+          <StaffMenu />
         </div>
         <div className="border-t border-gray-400-40 pb-2">
           <MenuOnlyForCEO />
@@ -83,7 +83,7 @@ function StaffMenu() {
     </div>
   );
 }
-function MainMenuForAdmin() {
+function AdminMenu() {
   const menu = [
     {
       name: "Tổng quan",
