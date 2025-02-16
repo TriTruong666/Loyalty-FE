@@ -1,5 +1,6 @@
 "use client";
 import { formatPrice } from "@/app/utils/format";
+import DOMPurify from "isomorphic-dompurify";
 import { Accordion, AccordionItem, Button } from "@heroui/react";
 import Image from "next/image";
 const longHTML = `
@@ -91,6 +92,8 @@ const instruction = `<p style="text-align: left;color: rgb(255, 255, 255);backgr
 export default function ProductDetailPage() {
   const defaultContent =
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.";
+  const safeHTML = DOMPurify.sanitize(longHTML);
+  const safeHTML2 = DOMPurify.sanitize(instruction);
 
   return (
     <div className="flex flex-col p-[40px] font-open">
@@ -132,14 +135,14 @@ export default function ProductDetailPage() {
             aria-label="Accordion 1"
             title="Mô tả sản phẩm"
           >
-            <div dangerouslySetInnerHTML={{ __html: longHTML }} />{" "}
+            <div dangerouslySetInnerHTML={{ __html: safeHTML }} />{" "}
           </AccordionItem>
           <AccordionItem
             key="2"
             aria-label="Accordion 2"
             title="Chính sách thanh toán"
           >
-            <div dangerouslySetInnerHTML={{ __html: instruction }}></div>
+            <div dangerouslySetInnerHTML={{ __html: safeHTML2 }}></div>
           </AccordionItem>
           <AccordionItem key="3" aria-label="Accordion 3" title="Accordion 3">
             {defaultContent}
