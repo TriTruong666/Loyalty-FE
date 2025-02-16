@@ -3,20 +3,29 @@
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
-export function ProductStatusMenu() {
+export function AdminOrderStatusMenu() {
   const pathname = usePathname();
 
   const status = [
-    { name: "Đang Bán", path: "/dashboard/products", count: 10 },
-    { name: "Hết Hàng", path: "/dashboard/products/inactive", count: 10 },
-    { name: "Hết Bán", path: "/dashboard/products/notsale", count: 10 },
+    { name: "Chờ Xác Nhận", path: "/dashboard/admin-orders", count: 10 },
+    {
+      name: "Đã Xác Nhận",
+      path: "/dashboard/admin-orders/confirm",
+      count: 100,
+    },
+    {
+      name: "Đang Giao",
+      path: "/dashboard/admin-orders/pending",
+      count: 60,
+    },
+    { name: "Đơn Hủy", path: "/dashboard/admin-orders/cancelled", count: 10 },
   ];
 
   return (
     <div className="flex items-center font-open pb-[2px] border-b border-gray-400-40 mt-[30px]">
       {status.map((status) => {
         const isActive =
-          status.path === "/dashboard/products"
+          status.path === "/dashboard/admin-orders"
             ? pathname === status.path
             : pathname.startsWith(status.path);
         return (
