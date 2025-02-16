@@ -76,7 +76,7 @@ function LoginForm() {
       >
         Email Address *
       </label>
-      <div className="group flex items-center w-[80%] py-3 px-3 border space-x-4 border-gray-400 border-opacity-40 rounded-md transition-all duration-300 hover:border-opacity-80 focus-within:border-opacity-80 hover:shadow-md focus-within:shadow-md">
+      <div className="relative group flex items-center w-[80%] py-3 px-3 border space-x-4 border-gray-400-40 rounded-md transition-all duration-300 hover:border-gray-400 hover:border-opacity-40 focus-within:border-gray-400 focus-within:border-opacity-40 hover:shadow-md focus-within:shadow-md">
         <MdEmail size={20} />
         <input
           type="text"
@@ -92,7 +92,7 @@ function LoginForm() {
       >
         Password *
       </label>
-      <div className="relative group flex items-center w-[80%] py-3 px-3 border space-x-4 border-gray-400 border-opacity-40 rounded-md transition-all duration-300 hover:border-opacity-80 focus-within:border-opacity-80 hover:shadow-md focus-within:shadow-md">
+      <div className="relative group flex items-center w-[80%] py-3 px-3 border space-x-4 border-gray-400-40 rounded-md transition-all duration-300 hover:border-gray-400 hover:border-opacity-40 focus-within:border-gray-400 focus-within:border-opacity-40 hover:shadow-md focus-within:shadow-md">
         <FaKey size={20} />
         <input
           type={showPassword ? "text" : "password"} // Toggle Password Visibility

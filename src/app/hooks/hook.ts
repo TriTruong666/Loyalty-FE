@@ -1,0 +1,29 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import { Product } from "../interfaces/Product";
+import * as ProductService from "@/app/service/productService";
+function useFetch<T>(
+  queryKey: any[],
+  queryFn: () => Promise<T>,
+  options?: UseQueryOptions<T>
+) {
+  const { data, isLoading, isError, error, refetch, isFetching } = useQuery<T>({
+    queryKey,
+    queryFn,
+    ...options,
+  });
+
+  return { data, isLoading, isError, error, refetch, isFetching };
+}
+
+export function useAllProduct() {
+  return useFetch<Product[]>(["products"], async () =>
+    ProductService.getAllProductService()
+  );
+}
+
+export function useGetProductByLimit() {
+  return useFetch<Product[]>(["products"], async () =>
+    ProductService.getProductServiceByLimit()
+  );
+}

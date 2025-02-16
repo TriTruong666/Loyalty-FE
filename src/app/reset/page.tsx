@@ -1,6 +1,6 @@
 "use client";
 import LoginHeader from "../components/LoginHeader";
-import { atom, useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { useRef, useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { FaKey } from "react-icons/fa";
@@ -47,7 +47,7 @@ function EmailForm() {
   return (
     <div className="flex flex-col w-[50%] border-gray-400 border-opacity-40 border-l justify-center pl-[150px] gap-y-3 mb-[70px]">
       <p className="font-semibold 2xl:text-[40px] text-[50px] w-[80%] mt-[70px] 2xl:mt-[5px] bg-[conic-gradient(at_right,_var(--tw-gradient-stops))] from-yellow-600 via-primary to-emerald-50 bg-clip-text text-transparent">
-        Forgot your password? Don't worry.
+        Forgot your password? Don&apos;t worry.
       </p>
       <p className="dark:text-normal text-sm 2xl:text-[11px] w-[80%] text-black">
         First you need to enter your email, then the system will send an OTP
@@ -61,7 +61,7 @@ function EmailForm() {
           >
             Email Address *
           </label>
-          <div className="group flex items-center w-[70%] py-3 px-3 border space-x-4 border-gray-400 border-opacity-40 rounded-md transition-all duration-300 hover:border-opacity-80 focus-within:border-opacity-80 hover:shadow-md focus-within:shadow-md">
+          <div className="relative group flex items-center w-[80%] py-3 px-3 border space-x-4 border-gray-400-40 rounded-md transition-all duration-300 hover:border-gray-400 hover:border-opacity-40 focus-within:border-gray-400 focus-within:border-opacity-40 hover:shadow-md focus-within:shadow-md">
             <MdEmail size={20} />
             <input
               type="text"
@@ -73,7 +73,7 @@ function EmailForm() {
             Your email not linked to our system.
           </p> */}
           <button
-            className="mt-6 2xl:mt-3 2xl:text-sm w-[70%] border py-2 rounded-md transition-all duration-300 bg-gray-300 text-gray-500
+            className="mt-6 2xl:mt-3 2xl:text-sm w-[80%] border py-2 rounded-md transition-all duration-300 bg-gray-300 text-gray-500
              disabled:bg-[#141414] disabled:text-gray-600 disabled:border-gray-400 disabled:border-opacity-20
              enabled:bg-primary enabled:text-black enabled:hover:bg-black enabled:hover:text-white enabled:border-transparent enabled:hover:border-white"
             onClick={handleSubmit}
@@ -161,7 +161,7 @@ function EmailVerification() {
       </button>
       <div className="max-w-md text-center mb-[90px]">
         <p className="text-normal text-sm">
-          We've sent a 6-digit code to{" "}
+          We&apos;ve sent a 6-digit code to{" "}
           <span className="text-primary">email123@gmail.com</span>. Enter OTP to
           reset your password.
         </p>
@@ -172,7 +172,7 @@ function EmailVerification() {
           spam folder.
         </p>
         <p className="text-normal text-[11px]">
-          Didn't get it?{" "}
+          Didn&apos;t get it?{" "}
           <span className="text-white cursor-pointer hover:underline">
             Resend Email.
           </span>
@@ -199,7 +199,7 @@ function ResetForm() {
         >
           New Password *
         </label>
-        <div className="relative group flex items-center w-[500px] py-3 px-3 border space-x-4 border-gray-400 border-opacity-40 rounded-md transition-all duration-300 hover:border-opacity-80 focus-within:border-opacity-80 hover:shadow-md focus-within:shadow-md">
+        <div className="relative group flex items-center w-[500px] py-3 px-3 border space-x-4 border-gray-400-40 rounded-md transition-all duration-300 hover:border-gray-400 hover:border-opacity-40 focus-within:border-gray-400 focus-within:border-opacity-40 hover:shadow-md focus-within:shadow-md">
           <FaKey size={20} />
           <input
             type={showPassword ? "text" : "password"} // Toggle Password Visibility
@@ -225,7 +225,7 @@ function ResetForm() {
         >
           Confirm Password *
         </label>
-        <div className="relative group flex items-center w-[500px] py-3 px-3 border space-x-4 border-gray-400 border-opacity-40 rounded-md transition-all duration-300 hover:border-opacity-80 focus-within:border-opacity-80 hover:shadow-md focus-within:shadow-md">
+        <div className="relative group flex items-center w-[500px] py-3 px-3 border space-x-4 border-gray-400-40 rounded-md transition-all duration-300 hover:border-gray-400 hover:border-opacity-40 focus-within:border-gray-400 focus-within:border-opacity-40 hover:shadow-md focus-within:shadow-md">
           <FaKey size={20} />
           <input
             type={showConfirmPassword ? "text" : "password"} // Toggle Password Visibility
