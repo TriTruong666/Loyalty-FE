@@ -15,7 +15,7 @@ export function AdminOrderStatusMenu() {
     },
     {
       name: "Đang Giao",
-      path: "/dashboard/admin-orders/pending",
+      path: "/dashboard/admin-orders/delivering",
       count: 60,
     },
     { name: "Đơn Hủy", path: "/dashboard/admin-orders/cancelled", count: 10 },
