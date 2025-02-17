@@ -5,7 +5,7 @@ export default function DetailNotificationPage() {
         Thông báo về việc bảo trì hệ thông
       </p>
       <p className="text-center text-normal text-[12px]">
-        Thông báo vào lúc 10:00 ngày 17/02/2025
+        Thông báo vào 10:00 ngày 17/02/2025
       </p>
       <div className="mt-[40px] text-sm leading-8">
         Contrary to popular belief, Lorem Ipsum is not simply random text. It

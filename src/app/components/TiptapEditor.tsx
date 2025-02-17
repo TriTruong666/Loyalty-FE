@@ -15,15 +15,23 @@ import {
 } from "react-icons/lu";
 import { Button } from "@heroui/button";
 
-export default function TiptapEditor() {
+interface TiptapEditorProps {
+  content?: string;
+  attributes?: Record<string, string>;
+}
+
+export default function TiptapEditor({
+  content = "",
+  attributes = {
+    class:
+      "p-4 h-[70px] max-h-[100px] overflow-auto bg-gray-700 bg-opacity-20 text-normal text-sm border border-gray-600 border-opacity-10 rounded-lg focus:outline-none",
+  },
+}: TiptapEditorProps) {
   const editor = useEditor({
     extensions: [StarterKit, Image],
-    content: "<p>Nhập mô tả sản phẩm...</p>",
+    content,
     editorProps: {
-      attributes: {
-        class:
-          "p-4 h-[70px] max-h-[100px] overflow-auto bg-gray-700 bg-opacity-20 text-normal text-sm border border-gray-600 border-opacity-10 rounded-lg focus:outline-none",
-      },
+      attributes,
     },
   });
 

@@ -1,10 +1,16 @@
 "use client";
 import NotificationItem from "@/app/components/NotificationItem";
+import { createNotificationState } from "@/app/store/modalAtoms";
+import { useSetAtom } from "jotai";
 import { HiPlusSmall } from "react-icons/hi2";
 
 export default function NotificationLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const setModal = useSetAtom(createNotificationState);
+  const handleToggleModalOn = () => {
+    setModal(true);
+  };
   return (
     <div className="flex font-open">
       {/* list */}
@@ -19,7 +25,10 @@ export default function NotificationLayout({
           </div>
         </div>
         <div className="flex px-[40px] mt-[20px]">
-          <div className="flex items-center bg-foreground border border-foreground px-4 py-[6px] rounded-md cursor-pointer gap-x-2 transition-all duration-200 hover:bg-foreground hover:border-transparent group">
+          <div
+            onClick={handleToggleModalOn}
+            className="flex items-center bg-foreground border border-foreground px-4 py-[6px] rounded-md cursor-pointer gap-x-2 transition-all duration-200 hover:bg-foreground hover:border-transparent group"
+          >
             <HiPlusSmall className="text-[16px] text-background" />
             <p className="text-[12px] text-background">Tạo thông báo</p>
           </div>

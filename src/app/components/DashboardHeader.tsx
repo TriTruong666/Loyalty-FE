@@ -5,7 +5,8 @@ import { IoShieldCheckmarkOutline } from "react-icons/io5";
 import { BsBellFill } from "react-icons/bs";
 import { IoIosSettings } from "react-icons/io";
 import { FaShoppingCart } from "react-icons/fa";
-import Image from "next/image";
+import { useAtom } from "jotai";
+import { notificationDropdownState } from "../store/dropdownAtoms";
 
 export default function DashboardHeader() {
   return (
@@ -64,6 +65,11 @@ function SearchBar() {
 }
 
 function MainBar() {
+  const [notiDropdown, setNotiDropdown] = useAtom(notificationDropdownState);
+
+  const handleToggleDropdown = () => {
+    setNotiDropdown(!notiDropdown);
+  };
   return (
     <div className="flex items-center">
       <div className="flex items-center gap-x-2 border border-[#34C724] px-2 py-1 rounded-full mr-4">
@@ -71,7 +77,10 @@ function MainBar() {
         <p className="text-[12px] text-[#34C724]">Verified</p>
       </div>
       {/* Notification Icon with Badge */}
-      <div className="relative px-4 border-l border-gray-300">
+      <div
+        className="relative px-4 border-l border-gray-300 cursor-pointer"
+        onClick={handleToggleDropdown}
+      >
         <BsBellFill className="text-[20px]" />
         <span className="absolute -top-1 left-[30px] bg-red-500 text-white text-[8px] px-[6px] py-[1px] rounded-full font-bold">
           10
@@ -88,7 +97,7 @@ function MainBar() {
         <IoIosSettings className="text-[20px]" />
       </div>
       {/* Avatar */}
-      <div className="flex items-center ml-[15px] gap-x-2">
+      {/* <div className="flex items-center ml-[15px] gap-x-2">
         <div className="flex flex-col">
           <p className="text-foreground font-semibold text-[13px] font-monse">
             Truong Hoang Tri
@@ -105,7 +114,7 @@ function MainBar() {
           className="w-[40px] h-[40px] object-cover rounded-full"
           priority
         />
-      </div>
+      </div> */}
     </div>
   );
 }

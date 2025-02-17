@@ -7,6 +7,8 @@ import DashboardLoadingLayout from "./loading";
 import AddProductModal from "../components/AddProductModal";
 import AddAccountModal from "../components/AddAccountModal";
 import ConfirmOrderModal from "../components/ConfirmOrderModal";
+import CreateNotificationModal from "../components/CreateNotificationModal";
+import NotificationDropdown from "../components/NotificationDropdown";
 
 export default function DashboardLayout({
   children,
@@ -14,6 +16,8 @@ export default function DashboardLayout({
   return (
     <div className="flex min-h-screen relative overflow-hidden">
       <Toaster position="top-center" reverseOrder={false} />
+      <NotificationDropdown />
+      <CreateNotificationModal />
       <ConfirmOrderModal />
       <AddProductModal />
       <AddAccountModal />
