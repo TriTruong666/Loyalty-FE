@@ -6,6 +6,7 @@ import DashboardHeader from "../components/DashboardHeader";
 import DashboardLoadingLayout from "./loading";
 import AddProductModal from "../components/AddProductModal";
 import AddAccountModal from "../components/AddAccountModal";
+import ConfirmOrderModal from "../components/ConfirmOrderModal";
 
 export default function DashboardLayout({
   children,
@@ -13,6 +14,7 @@ export default function DashboardLayout({
   return (
     <div className="flex min-h-screen relative overflow-hidden">
       <Toaster position="top-center" reverseOrder={false} />
+      <ConfirmOrderModal />
       <AddProductModal />
       <AddAccountModal />
       <DashboardSidebar />

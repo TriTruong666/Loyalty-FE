@@ -13,6 +13,8 @@ import { Button } from "@heroui/button";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { showToast } from "@/app/utils/toast";
 import { IoCheckmarkSharp } from "react-icons/io5";
+import { confirmOrderModalState } from "@/app/store/modalAtoms";
+import { useSetAtom } from "jotai";
 
 export default function OrderPage() {
   return (
@@ -50,6 +52,8 @@ export default function OrderPage() {
 }
 
 function AllOrderTable() {
+  const setModal = useSetAtom(confirmOrderModalState);
+
   const statusTheme = (status: string) => {
     switch (status) {
       case "pending":
@@ -77,6 +81,9 @@ function AllOrderTable() {
       default:
         return "";
     }
+  };
+  const handleToggleModalOn = () => {
+    setModal(true);
   };
   return (
     <div className="flex mt-[20px] flex-col items-center">
@@ -140,9 +147,7 @@ function AllOrderTable() {
                 </DropdownTrigger>
                 <DropdownMenu>
                   <DropdownItem
-                    onPress={() =>
-                      showToast("Đơn hàng đã được duyệt!", "success")
-                    }
+                    onPress={handleToggleModalOn}
                     className="group"
                     color="default"
                     startContent={
