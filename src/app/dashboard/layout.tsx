@@ -9,6 +9,7 @@ import AddAccountModal from "../components/AddAccountModal";
 import ConfirmOrderModal from "../components/ConfirmOrderModal";
 import CreateNotificationModal from "../components/CreateNotificationModal";
 import NotificationDropdown from "../components/NotificationDropdown";
+import CartDropdown from "../components/CartDropdown";
 
 export default function DashboardLayout({
   children,
@@ -16,6 +17,7 @@ export default function DashboardLayout({
   return (
     <div className="flex min-h-screen relative overflow-hidden">
       <Toaster position="top-center" reverseOrder={false} />
+      <CartDropdown />
       <NotificationDropdown />
       <CreateNotificationModal />
       <ConfirmOrderModal />

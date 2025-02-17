@@ -6,7 +6,10 @@ import { BsBellFill } from "react-icons/bs";
 import { IoIosSettings } from "react-icons/io";
 import { FaShoppingCart } from "react-icons/fa";
 import { useAtom } from "jotai";
-import { notificationDropdownState } from "../store/dropdownAtoms";
+import {
+  cartDropdownState,
+  notificationDropdownState,
+} from "../store/dropdownAtoms";
 
 export default function DashboardHeader() {
   return (
@@ -66,9 +69,14 @@ function SearchBar() {
 
 function MainBar() {
   const [notiDropdown, setNotiDropdown] = useAtom(notificationDropdownState);
-
-  const handleToggleDropdown = () => {
+  const [cartDropdown, setCartDropdown] = useAtom(cartDropdownState);
+  const handleToggleNotiDropdown = () => {
     setNotiDropdown(!notiDropdown);
+    setCartDropdown(false);
+  };
+  const handleToggleCartDropdown = () => {
+    setCartDropdown(!cartDropdown);
+    setNotiDropdown(false);
   };
   return (
     <div className="flex items-center">
@@ -79,7 +87,7 @@ function MainBar() {
       {/* Notification Icon with Badge */}
       <div
         className="relative px-4 border-l border-gray-300 cursor-pointer"
-        onClick={handleToggleDropdown}
+        onClick={handleToggleNotiDropdown}
       >
         <BsBellFill className="text-[20px]" />
         <span className="absolute -top-1 left-[30px] bg-red-500 text-white text-[8px] px-[6px] py-[1px] rounded-full font-bold">
@@ -87,7 +95,10 @@ function MainBar() {
         </span>
       </div>
       {/* Cart Icon with Badge */}
-      <div className="relative px-4 border-l border-gray-300">
+      <div
+        className="relative px-4 border-l border-gray-300 cursor-pointer"
+        onClick={handleToggleCartDropdown}
+      >
         <FaShoppingCart className="text-[20px]" />
         <span className="absolute -top-1 left-[30px] bg-red-500 text-white text-[8px] px-[6px] py-[1px] rounded-full font-bold">
           5
