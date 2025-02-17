@@ -13,7 +13,6 @@ export const uploadFileService = async (file: File): Promise<string | null> => {
     formData.append("file", file);
     formData.append("upload_preset", UPLOAD_PRESET_NAME as string);
     formData.append("cloud_name", CLOUDINARY_CLOUD_NAME as string);
-
     const res: AxiosResponse = await axios.post(
       `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
       formData
@@ -38,9 +37,14 @@ export const createSignatureService = async (data: Signature) => {
 
 export const deleteFileService = async (data: DeleteFile) => {
   try {
+    const formData = new FormData();
+    formData.append("public_id", data.public_id);
+    formData.append("api_key", data.api_key);
+    formData.append("timestamp", data.timestamp);
+    formData.append("signature", data.signature);
     const res = await axios.post(
       `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/destroy`,
-      data
+      formData
     );
     return res.data;
   } catch (error) {

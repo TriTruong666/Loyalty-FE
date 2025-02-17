@@ -125,8 +125,14 @@ function MediaTable() {
               <td className="col-span-2 text-[13px] text-center font-semibold">
                 {formatDate(item.created_at)}
               </td>
-              <td className="col-span-4 text-[13px] text-center font-semibold">
-                <Link isExternal showAnchorIcon size="sm" href={item.url}>
+              <td className="col-span-4 text-[13px] text-center font-semibold w-fit">
+                <Link
+                  isExternal
+                  showAnchorIcon
+                  size="sm"
+                  href={item.url}
+                  className=""
+                >
                   <p className="text-[13px] line-clamp-1 max-w-[80%]">
                     {item.url}
                   </p>

@@ -17,6 +17,7 @@
     "@tiptap/react": "^2.11.5",
     "@tiptap/starter-kit": "^2.11.5",
     "axios": "^1.7.9",
+    "cloudinary": "^2.5.1",
     "framer-motion": "^12.4.3",
     "isomorphic-dompurify": "^2.21.0",
     "jotai": "^2.12.0",
