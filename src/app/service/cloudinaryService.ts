@@ -1,7 +1,12 @@
 import axios, { AxiosResponse } from "axios";
+import {
+  CloudinaryAsset,
+  DeleteFile,
+  Signature,
+} from "../interfaces/Cloudinary";
 const CLOUDINARY_CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 const UPLOAD_PRESET_NAME = process.env.NEXT_PUBLIC_UPLOAD_PRESET_NAME;
-
+const HOST_URL = process.env.NEXT_PUBLIC_API_URL;
 export const uploadFileService = async (file: File): Promise<string | null> => {
   try {
     const formData = new FormData();
@@ -18,5 +23,39 @@ export const uploadFileService = async (file: File): Promise<string | null> => {
   } catch (error) {
     console.error("Lỗi khi tải ảnh lên Cloudinary:", error);
     return null;
+  }
+};
+
+export const createSignatureService = async (data: Signature) => {
+  try {
+    const url = `${HOST_URL}/api/cloudinary`;
+    const res: AxiosResponse = await axios.post(url, data);
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const deleteFileService = async (data: DeleteFile) => {
+  try {
+    const res = await axios.post(
+      `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/destroy`,
+      data
+    );
+    return res.data;
+  } catch (error) {
+    console.error("Error deleting file from Cloudinary:", error);
+    return false;
+  }
+};
+
+export const getAllAssets = async (): Promise<CloudinaryAsset[]> => {
+  try {
+    const url = `${HOST_URL}/api/cloudinary`;
+    const res: AxiosResponse = await axios.get(url);
+    return res.data;
+  } catch (error) {
+    console.error(error);
+    return [];
   }
 };

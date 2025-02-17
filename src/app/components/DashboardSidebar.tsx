@@ -13,6 +13,7 @@ import { IoIosLogOut } from "react-icons/io";
 import { RiShoppingBagLine } from "react-icons/ri";
 import { BsCart } from "react-icons/bs";
 import { IoLockOpenOutline } from "react-icons/io5";
+import { MdOutlinePermMedia } from "react-icons/md";
 
 export default function DashboardSidebar() {
   return (
@@ -29,7 +30,7 @@ export default function DashboardSidebar() {
           />
         </div>
         <div className="py-2">
-          <StaffMenu />
+          <AdminMenu />
         </div>
         <div className="border-t border-gray-400-40 pb-2">
           <MenuOnlyForCEO />
@@ -105,6 +106,11 @@ function AdminMenu() {
       icon: LuFileText,
       path: "/dashboard/admin-orders",
       typography: 10,
+    },
+    {
+      name: "Thư viện",
+      icon: MdOutlinePermMedia,
+      path: "/dashboard/media",
     },
     {
       name: "Thông báo",
