@@ -63,3 +63,14 @@ export const getAllAssets = async (): Promise<CloudinaryAsset[]> => {
     return [];
   }
 };
+
+export const getAssetsByLimit = async (): Promise<CloudinaryAsset[]> => {
+  try {
+    const url = `${HOST_URL}/api/cloudinary/limit?limit=2&page=1`;
+    const res: AxiosResponse = await axios.get(url);
+    return res.data;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+};

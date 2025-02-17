@@ -115,7 +115,7 @@ function AdminMenu() {
     {
       name: "Thông báo",
       icon: PiNotification,
-      path: "/dashboard/notification",
+      path: "/dashboard/admin-notification",
       typography: 3,
     },
   ];
@@ -278,7 +278,7 @@ function UserMenu() {
     {
       name: "Thông báo",
       icon: PiNotification,
-      path: "/dashboard/notification",
+      path: "/dashboard/user-notification",
       typography: 3,
     },
   ];
