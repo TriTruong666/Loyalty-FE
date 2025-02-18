@@ -12,8 +12,9 @@ import {
 import { Button } from "@heroui/button";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { showToast } from "@/app/utils/toast";
-import { useGetProductByLimit } from "@/app/hooks/hook";
+import { useAllProduct, useGetProductByLimit } from "@/app/hooks/hook";
 import { formatPrice } from "@/app/utils/format";
+import { useEffect, useState } from "react";
 
 export default function ProductPage() {
   return (
@@ -51,7 +52,16 @@ export default function ProductPage() {
 }
 
 function ProductTable() {
-  const { data: products } = useGetProductByLimit();
+  const [page, setPage] = useState(1);
+  const [totalPage, setTotalPage] = useState(1);
+  const limit = 4;
+  const { data: products } = useGetProductByLimit(page);
+  const { data: allProduct } = useAllProduct();
+  useEffect(() => {
+    if (allProduct) {
+      setTotalPage(Math.ceil(allProduct.length / limit));
+    }
+  }, [allProduct]);
   const statusTheme = (status: string) => {
     switch (status) {
       case "inactive":
@@ -119,7 +129,7 @@ function ProductTable() {
                   className="w-[35px] h-[35px] object-cover rounded-full"
                 />
                 <div className="flex flex-col">
-                  <p className="text-[13px] font-semibold">
+                  <p className="text-[13px] font-semibold line-clamp-2">
                     {item.productName}
                   </p>
                 </div>
@@ -199,8 +209,9 @@ function ProductTable() {
           loop
           showControls
           color="default"
-          initialPage={1}
-          total={10}
+          initialPage={page}
+          total={totalPage}
+          onChange={(newPage) => setPage(newPage)}
         />
       </div>
     </div>

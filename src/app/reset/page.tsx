@@ -47,11 +47,11 @@ function EmailForm() {
   return (
     <div className="flex flex-col w-[50%] border-gray-400 border-opacity-40 border-l justify-center pl-[150px] gap-y-3 mb-[70px]">
       <p className="font-semibold 2xl:text-[40px] text-[50px] w-[80%] mt-[70px] 2xl:mt-[5px] bg-[conic-gradient(at_right,_var(--tw-gradient-stops))] from-yellow-600 via-primary to-emerald-50 bg-clip-text text-transparent">
-        Forgot your password? Don&apos;t worry.
+        Quên mật khẩu hả? Đừng có lo nha.
       </p>
       <p className="dark:text-normal text-sm 2xl:text-[11px] w-[80%] text-black">
-        First you need to enter your email, then the system will send an OTP
-        code to your authenticated gmail.
+        Đầu tiên bạn cần nhập email của mình, sau đó hệ thống sẽ gửi OTP mã vào
+        gmail đã được xác thực của bạn.
       </p>
       <div className="pt-4 2xl:pt-2">
         <div className="flex flex-col gap-y-2">
@@ -59,7 +59,7 @@ function EmailForm() {
             htmlFor="email"
             className="font-semibold text-sm 2xl:text-[12px] mb-1"
           >
-            Email Address *
+            Email *
           </label>
           <div className="relative group flex items-center w-[80%] py-3 px-3 border space-x-4 border-gray-400-40 rounded-md transition-all duration-300 hover:border-gray-400 hover:border-opacity-40 focus-within:border-gray-400 focus-within:border-opacity-40 hover:shadow-md focus-within:shadow-md">
             <MdEmail size={20} />
@@ -78,7 +78,7 @@ function EmailForm() {
              enabled:bg-primary enabled:text-black enabled:hover:bg-black enabled:hover:text-white enabled:border-transparent enabled:hover:border-white"
             onClick={handleSubmit}
           >
-            Send OTP
+            Xác thực email
           </button>
         </div>
       </div>
@@ -129,7 +129,7 @@ function EmailVerification() {
       {/* Icon & Tiêu đề */}
       <IoMailUnreadOutline className="text-[60px] text-foreground" />
       <p className="text-[40px] font-semibold text-foreground">
-        Please check your email.
+        Kiểm tra email của bạn.
       </p>
       {/* OTP Input Fields */}
       <div className="flex space-x-6 p-4">

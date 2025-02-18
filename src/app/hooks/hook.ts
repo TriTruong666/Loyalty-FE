@@ -24,9 +24,9 @@ export function useAllProduct() {
   );
 }
 
-export function useGetProductByLimit() {
-  return useFetch<Product[]>(["products"], async () =>
-    ProductService.getProductServiceByLimit()
+export function useGetProductByLimit(page: number) {
+  return useFetch<Product[]>(["products", page], async () =>
+    ProductService.getProductServiceByLimit(page)
   );
 }
 

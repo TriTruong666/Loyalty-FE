@@ -16,3 +16,13 @@ export const loginService = async (data: Login) => {
     console.log(error);
   }
 };
+
+export const verifyLoginService = async (data: Login) => {
+  try {
+    const url = `${API_URL}/api/user/otp`;
+    const res = await axios.post(url, data);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+};

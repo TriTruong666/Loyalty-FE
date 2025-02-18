@@ -1,9 +1,9 @@
+"use client";
 import { Button, Switch } from "@heroui/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAtomValue } from "jotai";
-import { Url } from "next/dist/shared/lib/router/router";
 import Link from "next/link";
-import { FC, ReactNode } from "react";
+import { FC, ReactNode, useEffect, useState } from "react";
 import { GrHelpBook, GrSun } from "react-icons/gr";
 import {
   IoLogOutOutline,
@@ -12,10 +12,19 @@ import {
 } from "react-icons/io5";
 import { PiRanking } from "react-icons/pi";
 import { profileSettingDropdownState } from "../store/dropdownAtoms";
+import { User } from "../interfaces/Account";
 
 export default function ProfileSettingDropdown() {
+  const [parsedUserInfo, setParsedUserInfo] = useState<User | null>(null);
+
+  useEffect(() => {
+    const userInfo = localStorage.getItem("account");
+    if (userInfo) {
+      setParsedUserInfo(JSON.parse(userInfo));
+    }
+  }, []);
+
   const isToggleDropdown = useAtomValue(profileSettingDropdownState);
-  const name = "Truong Hoang Tri";
   const rankingTheme = (title: string) => {
     switch (title) {
       case "gold":
@@ -43,12 +52,16 @@ export default function ProfileSettingDropdown() {
             <div className="flex flex-col">
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-x-[5px]">
-                  <div className="w-[35px] h-[35px] flex items-center justify-center rounded-full font-bold bg-[conic-gradient(at_left,_var(--tw-gradient-stops))] from-red-900 via-zinc-800 to-rose-100">
-                    {name.charAt(0).toUpperCase()}
+                  <div className="w-[35px] h-[35px] flex items-center justify-center rounded-full font-bold text-white cursor-pointer relative bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-indigo-200 via-pink-900 to-stone-800">
+                    {parsedUserInfo?.userName.charAt(0).toUpperCase()}
                   </div>
                   <div className="flex flex-col">
-                    <p className="text-[13px]">Trương Hoàng Trí</p>
-                    <p className="text-[11px] font-light">Cá nhân</p>
+                    <p className="text-[13px]">
+                      {parsedUserInfo?.userName.toLocaleUpperCase()}
+                    </p>
+                    <p className="text-[11px] font-light">
+                      {parsedUserInfo?.type}
+                    </p>
                   </div>
                 </div>
                 <div

@@ -36,29 +36,25 @@ export default function LoginHeader() {
 
       {pathName === "/reset" ? (
         <div className="flex items-center space-x-5">
-          <p className="text-normal font-light 2xl:text-sm">
-            Just remember it?
-          </p>
+          <p className="text-normal font-light 2xl:text-sm">Vừa nhớ lại?</p>
           <Link
             href="/"
             onClick={handleResetState}
             className="relative 2xl:text-sm text-black dark:text-white hover:underline"
           >
-            Sign in
+            Đăng nhập
           </Link>
           <MdOutlineNavigateNext className="text-primary text-[24px] 2xl:text-[20px]" />
         </div>
       ) : (
         <div className="flex items-center space-x-5">
-          <p className="text-normal font-light 2xl:text-sm">
-            Forget your account?
-          </p>
+          <p className="text-normal font-light 2xl:text-sm">Quên tài khoản?</p>
           <Link
             href="/reset"
             onClick={handleResetState}
             className="relative 2xl:text-sm text-black dark:text-white hover:underline"
           >
-            Reset account
+            Reset mật khẩu
           </Link>
           <MdOutlineNavigateNext className="text-primary text-[24px] 2xl:text-[20px]" />
         </div>
