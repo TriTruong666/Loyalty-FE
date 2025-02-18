@@ -9,6 +9,7 @@ import Image from "next/image";
 import { useAtomValue, useSetAtom } from "jotai";
 import { IoMailUnreadOutline } from "react-icons/io5";
 import { loginProgressState } from "./store/loginAtoms";
+import DecryptedText from "./components/DecryptText";
 
 export default function Home() {
   const progressState = useAtomValue(loginProgressState);
@@ -36,13 +37,24 @@ export default function Home() {
 function Introduce() {
   return (
     <div className="flex flex-col w-[50%] border-r h-full border-gray-400 border-opacity-40 justify-center pl-[150px] gap-y-3">
-      <p className="font-semibold 2xl:text-[40px] text-[50px] w-[80%] mt-[70px] 2xl:mt-[5px] bg-[conic-gradient(at_right,_var(--tw-gradient-stops))] from-yellow-600 via-primary to-emerald-50 bg-clip-text text-transparent">
-        Loyalty happy to see you, friends.
-      </p>
+      <div className="w-[80%]">
+        <DecryptedText
+          text="Hi, chào mừng bạn đã đến với Loyalty."
+          characters="LTAOTY!Hchád"
+          animateOn="view"
+          encryptedClassName="font-semibold 2xl:text-[40px] text-[50px] w-[80%] mt-[70px] 2xl:mt-[5px] bg-[conic-gradient(at_right,_var(--tw-gradient-stops))] from-yellow-600 via-primary to-emerald-50 bg-clip-text text-transparent"
+          revealDirection="start"
+          maxIterations={10}
+          sequential
+          speed={60}
+          className="font-semibold 2xl:text-[40px] text-[50px] w-[80%] mt-[70px] 2xl:mt-[5px] bg-[conic-gradient(at_right,_var(--tw-gradient-stops))] from-yellow-600 via-primary to-emerald-50 bg-clip-text text-transparent"
+        />
+      </div>
+
       <p className="dark:text-normal text-sm 2xl:text-[11px] w-[80%] text-black">
-        Loyalty is a platform that helps pharmaceutical retailers buy in bulk
-        from trusted suppliers. We offer competitive pricing, a seamless
-        ordering process, and reliable product quality.
+        Loyalty là nền tảng giúp các nhà bán mỹ phẩm mua số lượng lớn từ các nhà
+        cung cấp đáng tin cậy. Chúng tôi cung cấp giá cả cạnh tranh, quy trình
+        đặt hàng liền mạch và chất lượng sản phẩm đáng tin cậy.
       </p>
       <div className="pt-4 2xl:pt-2">
         <LoginForm />
