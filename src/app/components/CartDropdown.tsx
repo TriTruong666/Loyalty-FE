@@ -17,9 +17,9 @@ export default function CartDropdown() {
           animate={{ opacity: 1, translateX: 0 }}
           exit={{ opacity: 0, display: "none", translateX: 100 }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="fixed flex flex-col w-[350px] 3xl:w-[400px] h-[700px] 3xl:h-[1000px] max-h-[600px] z-[50] border border-gray-400-40 bg-background top-[70px] left-[1120px] 3xl:left-[1450px] rounded-[15px] py-[10px] font-open"
+          className="fixed flex flex-col w-[350px] 3xl:w-[400px] max-h-[600px] z-[50] border border-gray-400-40 bg-background top-[70px] left-[1120px] 3xl:left-[1450px] rounded-[15px] pb-[10px] font-open"
         >
-          <p className="font-open font-light w-full px-[20px] py-[20px] sticky top-0 left-0 bg-background z-[60]">
+          <p className="font-open font-light w-full px-[20px] py-[20px] sticky top-0 left-0 z-[60]">
             Giỏ hàng của bạn
           </p>
 

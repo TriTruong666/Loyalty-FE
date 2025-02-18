@@ -9,6 +9,7 @@ import { useAtom } from "jotai";
 import {
   cartDropdownState,
   notificationDropdownState,
+  profileSettingDropdownState,
 } from "../store/dropdownAtoms";
 
 export default function DashboardHeader() {
@@ -70,13 +71,23 @@ function SearchBar() {
 function MainBar() {
   const [notiDropdown, setNotiDropdown] = useAtom(notificationDropdownState);
   const [cartDropdown, setCartDropdown] = useAtom(cartDropdownState);
+  const [profileDropdown, setProfileDropdown] = useAtom(
+    profileSettingDropdownState
+  );
   const handleToggleNotiDropdown = () => {
     setNotiDropdown(!notiDropdown);
     setCartDropdown(false);
+    setProfileDropdown(false);
   };
   const handleToggleCartDropdown = () => {
     setCartDropdown(!cartDropdown);
     setNotiDropdown(false);
+    setProfileDropdown(false);
+  };
+  const handleToggleProfileModal = () => {
+    setProfileDropdown(!profileDropdown);
+    setNotiDropdown(false);
+    setCartDropdown(false);
   };
   return (
     <div className="flex items-center">
@@ -104,7 +115,10 @@ function MainBar() {
           5
         </span>
       </div>
-      <div className="px-4 border-l border-gray-300">
+      <div
+        className="px-4 border-l border-gray-300 cursor-pointer"
+        onClick={handleToggleProfileModal}
+      >
         <IoIosSettings className="text-[20px]" />
       </div>
       {/* Avatar */}
