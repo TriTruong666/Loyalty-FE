@@ -21,16 +21,9 @@ import {
 } from "./service/authenticateService";
 import { Button } from "@heroui/react";
 import { useRouter } from "next/navigation";
+import { showToast } from "./utils/toast";
 
 export default function Home() {
-  const router = useRouter();
-  useEffect(() => {
-    const userInfo = localStorage.getItem("account");
-    const token = localStorage.getItem("token");
-    if (userInfo || token) {
-      router.push("/dashboard");
-    }
-  }, [router]);
   const progressState = useAtomValue(loginProgressState);
   return (
     <>
@@ -106,7 +99,7 @@ function LoginForm() {
       setIsLoading(true);
     },
     onSuccess(data) {
-      if (data === "Failed: Invalid email or password") {
+      if (data.code === "INVALID_EMAIL_OR_PASSWORD") {
         setError("Thử lại, sai email hoặc mật khẩu");
       }
       if (data === "Login successfully") {
@@ -260,10 +253,20 @@ function EmailVerification() {
     dataVerifyOTPState
   );
   const [isLoading, setIsLoading] = useState(false);
+  const [isSpam, setIsSpam] = useState(false);
   const [error, setError] = useState("");
   const [otp, setOtp] = useState<string>("".padStart(6, ""));
   const inputRefs = useRef<HTMLInputElement[]>([]);
-
+  const loginMutation = useMutation({
+    mutationKey: ["login"],
+    mutationFn: loginService,
+    onMutate() {
+      setIsLoading(true);
+    },
+    onSuccess() {
+      setIsLoading(false);
+    },
+  });
   const verifyMutation = useMutation({
     mutationKey: ["verify-login"],
     mutationFn: verifyLoginService,
@@ -271,8 +274,13 @@ function EmailVerification() {
       setIsLoading(true);
     },
     onSuccess(data) {
-      if (data === "Failed: There is no otp code for this email.") {
+      if (data.code === "INVALID_OTP_CODE") {
         setError("OTP bạn vừa nhập không đúng, vui lòng kiểm tra lại");
+        return;
+      }
+      if (data.code === "THIS_OTP_CODE_HAS_BEEN_EXPIRED") {
+        setError("OTP của bạn đã hết hạn xin vui lòng gửi lại OTP ");
+        return;
       } else {
         setIsLoading(false);
         localStorage?.setItem("account", JSON.stringify(data.user));
@@ -333,6 +341,18 @@ function EmailVerification() {
       console.log(error);
     }
   };
+  const handleResendOTP = async () => {
+    try {
+      await loginMutation.mutateAsync(loginData);
+      showToast("Đã gửi lại OTP vui lòng kiểm tra gmail", "success");
+      setIsSpam(true);
+      setTimeout(() => {
+        setIsSpam(false);
+      }, 300000);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div className="flex flex-col w-full justify-center items-center gap-y-6 min-h-screen bg-background text-white p-4">
@@ -388,11 +408,20 @@ function EmailVerification() {
         <p className="text-normal text-[11px]">
           Có thể mất vài phút để email đến. Kiểm tra lại thư mục thư rác.
         </p>
-        <p className="text-normal text-[11px]">
-          Chưa nhận được?{" "}
-          <span className="text-white cursor-pointer hover:underline">
-            Gửi lại OTP
-          </span>
+        <p className="text-[11px] text-normal">
+          OTP hết hạn?{" "}
+          {isSpam ? (
+            <span className="text-[11px] text-white cursor-pointer hover:underline">
+              Gửi lại sau 5 phút
+            </span>
+          ) : (
+            <span
+              onClick={handleResendOTP}
+              className="text-[11px] text-white cursor-pointer hover:underline"
+            >
+              Gửi lại OTP
+            </span>
+          )}
         </p>
       </div>
     </div>
