@@ -2,7 +2,7 @@
 import LoginHeader from "./components/LoginHeader";
 import { MdEmail } from "react-icons/md";
 import { FaKey } from "react-icons/fa";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { FaCircleCheck } from "react-icons/fa6";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
@@ -23,6 +23,14 @@ import { Button } from "@heroui/react";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
+  useEffect(() => {
+    const userInfo = localStorage.getItem("account");
+    const token = localStorage.getItem("token");
+    if (userInfo || token) {
+      router.push("/dashboard");
+    }
+  }, [router]);
   const progressState = useAtomValue(loginProgressState);
   return (
     <>

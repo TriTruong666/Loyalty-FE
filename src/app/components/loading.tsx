@@ -1,9 +1,15 @@
 "use client";
 
-import loadingAnimation1 from "@/app/static/loading/loading2.json";
+import loadingAnimation1 from "@/app/static/loading/loading3.json";
 
 import dynamic from "next/dynamic";
+import { FC } from "react";
+
 const DynamicLottie = dynamic(() => import("lottie-react"), { ssr: false });
+
+interface customProps {
+  className?: string;
+}
 
 export const LoadingDashboard = () => {
   return (
@@ -17,9 +23,15 @@ export const LoadingDashboard = () => {
   );
 };
 
-export const LoadingTable = () => {
+export const LoadingTable: FC<customProps> = ({ className }) => {
   return (
-    <div className="flex flex-col items-center justify-center h-[550px] bg-black">
+    <div
+      className={
+        className
+          ? className
+          : "flex flex-col items-center justify-center h-[550px] bg-background"
+      }
+    >
       <DynamicLottie
         animationData={loadingAnimation1}
         loop={true}

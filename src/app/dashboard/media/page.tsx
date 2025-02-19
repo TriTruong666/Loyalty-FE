@@ -13,10 +13,11 @@ import { formatDate } from "@/app/utils/format";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useMutation } from "@tanstack/react-query";
 import * as CloudinaryService from "@/app/service/cloudinaryService";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Signature } from "@/app/interfaces/Cloudinary";
 import { showToast } from "@/app/utils/toast";
-import { useGetAllAssets } from "@/app/hooks/hook";
+import { useGetAllAssetByLimit, useGetAllAssets } from "@/app/hooks/hook";
+import { LoadingTable } from "@/app/components/loading";
 export default function MediaPage() {
   return (
     <div className="flex flex-col">
@@ -53,11 +54,20 @@ export default function MediaPage() {
 }
 
 function MediaTable() {
+  const [page, setPage] = useState(1);
+  const [totalPage, setTotalPage] = useState(1);
+  const limit = 10;
   const [submitSign, setSubmitSign] = useState<Signature>({
     apiSecret: process.env.NEXT_PUBLIC_SECRET_API as string,
     publicID: "",
   });
-  const { data: assets } = useGetAllAssets();
+  const { data: allAssets } = useGetAllAssets();
+  const { data: assets, isLoading } = useGetAllAssetByLimit(page);
+  useEffect(() => {
+    if (allAssets) {
+      setTotalPage(Math.ceil(allAssets.length / limit));
+    }
+  }, [allAssets]);
   const deleteMutation = useMutation({
     mutationKey: ["deleteFile"],
     mutationFn: CloudinaryService.deleteFileService,
@@ -89,7 +99,13 @@ function MediaTable() {
       console.error("Error deleting file:", error);
     }
   };
-
+  if (isLoading) {
+    return (
+      <>
+        <LoadingTable />
+      </>
+    );
+  }
   return (
     <div className="flex mt-[20px] flex-col items-center">
       <table className="flex flex-col w-full">
@@ -112,6 +128,7 @@ function MediaTable() {
             </th>
           </tr>
         </thead>
+
         <tbody>
           {assets?.map((item, i) => (
             <tr
@@ -169,8 +186,9 @@ function MediaTable() {
           loop
           showControls
           color="default"
-          initialPage={1}
-          total={10}
+          initialPage={page}
+          total={totalPage}
+          onChange={(newPage) => setPage(newPage)}
         />
       </div>
     </div>

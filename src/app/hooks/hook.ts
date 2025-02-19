@@ -3,7 +3,9 @@ import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { Product } from "../interfaces/Product";
 import * as ProductService from "@/app/service/productService";
 import * as CloudinaryService from "@/app/service/cloudinaryService";
+import * as BrandService from "@/app/service/brandService";
 import { CloudinaryAsset } from "../interfaces/Cloudinary";
+import { Brand } from "../interfaces/Brand";
 function useFetch<T>(
   queryKey: any[],
   queryFn: () => Promise<T>,
@@ -34,4 +36,14 @@ export function useGetAllAssets() {
   return useFetch<CloudinaryAsset[]>(["assets"], async () =>
     CloudinaryService.getAllAssets()
   );
+}
+
+export function useGetAllAssetByLimit(page: number) {
+  return useFetch<CloudinaryAsset[]>(["assets", page], async () =>
+    CloudinaryService.getAssetsByLimit(page)
+  );
+}
+
+export function useGetAllBrand() {
+  return useFetch<Brand[]>(["brands"], async () => BrandService.getAllBrand());
 }

@@ -14,7 +14,7 @@ export const getAllProductService = async () => {
 
 export const getProductServiceByLimit = async (page: number) => {
   try {
-    const url = `${API_URL}/api/product/limit?page=${page}&limit=4`;
+    const url = `${API_URL}/api/product/limit?page=${page}&limit=8`;
     const res: AxiosResponse = await axios.get(url);
     return res.data;
   } catch (error) {
@@ -40,6 +40,16 @@ export const createProductService = async (
   try {
     const url = `${API_URL}/api/product?userID=${userId}`;
     const res = await axios.post(url, data);
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const deleteProductService = async (productId: string) => {
+  try {
+    const url = `${API_URL}/api/product/${productId}`;
+    const res = await axios.delete(url);
     return res.data;
   } catch (error) {
     console.error(error);

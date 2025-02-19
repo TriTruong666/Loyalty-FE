@@ -41,7 +41,7 @@ export default function ProductDashboardLayout({
 
       <ProductStatusMenu />
       <Suspense fallback={<ProductLoadingTableLayout />}>
-        <div className="">{children}</div>
+        <div className="overflow-auto">{children}</div>
       </Suspense>
     </div>
   );

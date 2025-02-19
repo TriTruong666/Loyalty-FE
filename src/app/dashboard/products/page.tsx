@@ -15,10 +15,13 @@ import { showToast } from "@/app/utils/toast";
 import { useAllProduct, useGetProductByLimit } from "@/app/hooks/hook";
 import { formatPrice } from "@/app/utils/format";
 import { useEffect, useState } from "react";
+import { LoadingTable } from "@/app/components/loading";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { deleteProductService } from "@/app/service/productService";
 
 export default function ProductPage() {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col pb-[40px]">
       <div className="flex items-center px-[40px] py-[20px] mt-[10px] justify-end gap-x-4">
         <div className="w-[250px]">
           {/* <ThemeProvider value={selectTheme}>
@@ -54,14 +57,23 @@ export default function ProductPage() {
 function ProductTable() {
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
-  const limit = 4;
-  const { data: products } = useGetProductByLimit(page);
+  const limit = 8;
+  const { data: products, isLoading } = useGetProductByLimit(page);
   const { data: allProduct } = useAllProduct();
   useEffect(() => {
     if (allProduct) {
       setTotalPage(Math.ceil(allProduct.length / limit));
     }
   }, [allProduct]);
+  const queryClient = useQueryClient();
+  const deleteProductMutation = useMutation({
+    mutationKey: ["delete-product"],
+    mutationFn: deleteProductService,
+    onSuccess() {
+      showToast("Xoá thành công", "success");
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+    },
+  });
   const statusTheme = (status: string) => {
     switch (status) {
       case "inactive":
@@ -87,7 +99,20 @@ function ProductTable() {
         return "";
     }
   };
-
+  const handleDelProduct = async (productId: string) => {
+    try {
+      await deleteProductMutation.mutateAsync(productId);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  if (isLoading) {
+    return (
+      <>
+        <LoadingTable />
+      </>
+    );
+  }
   return (
     <div className="flex mt-[20px] flex-col items-center">
       <table className="flex flex-col w-full">
@@ -99,7 +124,7 @@ function ProductTable() {
             <th className="col-span-3 text-[12px] text-normal font-light text-start">
               Sản phẩm
             </th>
-            <th className="col-span-2 text-[12px] text-normal font-light text-start">
+            <th className="col-span-2 text-[12px] text-normal font-light text-center">
               Nhãn hàng
             </th>
             <th className="col-span-2 text-[12px] text-normal font-light text-center">
@@ -121,20 +146,13 @@ function ProductTable() {
             >
               <td className="col-span-1 text-[13px]">{item.productId}</td>
               <td className="col-span-3 flex items-center gap-x-2">
-                <Image
-                  alt=""
-                  src="/woman-1.jpg"
-                  width={35}
-                  height={35}
-                  className="w-[35px] h-[35px] object-cover rounded-full"
-                />
                 <div className="flex flex-col">
                   <p className="text-[13px] font-semibold line-clamp-2">
                     {item.productName}
                   </p>
                 </div>
               </td>
-              <td className="col-span-2 text-[11px] font-semibold">
+              <td className="col-span-2 text-[11px] text-center font-semibold">
                 {item.brand.brandName}
               </td>
               <td className="col-span-2 text-[13px] text-center font-semibold">
@@ -164,6 +182,17 @@ function ProductTable() {
                     </Button>
                   </DropdownTrigger>
                   <DropdownMenu>
+                    <DropdownItem
+                      onPress={() => handleDelProduct(item.productId)}
+                      className="group"
+                      color="default"
+                      startContent={
+                        <FaEdit className="text-[16px] group-hover:text-danger" />
+                      }
+                      key="delete"
+                    >
+                      <p className="group-hover:text-danger">Xoá (for test)</p>
+                    </DropdownItem>
                     <DropdownItem
                       className="group"
                       color="default"

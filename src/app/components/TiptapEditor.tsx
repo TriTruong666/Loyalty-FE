@@ -1,8 +1,8 @@
-"use client";
-
+import { useEffect } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
+import Placeholder from "@tiptap/extension-placeholder"; // Thêm extension Placeholder
 import {
   LuBold,
   LuItalic,
@@ -16,24 +16,51 @@ import {
 import { Button } from "@heroui/button";
 
 interface TiptapEditorProps {
-  content?: string;
+  content?: string; // Nội dung ban đầu
+  placeholder?: string; // Placeholder mặc định
   attributes?: Record<string, string>;
+  onChange?: (value: string) => void;
 }
 
 export default function TiptapEditor({
-  content = "",
+  content = "", // Nội dung ban đầu
+  placeholder = "Nhập mô tả sản phẩm...", // Placeholder mặc định
   attributes = {
     class:
       "p-4 h-[70px] max-h-[100px] overflow-auto bg-gray-700 bg-opacity-20 text-normal text-sm border border-gray-600 border-opacity-10 rounded-lg focus:outline-none",
   },
+  onChange,
 }: TiptapEditorProps) {
   const editor = useEditor({
-    extensions: [StarterKit, Image],
-    content,
+    extensions: [
+      StarterKit,
+      Image,
+      Placeholder.configure({
+        placeholder: ({ node }) => {
+          if (node.type.name === "paragraph") {
+            return placeholder;
+          }
+          return "";
+        },
+      }),
+    ],
+    content, // Gán nội dung ban đầu
     editorProps: {
       attributes,
     },
+    onUpdate: ({ editor }) => {
+      if (onChange) {
+        onChange(editor.getHTML());
+      }
+    },
   });
+
+  // Cập nhật editor khi content thay đổi từ bên ngoài
+  useEffect(() => {
+    if (editor && content !== editor.getHTML()) {
+      editor.commands.setContent(content);
+    }
+  }, [content, editor]);
 
   const handleImageUpload = () => {
     const input = document.createElement("input");
