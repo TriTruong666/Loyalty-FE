@@ -82,11 +82,21 @@ function ProductForm() {
       unitName: "Miếng",
     },
   ];
+
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setSubmitData({
       ...submitData,
       [name]: value,
+    });
+  };
+  const handleOnChangeNameProduct = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { value } = e.target;
+    setSubmitData({
+      ...submitData,
+      productName: value.toUpperCase(),
     });
   };
   const handleGoNext = () => {
@@ -126,7 +136,7 @@ function ProductForm() {
         />
         <NormalInput
           name="productName"
-          onChange={handleOnChange}
+          onChange={handleOnChangeNameProduct}
           defaultValue={submitData.productName}
           label="Tên sản phẩm"
           placeholder="EASYDEW EX UV CONTROL VELVET PRIMER 40ML"
@@ -269,23 +279,30 @@ function ImageDropZone() {
     mutationFn: async ({ userId, data }: { userId: string; data: any }) =>
       createProductService(userId, data),
     onMutate: () => setIsUploading(true),
-    onSuccess: () => {
-      showToast("Tạo sản phẩm thành công", "success");
-      queryClient.invalidateQueries({ queryKey: ["products"] });
-      setModal(false);
-      setSubmitData({
-        productId: "",
-        productName: "",
-        unit: "",
-        handle: "",
-        imageUrl: "",
-        status: "dangban",
-        brandId: "",
-        price: 0,
-        description: "",
-      });
-      setProductModalProgress(1);
-      setIsUploading(false);
+    onSuccess: (data) => {
+      if (data.code === "PRODUCT_ID_ALREADY_BOUND_TO_AN_EXISTING_PRODUCT") {
+        showToast(
+          "Sản phẩm này đã tồn tại, vui lòng đổi SKU sản phẩm",
+          "error"
+        );
+      } else {
+        showToast("Tạo sản phẩm thành công", "success");
+        queryClient.invalidateQueries({ queryKey: ["products"] });
+        setModal(false);
+        setSubmitData({
+          productId: "",
+          productName: "",
+          unit: "",
+          handle: "",
+          imageUrl: "",
+          status: "dangban",
+          brandId: "",
+          price: 0,
+          description: "",
+        });
+        setProductModalProgress(1);
+        setIsUploading(false);
+      }
     },
     onError: (error) => {
       console.error("Lỗi tạo sản phẩm:", error);
