@@ -11,13 +11,14 @@ import {
 } from "@heroui/react";
 import { formatDate } from "@/app/utils/format";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import * as CloudinaryService from "@/app/service/cloudinaryService";
 import { useEffect, useState } from "react";
 import { Signature } from "@/app/interfaces/Cloudinary";
 import { showToast } from "@/app/utils/toast";
 import { useGetAllAssetByLimit, useGetAllAssets } from "@/app/hooks/hook";
 import { LoadingTable } from "@/app/components/loading";
+import { TbMoodEmpty } from "react-icons/tb";
 export default function MediaPage() {
   return (
     <div className="flex flex-col">
@@ -68,11 +69,13 @@ function MediaTable() {
       setTotalPage(Math.ceil(allAssets.length / limit));
     }
   }, [allAssets]);
+  const queryClient = useQueryClient();
   const deleteMutation = useMutation({
     mutationKey: ["deleteFile"],
     mutationFn: CloudinaryService.deleteFileService,
 
     onSuccess(data) {
+      queryClient.invalidateQueries({ queryKey: ["assets"] });
       console.log(data);
       showToast("Xoá ảnh thành công", "success");
     },
@@ -103,6 +106,18 @@ function MediaTable() {
     return (
       <>
         <LoadingTable />
+      </>
+    );
+  }
+  if (assets?.length === 0) {
+    return (
+      <>
+        <div className="flex flex-col w-full justify-center items-center h-[400px] gap-y-[20px]">
+          <TbMoodEmpty className="text-[50px] text-normal " />
+          <p className="text-normal">
+            Không có ảnh nào được lưu, vui lòng thử lại.
+          </p>
+        </div>
       </>
     );
   }

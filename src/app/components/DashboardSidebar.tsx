@@ -14,6 +14,8 @@ import { RiShoppingBagLine } from "react-icons/ri";
 import { BsCart } from "react-icons/bs";
 import { IoLockOpenOutline } from "react-icons/io5";
 import { MdOutlinePermMedia } from "react-icons/md";
+import { logoutService } from "../service/authenticateService";
+import { useRouter } from "next/navigation";
 
 export default function DashboardSidebar() {
   return (
@@ -139,6 +141,11 @@ function AdminMenu() {
 }
 
 function UtilityItem() {
+  const router = useRouter();
+  const handleLogout = () => {
+    router.push("/");
+    logoutService();
+  };
   const utilMenu = [
     {
       name: "Cài đặt",
@@ -148,11 +155,6 @@ function UtilityItem() {
     {
       name: "Hỗ trợ?",
       icon: IoIosHelpCircleOutline,
-      path: "/dashboard/help",
-    },
-    {
-      name: "Đăng xuất",
-      icon: IoIosLogOut,
       path: "/dashboard/help",
     },
   ];
@@ -168,6 +170,19 @@ function UtilityItem() {
             path={item.path}
           />
         ))}
+        <div
+          className="relative flex items-center justify-between px-6 py-2 group overflow-hidden transition-all duration-300 cursor-pointer"
+          onClick={handleLogout}
+        >
+          <span className="absolute inset-0 bg-gray-600 bg-opacity-10 scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100"></span>
+
+          <div className="relative flex items-center gap-x-3 z-10">
+            <IoIosLogOut />
+            <p className="text-[13px] font-light group-hover:text-foreground transition-all duration-300 text-normal">
+              Đăng xuất
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

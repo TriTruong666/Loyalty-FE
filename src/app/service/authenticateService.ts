@@ -26,3 +26,8 @@ export const verifyLoginService = async (data: Login) => {
     console.log(error);
   }
 };
+
+export const logoutService = () => {
+  localStorage?.removeItem("token");
+  localStorage?.removeItem("account");
+};

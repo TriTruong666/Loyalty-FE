@@ -7,3 +7,5 @@ export const addProductModalState = atom(false);
 export const confirmOrderModalState = atom(false);
 
 export const createNotificationState = atom(false);
+
+export const tokenTimeoutState = atom(false);

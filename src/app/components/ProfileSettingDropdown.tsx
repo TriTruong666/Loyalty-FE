@@ -60,7 +60,7 @@ export default function ProfileSettingDropdown() {
                       {parsedUserInfo?.userName.toLocaleUpperCase()}
                     </p>
                     <p className="text-[11px] font-light">
-                      {parsedUserInfo?.type}
+                      {parsedUserInfo?.type.toUpperCase()}
                     </p>
                   </div>
                 </div>
