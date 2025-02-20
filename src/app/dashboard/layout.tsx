@@ -1,6 +1,6 @@
 "use client";
 import { Toaster } from "react-hot-toast";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect } from "react";
 import DashboardSidebar from "../components/DashboardSidebar";
 import DashboardHeader from "../components/DashboardHeader";
 import DashboardLoadingLayout from "./loading";
@@ -19,8 +19,8 @@ import {
 } from "../store/dropdownAtoms";
 import { useGetUserInfo } from "../hooks/hook";
 import { userInfoState } from "../store/accountAtoms";
+import { showToast } from "../utils/toast";
 import { useRouter } from "next/navigation";
-import { hasCookie } from "cookies-next/client";
 
 export default function DashboardLayout({
   children,
@@ -38,6 +38,9 @@ export default function DashboardLayout({
   const { data: info } = useGetUserInfo();
   useEffect(() => {
     setInfo(info);
+    if (info?.code === "UNKNOWN_ERROR") {
+      router.replace("/");
+    }
   }, [info]);
 
   return (
