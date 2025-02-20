@@ -34,7 +34,7 @@ export default function ProductPage() {
 
 function ProductTable() {
   const setUpdateModal = useSetAtom(updateProductModalState);
-  const [selectedProduct, setSelectedProduct] = useAtom(dataUpdateProductState);
+  const [setSelectedProduct] = useAtom(dataUpdateProductState);
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const limit = 8;
@@ -172,10 +172,10 @@ function ProductTable() {
                   </div>
                 </td>
                 <td className="col-span-2 text-[11px] text-center font-semibold">
-                  {item.brand.brandName}
+                  {item.brand?.brandName}
                 </td>
                 <td className="col-span-2 text-[13px] text-center font-semibold">
-                  {formatPrice(item.price)}
+                  {formatPrice(item?.price as number)}
                 </td>
                 <td
                   className={`col-span-2 flex justify-center w-fit px-3 gap-x-1 py-[2px] border ml-[60px] ${statusTheme(
