@@ -1,11 +1,11 @@
-import axios, { AxiosResponse } from "axios";
+import axiosClient from "../utils/axiosClient";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export const getAllProductService = async () => {
   try {
     const url = `${API_URL}/api/product`;
-    const res: AxiosResponse = await axios.get(url);
+    const res = await axiosClient.get(url);
     return res.data;
   } catch (error) {
     console.error(error);
@@ -15,7 +15,7 @@ export const getAllProductService = async () => {
 export const getProductServiceByLimit = async (page: number) => {
   try {
     const url = `${API_URL}/api/product/limit?page=${page}&limit=8`;
-    const res: AxiosResponse = await axios.get(url);
+    const res = await axiosClient.get(url);
     return res.data;
   } catch (error) {
     console.error(error);
@@ -39,7 +39,7 @@ export const createProductService = async (
 ) => {
   try {
     const url = `${API_URL}/api/product?userID=${userId}`;
-    const res = await axios.post(url, data);
+    const res = await axiosClient.post(url, data);
     return res.data;
   } catch (error) {
     console.error(error);
@@ -49,7 +49,7 @@ export const createProductService = async (
 export const deleteProductService = async (productId: string) => {
   try {
     const url = `${API_URL}/api/product/${productId}`;
-    const res = await axios.delete(url);
+    const res = await axiosClient.delete(url);
     return res.data;
   } catch (error) {
     console.error(error);

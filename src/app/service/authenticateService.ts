@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from "axios";
+import axiosClient from "../utils/axiosClient";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -10,7 +10,7 @@ interface Login {
 export const loginService = async (data: Login) => {
   try {
     const url = `${API_URL}/api/user/login`;
-    const res = await axios.post(url, data);
+    const res = await axiosClient.post(url, data);
     return res.data;
   } catch (error) {
     console.log(error);
@@ -20,7 +20,7 @@ export const loginService = async (data: Login) => {
 export const verifyLoginService = async (data: Login) => {
   try {
     const url = `${API_URL}/api/user/otp`;
-    const res = await axios.post(url, data);
+    const res = await axiosClient.post(url, data);
     return res.data;
   } catch (error) {
     console.log(error);
