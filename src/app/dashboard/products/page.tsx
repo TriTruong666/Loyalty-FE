@@ -16,13 +16,17 @@ import { formatPrice } from "@/app/utils/format";
 import { useEffect, useState } from "react";
 import { LoadingTable } from "@/app/components/loading";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteProductService } from "@/app/service/productService";
+import {
+  deleteProductService,
+  updateProductService,
+} from "@/app/service/productService";
 import { LuPackageX } from "react-icons/lu";
 import { Select, SelectItem } from "@heroui/react";
-import { useAtom, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { dataUpdateProductState } from "@/app/store/productAtoms";
 import { Product } from "@/app/interfaces/Product";
 import { updateProductModalState } from "@/app/store/modalAtoms";
+import { userInfoState } from "@/app/store/accountAtoms";
 
 export default function ProductPage() {
   return (
@@ -33,6 +37,7 @@ export default function ProductPage() {
 }
 
 function ProductTable() {
+  const userInfo = useAtomValue(userInfoState);
   const setUpdateModal = useSetAtom(updateProductModalState);
   const [selectedProduct, setSelectedProduct] = useAtom(dataUpdateProductState);
   const [page, setPage] = useState(1);
@@ -40,14 +45,17 @@ function ProductTable() {
   const limit = 8;
   const { data: products, isLoading } = useGetProductByLimit(page);
   const { data: allProduct } = useAllProduct();
+  const filteredAllProducts = allProduct?.filter(
+    (product) => product.status === "dangban"
+  );
   const filteredProducts = products?.filter(
     (product) => product.status === "dangban"
   );
   useEffect(() => {
-    if (allProduct) {
-      setTotalPage(Math.ceil(allProduct.length / limit));
+    if (filteredAllProducts) {
+      setTotalPage(Math.ceil(filteredAllProducts.length / limit));
     }
-  }, [allProduct]);
+  }, [filteredAllProducts]);
   const queryClient = useQueryClient();
   const deleteProductMutation = useMutation({
     mutationKey: ["delete-product"],
@@ -57,13 +65,22 @@ function ProductTable() {
       queryClient.invalidateQueries({ queryKey: ["products"] });
     },
   });
+  const updateStatusMutation = useMutation({
+    mutationKey: ["update-status"],
+    mutationFn: async ({ userId, data }: { userId: string; data: any }) =>
+      updateProductService(userId, data),
+    onSuccess() {
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      showToast("Sửa đổi trạng thái thành công", "success");
+    },
+  });
   const statusTheme = (status: string) => {
     switch (status) {
-      case "inactive":
-        return "border-gray-400-40";
-      case "active":
-        return "border-[#45A834]";
-      case "notsaleanymore":
+      case "hethang":
+        return "border-warning";
+      case "dangban":
+        return "border-success";
+      case "hetban":
         return "border-red-500";
       default:
         return "";
@@ -72,11 +89,11 @@ function ProductTable() {
 
   const titleStatusTheme = (status: string) => {
     switch (status) {
-      case "inactive":
-        return "text-normal";
-      case "active":
-        return "text-[#45A834]";
-      case "notsaleanymore":
+      case "hethang":
+        return "text-warning";
+      case "dangban":
+        return "text-success";
+      case "hetban":
         return "text-red-500";
       default:
         return "";
@@ -85,6 +102,19 @@ function ProductTable() {
   const handleDelProduct = async (productId: string) => {
     try {
       await deleteProductMutation.mutateAsync(productId);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const handleChangeStatusProduct = async (data: Product) => {
+    try {
+      await updateStatusMutation.mutateAsync({
+        userId: userInfo?.userId as string,
+        data: {
+          productId: data.productId,
+          status: "hethang",
+        },
+      });
     } catch (error) {
       console.error(error);
     }
@@ -177,22 +207,25 @@ function ProductTable() {
                 <td className="col-span-2 text-[13px] text-center font-semibold">
                   {formatPrice(item?.price as number)}
                 </td>
-                <td
-                  className={`col-span-2 flex justify-center w-fit px-3 gap-x-1 py-[2px] border ml-[60px] ${statusTheme(
-                    "active"
-                  )} rounded-lg`}
-                >
-                  <IoIosInformationCircleOutline
-                    className={`${titleStatusTheme("active")}`}
-                  />
-                  <p
-                    className={`text-[11px] font-semibold font-open ${titleStatusTheme(
-                      "active"
-                    )}`}
+                <td className="col-span-2 flex justify-center">
+                  <div
+                    className={` flex justify-center px-3 gap-x-1 py-[2px] w-fit border self-center ${statusTheme(
+                      item?.status as string
+                    )} rounded-lg`}
                   >
-                    Đang Bán
-                  </p>
+                    <IoIosInformationCircleOutline
+                      className={`${titleStatusTheme(item?.status as string)}`}
+                    />
+                    <p
+                      className={`text-[11px] font-semibold font-open ${titleStatusTheme(
+                        item?.status as string
+                      )}`}
+                    >
+                      Đang Bán
+                    </p>
+                  </div>
                 </td>
+
                 <td className="col-span-2 text-[13px] font-semibold flex justify-end">
                   <Dropdown>
                     <DropdownTrigger>
@@ -221,24 +254,22 @@ function ProductTable() {
                         className="group"
                         color="default"
                         startContent={
-                          <FaEdit className="text-[16px] group-hover:text-success" />
+                          <FaEdit className="text-[16px] group-hover:text-foreground" />
                         }
                         key="update"
                       >
-                        <p className="group-hover:text-success">Chỉnh sửa</p>
+                        <p className="group-hover:text-foreground">Chỉnh sửa</p>
                       </DropdownItem>
                       <DropdownItem
-                        onPress={() =>
-                          showToast("Sản phẩm đã hết hàng!", "success")
-                        }
+                        onPress={() => handleChangeStatusProduct(item)}
                         className="group"
                         color="default"
                         startContent={
-                          <FaPowerOff className="text-[16px] group-hover:text-success" />
+                          <FaPowerOff className="text-[16px] group-hover:text-warning" />
                         }
-                        key="deny"
+                        key="change-inactive"
                       >
-                        <p className="group-hover:text-success">Hết Hàng</p>
+                        <p className="group-hover:text-warning">Hết Hàng</p>
                       </DropdownItem>
                       <DropdownItem
                         className="group"
