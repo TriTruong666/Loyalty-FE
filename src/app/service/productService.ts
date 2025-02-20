@@ -22,7 +22,7 @@ export const getProductServiceByLimit = async (page: number) => {
   }
 };
 
-interface addProductProps {
+interface productProps {
   productID: string;
   productName: string;
   unit: string;
@@ -35,11 +35,24 @@ interface addProductProps {
 
 export const createProductService = async (
   userId: string,
-  data: addProductProps
+  data: productProps
 ) => {
   try {
     const url = `${API_URL}/api/product?userID=${userId}`;
     const res = await axiosClient.post(url, data);
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const updateProductService = async (
+  userId: string,
+  data: productProps
+) => {
+  try {
+    const url = `${API_URL}/api/product?userID=${userId}`;
+    const res = await axiosClient.put(url, data);
     return res.data;
   } catch (error) {
     console.error(error);

@@ -28,7 +28,7 @@ export default function AddProductModal() {
     return <></>;
   }
   return (
-    <div className="fixed w-screen h-screen top-0 left-0 flex items-center justify-center z-50 bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur-[2px] bg-opacity-10 backdrop-saturate-100 backdrop-contrast-100">
+    <div className="fixed w-screen h-screen top-0 left-0 flex items-center justify-center z-50 bg-black bg-opacity-70">
       <div className="w-[700px] 2xl:max-h-[700px] bg-black flex flex-col transition-all duration-300 items-center relative py-[40px] px-[40px] rounded-[15px] shadow-[2px_2px_60px_6px_rgba(19,_19,_19,_0.63)]">
         {addProductModalProgress === 1 && <ProductForm />}
         {addProductModalProgress === 2 && <ImageDropZone />}
@@ -277,7 +277,6 @@ function ImageDropZone() {
           productId: "",
           productName: "",
           unit: "",
-          handle: "",
           imageUrl: "",
           status: "dangban",
           brandId: "",

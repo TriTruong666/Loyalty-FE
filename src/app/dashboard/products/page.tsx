@@ -19,6 +19,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteProductService } from "@/app/service/productService";
 import { LuPackageX } from "react-icons/lu";
 import { Select, SelectItem } from "@heroui/react";
+import { useAtom, useSetAtom } from "jotai";
+import { dataUpdateProductState } from "@/app/store/productAtoms";
+import { Product } from "@/app/interfaces/Product";
+import { updateProductModalState } from "@/app/store/modalAtoms";
 
 export default function ProductPage() {
   return (
@@ -29,6 +33,8 @@ export default function ProductPage() {
 }
 
 function ProductTable() {
+  const setUpdateModal = useSetAtom(updateProductModalState);
+  const [selectedProduct, setSelectedProduct] = useAtom(dataUpdateProductState);
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const limit = 8;
@@ -82,6 +88,10 @@ function ProductTable() {
     } catch (error) {
       console.error(error);
     }
+  };
+  const handleUpdateProduct = (data: Product) => {
+    setUpdateModal(true);
+    setSelectedProduct(data);
   };
   if (isLoading) {
     return (
@@ -192,7 +202,9 @@ function ProductTable() {
                     </DropdownTrigger>
                     <DropdownMenu>
                       <DropdownItem
-                        onPress={() => handleDelProduct(item.productId)}
+                        onPress={() =>
+                          handleDelProduct(item.productId as string)
+                        }
                         className="group"
                         color="default"
                         startContent={
@@ -205,12 +217,13 @@ function ProductTable() {
                         </p>
                       </DropdownItem>
                       <DropdownItem
+                        onPress={() => handleUpdateProduct(item)}
                         className="group"
                         color="default"
                         startContent={
                           <FaEdit className="text-[16px] group-hover:text-success" />
                         }
-                        key="approve"
+                        key="update"
                       >
                         <p className="group-hover:text-success">Chỉnh sửa</p>
                       </DropdownItem>
