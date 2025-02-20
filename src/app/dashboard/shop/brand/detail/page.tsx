@@ -4,73 +4,7 @@ import DOMPurify from "isomorphic-dompurify";
 import { Accordion, AccordionItem, Button } from "@heroui/react";
 import Image from "next/image";
 const longHTML = `
-<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #fff;">
-  <h1 style="color: #007bff;">Welcome to the Long HTML Test</h1>
-  <p>This is a long HTML string to test rendering inside <code>dangerouslySetInnerHTML</code>.</p>
-
-  <h2>Introduction</h2>
-  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ac ante et lectus dictum aliquet. Nulla facilisi.</p>
-  
-  <h2>Ordered List</h2>
-  <ol>
-    <li>First item</li>
-    <li>Second item with <strong>bold</strong> text</li>
-    <li>Third item with <em>italic</em> text</li>
-    <li>Fourth item containing a <a href="https://example.com" target="_blank">link</a></li>
-  </ol>
-
-  <h2>Unordered List</h2>
-  <ul>
-    <li>Apple</li>
-    <li>Banana</li>
-    <li>Cherry</li>
-  </ul>
-
-  <h2>Table Example</h2>
-  <table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; width: 100%;">
-    <tr style="background-color: #f4f4f4;">
-      <th>Name</th>
-      <th>Age</th>
-      <th>Country</th>
-    </tr>
-    <tr>
-      <td>John Doe</td>
-      <td>30</td>
-      <td>USA</td>
-    </tr>
-    <tr>
-      <td>Jane Smith</td>
-      <td>25</td>
-      <td>Canada</td>
-    </tr>
-    <tr>
-      <td>Michael Lee</td>
-      <td>35</td>
-      <td>UK</td>
-    </tr>
-  </table>
-
-  <h2>Images</h2>
-  <p>Here is an image for testing:</p>
-  <img src="/brand2.png" alt="Test Image" width="300" style="border-radius: 10px;"/>
-
-  <h2>Blockquote</h2>
-  <blockquote style="border-left: 4px solid #007bff; padding-left: 10px; font-style: italic;">
-    "This is a sample blockquote to test styling."
-  </blockquote>
-
-  <h2>Code Block</h2>
-  <pre style="background: #f8f9fa; padding: 10px; border-radius: 5px;">
-    function helloWorld() {
-      console.log("Hello, World!");
-    }
-  </pre>
-  <h2>Styled Text</h2>
-  <p style="color: red;">This text is red.</p>
-  <p style="color: green;">This text is green.</p>
-  <p style="color: blue;">This text is blue.</p>
-
-</div>
+<p>Easydew Ex UV Control Velvet Primer là kem chống nắng trong suốt có kết cấu mỏng nhẹ nên dễ thẩm thấu vào da, không gây nhờn rít. Kem chống nắng trong suốt không chứa các thành phần tạo màu nên không để lại vệt trắng trên da.Thích hợp cho mọi loại da, kể cả da nhạy cảm. Phù hợp với da dầu. Có thể sử dụng trước khi trang điểm để lớp nền được mềm mịn và không bị lộ lỗ chân lông.</p><p><br><strong>1. Công dụng:</strong></p><p>- Chống nắng với chỉ số SPF 40+ bảo vệ da tránh khỏi 97% tia UVB tác động của ánh sáng mặt trời</p><p>- PA+++ bảo vệ da tối ưu 90% tia UVA</p><p>- Không gây bếch rít</p><p>- Làm lớp lót trang điểm, giúp da mịn màng và đều màu.</p><p>- Kiềm dầu, giúp da khô thoáng suốt cả ngày.</p><p>- Se khít lỗ chân lông, giúp da mịn màng.</p><p>&nbsp;</p><p><strong>2.&nbsp;Thành phần:</strong></p><p>- DW-EGF (1ppm), Tocopherol, Salicylic Acid, Hexanediol, Ceramide,...</p><p>&nbsp;</p><p><strong>3. Hướng dẫn sử dụng</strong></p><p>- Thoa kem chống nắng 20 phút trước khi ra ngoài trời giúp&nbsp;kem chống nắng có thời gian để thẩm thấu vào da.<br>-&nbsp; Nên thoa lại kem chống nắng sau mỗi 2 giờ, hoặc thường xuyên hơn nếu đổ mồ hôi hay&nbsp;bơi lội.<br>- Tẩy trang kỹ sau khi sử dụng kem chống nắng giúp làm sạch lớp kem chống nắng.</p><p>&nbsp;</p><p><strong>Lưu ý của Picare :</strong></p><p>● Không sử dụng trên các khu vực có bất thường như vết thương, vết sưng tấy hoặc phát ban.</p><p>● Nếu bạn gặp bất kỳ dấu hiệu bất thường nào như mẩn đỏ, sưng tấy, ngứa ngáy, kích ứng, mất màu (đốm trắng, v.v.) và sạm da trong hoặc sau khi sử dụng, hoặc nếu da bạn tiếp xúc trực tiếp với ánh nắng mặt trời thì có thể xảy ra những bất thường trên. xảy ra, ngưng sử dụng và hỏi ý kiến ​​bác sĩ da liễu.</p><p>&nbsp;</p><p>Dung tích: 40ml.</p><p>Xuất xứ thương hiệu: Hàn Quốc.</p><p>Sản xuất tại: Hàn Quốc.</p><p>Nhà sản xuất: COSMAX.INC - KOREA.</p><p>Chịu trách nhiệm đưa sản phẩm ra thị trường : Công ty TNHH&nbsp;Picare Việt Nam.</p>
 `;
 const instruction = `<p style="text-align: left;color: rgb(255, 255, 255);background-color: rgb(0, 0, 0);font-size: 16px;font-family: Roboto, sans-serif;"><span style="font-size: 12pt;">Hướng dẫn mua h&agrave;ng</span></p>
 <p style="text-align: left;color: rgb(45, 45, 45);background-color: rgb(255, 255, 255);font-size: 16px;font-family: Roboto, sans-serif;"><span style="font-size: 11pt;">Shop Dược Mỹ Phẩm https://shopduocmypham.com được quản l&yacute; vận h&agrave;nh bởi C&ocirc;ng ty TNHH Dược Phẩm Trung Hanh &ndash; Trung Hanh Pharma Co., Ltd.</span></p>
@@ -135,7 +69,10 @@ export default function ProductDetailPage() {
             aria-label="Accordion 1"
             title="Mô tả sản phẩm"
           >
-            <div dangerouslySetInnerHTML={{ __html: safeHTML }} />{" "}
+            <div
+              className="text-medium/loose"
+              dangerouslySetInnerHTML={{ __html: safeHTML }}
+            />{" "}
           </AccordionItem>
           <AccordionItem
             key="2"
