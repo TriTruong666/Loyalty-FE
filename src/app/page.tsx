@@ -22,27 +22,26 @@ import {
 import { Button } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { showToast } from "./utils/toast";
+import { hasCookie } from "cookies-next/client";
 
 export default function Home() {
   const progressState = useAtomValue(loginProgressState);
+  const router = useRouter();
+
   return (
-    <>
-      <div className="font-inter font-light relative w-screen h-screen overflow-hidden">
-        <LoginHeader />
-        {progressState === 1 && (
-          <div className="flex h-full">
-            <Introduce />
-            {/* missing image section */}
-          </div>
-        )}
-        {progressState === 2 && (
-          <div className="flex h-full">
-            <EmailVerification />
-            {/* missing image section */}
-          </div>
-        )}
-      </div>
-    </>
+    <div className="font-inter font-light relative w-screen h-screen overflow-hidden">
+      <LoginHeader />
+      {progressState === 1 && (
+        <div className="flex h-full">
+          <Introduce />
+        </div>
+      )}
+      {progressState === 2 && (
+        <div className="flex h-full">
+          <EmailVerification />
+        </div>
+      )}
+    </div>
   );
 }
 

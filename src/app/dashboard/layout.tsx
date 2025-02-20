@@ -18,11 +18,15 @@ import {
   profileSettingDropdownState,
 } from "../store/dropdownAtoms";
 import { useGetUserInfo } from "../hooks/hook";
+import { userInfoState } from "../store/accountAtoms";
+import { useRouter } from "next/navigation";
+import { hasCookie } from "cookies-next/client";
 
 export default function DashboardLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const setNotiDropdown = useSetAtom(notificationDropdownState);
+  const setInfo = useSetAtom(userInfoState);
   const setCartDropdown = useSetAtom(cartDropdownState);
   const setProfileDropdown = useSetAtom(profileSettingDropdownState);
   const handleToggleOffDropdown = () => {
@@ -30,7 +34,11 @@ export default function DashboardLayout({
     setNotiDropdown(false);
     setCartDropdown(false);
   };
+  const router = useRouter();
   const { data: info } = useGetUserInfo();
+  useEffect(() => {
+    setInfo(info);
+  }, [info]);
 
   return (
     <div className="flex min-h-screen relative overflow-hidden">
