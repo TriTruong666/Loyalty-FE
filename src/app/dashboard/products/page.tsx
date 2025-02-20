@@ -34,7 +34,7 @@ export default function ProductPage() {
 
 function ProductTable() {
   const setUpdateModal = useSetAtom(updateProductModalState);
-  const [setSelectedProduct] = useAtom(dataUpdateProductState);
+  const [selectedProduct, setSelectedProduct] = useAtom(dataUpdateProductState);
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const limit = 8;
