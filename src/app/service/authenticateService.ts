@@ -14,6 +14,20 @@ export const loginService = async (data: Login) => {
   }
 };
 
+export const logoutService = async () => {
+  try {
+    const res = await axiosClient.post("/api/user/logout");
+
+    if (typeof window !== "undefined") {
+      window.location.reload();
+    }
+
+    return res.data;
+  } catch (error) {
+    console.error("Logout failed:", error);
+  }
+};
+
 export const verifyLoginService = async (data: Login) => {
   try {
     const res = await axiosClient.post("/api/user/otp", data);
@@ -21,9 +35,4 @@ export const verifyLoginService = async (data: Login) => {
   } catch (error) {
     console.log(error);
   }
-};
-
-export const logoutService = () => {
-  localStorage?.removeItem("token");
-  localStorage?.removeItem("account");
 };

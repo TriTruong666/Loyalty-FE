@@ -30,6 +30,9 @@ export default function Home() {
   const { data: info } = useGetUserInfo();
   useEffect(() => {
     const isError = info?.code === "UNKNOWN_ERROR";
+    if (isError) {
+      router.push("/");
+    }
     if (!isError) {
       router.push("/dashboard");
     }
@@ -59,12 +62,12 @@ function Introduce() {
           text="Hi, chào mừng bạn đã đến với nền tảng Loyalty Picare."
           characters="LTAOTY!Hchád"
           animateOn="view"
-          encryptedClassName="font-semibold 2xl:text-[40px] text-[50px] w-[80%] mt-[70px] 2xl:mt-[5px] bg-[conic-gradient(at_right,_var(--tw-gradient-stops))] from-yellow-600 via-primary to-emerald-50 bg-clip-text text-transparent"
+          encryptedClassName="font-semibold 2xl:text-[30px] text-[40px] w-[80%] mt-[70px] 2xl:mt-[5px] bg-[conic-gradient(at_right,_var(--tw-gradient-stops))] from-yellow-600 via-primary to-emerald-50 bg-clip-text text-transparent"
           revealDirection="start"
           maxIterations={10}
           sequential
           speed={60}
-          className="font-semibold 2xl:text-[40px] text-[50px] w-[80%] mt-[70px] 2xl:mt-[5px] bg-[conic-gradient(at_right,_var(--tw-gradient-stops))] from-yellow-600 via-primary to-emerald-50 bg-clip-text text-transparent"
+          className="font-semibold 2xl:text-[30px] text-[40px] w-[80%] mt-[70px] 2xl:mt-[5px] bg-[conic-gradient(at_right,_var(--tw-gradient-stops))] from-yellow-600 via-primary to-emerald-50 bg-clip-text text-transparent"
         />
       </div>
 
@@ -292,7 +295,7 @@ function EmailVerification() {
         return;
       } else {
         if (typeof window !== "undefined") {
-          window.location.reload();
+          window.location.href = "/dashboard";
         }
         setIsLoading(false);
       }

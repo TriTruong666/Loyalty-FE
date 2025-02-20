@@ -15,7 +15,7 @@ import { BsCart } from "react-icons/bs";
 import { IoLockOpenOutline } from "react-icons/io5";
 import { MdOutlinePermMedia } from "react-icons/md";
 import { logoutService } from "../service/authenticateService";
-import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
 
 export default function DashboardSidebar() {
   return (
@@ -141,10 +141,16 @@ function AdminMenu() {
 }
 
 function UtilityItem() {
-  const router = useRouter();
-  const handleLogout = () => {
-    router.push("/");
-    logoutService();
+  const logoutMutation = useMutation({
+    mutationKey: ["logout"],
+    mutationFn: logoutService,
+  });
+  const handleLogout = async () => {
+    try {
+      await logoutMutation.mutateAsync();
+    } catch (error) {
+      console.error(error);
+    }
   };
   const utilMenu = [
     {
