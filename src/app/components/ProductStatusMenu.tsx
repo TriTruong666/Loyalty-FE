@@ -3,13 +3,35 @@
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useAllProduct } from "../hooks/hook";
 export function ProductStatusMenu() {
   const pathname = usePathname();
-
+  const { data: allProduct } = useAllProduct();
+  const filteredAllProductsActive = allProduct?.filter(
+    (product) => product.status === "dangban"
+  ).length;
+  const filteredAllProductsInactive = allProduct?.filter(
+    (product) => product.status === "hethang"
+  ).length;
+  const filteredAllProductsNotSale = allProduct?.filter(
+    (product) => product.status === "hetban"
+  ).length;
   const status = [
-    { name: "Đang Bán", path: "/dashboard/products", count: 10 },
-    { name: "Hết Hàng", path: "/dashboard/products/inactive", count: 10 },
-    { name: "Hết Bán", path: "/dashboard/products/notsale", count: 10 },
+    {
+      name: "Đang Bán",
+      path: "/dashboard/products",
+      count: filteredAllProductsActive,
+    },
+    {
+      name: "Hết Hàng",
+      path: "/dashboard/products/inactive",
+      count: filteredAllProductsInactive,
+    },
+    {
+      name: "Hết Bán",
+      path: "/dashboard/products/notsale",
+      count: filteredAllProductsNotSale,
+    },
   ];
 
   return (

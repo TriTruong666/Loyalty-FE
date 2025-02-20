@@ -36,3 +36,38 @@ export const verifyLoginService = async (data: Login) => {
     console.log(error);
   }
 };
+
+interface Forget {
+  email: string;
+}
+
+export const forgetPassService = async (data: Forget) => {
+  try {
+    const res = await axiosClient.post("/api/user/forgot-password", data);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const verifyForgetService = async (data: Forget) => {
+  try {
+    const res = await axiosClient.post("/api/user/verify-otp", data);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+interface Reset {
+  email: string;
+  newPassword: string;
+}
+export const resetPassService = async (data: Reset) => {
+  try {
+    const res = await axiosClient.post("/api/user/reset-password", data);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+};

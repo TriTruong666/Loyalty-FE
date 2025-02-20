@@ -191,11 +191,7 @@ function LoginForm() {
           )}
         </button>
       </div>
-      {error && (
-        <p className="text-[12px] 2xl:text-[11px] mt-1 text-dangerous">
-          {error}
-        </p>
-      )}
+      {error && <p className="2xl:text-[11px] mt-1 text-dangerous">{error}</p>}
       {/* Submit Button */}
       <Button
         variant="flat"
@@ -257,7 +253,6 @@ function Participants() {
 }
 
 function EmailVerification() {
-  const router = useRouter();
   const loginData = useAtomValue(dataLoginState);
   const [submitData, setSubmitData] = useAtom<{ email: string; pass: string }>(
     dataVerifyOTPState
