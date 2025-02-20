@@ -101,6 +101,7 @@ function LoginForm() {
     onSuccess(data) {
       if (data.code === "INVALID_EMAIL_OR_PASSWORD") {
         setError("Thử lại, sai email hoặc mật khẩu");
+        setIsLoading(false);
       }
       if (data === "Login successfully") {
         setIsLoading(false);
@@ -276,10 +277,12 @@ function EmailVerification() {
     onSuccess(data) {
       if (data.code === "INVALID_OTP_CODE") {
         setError("OTP bạn vừa nhập không đúng, vui lòng kiểm tra lại");
+        setIsLoading(false);
         return;
       }
       if (data.code === "THIS_OTP_CODE_HAS_BEEN_EXPIRED") {
         setError("OTP của bạn đã hết hạn xin vui lòng gửi lại OTP ");
+        setIsLoading(false);
         return;
       } else {
         setIsLoading(false);

@@ -17,6 +17,7 @@ import {
   notificationDropdownState,
   profileSettingDropdownState,
 } from "../store/dropdownAtoms";
+import { useGetUserInfo } from "../hooks/hook";
 
 export default function DashboardLayout({
   children,
@@ -29,6 +30,7 @@ export default function DashboardLayout({
     setNotiDropdown(false);
     setCartDropdown(false);
   };
+  const { data: info } = useGetUserInfo();
 
   return (
     <div className="flex min-h-screen relative overflow-hidden">

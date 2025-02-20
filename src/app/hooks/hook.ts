@@ -4,8 +4,10 @@ import { Product } from "../interfaces/Product";
 import * as ProductService from "@/app/service/productService";
 import * as CloudinaryService from "@/app/service/cloudinaryService";
 import * as BrandService from "@/app/service/brandService";
+import * as AccountService from "@/app/service/accountService";
 import { CloudinaryAsset } from "../interfaces/Cloudinary";
 import { Brand } from "../interfaces/Brand";
+import { User } from "../interfaces/Account";
 function useFetch<T>(
   queryKey: any[],
   queryFn: () => Promise<T>,
@@ -46,4 +48,10 @@ export function useGetAllAssetByLimit(page: number) {
 
 export function useGetAllBrand() {
   return useFetch<Brand[]>(["brands"], async () => BrandService.getAllBrand());
+}
+
+export function useGetUserInfo() {
+  return useFetch<User>(["user-info"], async () =>
+    AccountService.getUserInfo()
+  );
 }
