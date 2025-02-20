@@ -51,7 +51,7 @@ function Introduce() {
     <div className="flex flex-col w-[50%] border-r h-full border-gray-400 border-opacity-40 justify-center pl-[150px] gap-y-3">
       <div className="w-[80%]">
         <DecryptedText
-          text="Hi, chào mừng bạn đã đến với Loyalty."
+          text="Hi, chào mừng bạn đã đến với nền tảng Loyalty Picare."
           characters="LTAOTY!Hchád"
           animateOn="view"
           encryptedClassName="font-semibold 2xl:text-[40px] text-[50px] w-[80%] mt-[70px] 2xl:mt-[5px] bg-[conic-gradient(at_right,_var(--tw-gradient-stops))] from-yellow-600 via-primary to-emerald-50 bg-clip-text text-transparent"
@@ -64,9 +64,10 @@ function Introduce() {
       </div>
 
       <p className="dark:text-normal text-sm 2xl:text-[11px] w-[80%] text-black">
-        Loyalty là nền tảng giúp các nhà bán mỹ phẩm mua số lượng lớn từ các nhà
-        cung cấp nổi tiếng. Chúng tôi cung cấp giá cả tốt nhất, quy trình đặt
-        hàng liền mạch và chất lượng sản phẩm đáng tin cậy.
+        Chúng tôi cung cấp giải pháp toàn diện, giúp khách hàng xây dựng mối
+        quan hệ gắn kết bền vững, gia tăng lợi nhuận và nâng tầm dịch vụ. Với hệ
+        thống quản lý điểm thưởng linh hoạt và các chương trình ưu đãi hấp dẫn,
+        chúng tôi cam kết mang đến cho bạn những trải nghiệm tuyệt vời.
       </p>
       <div className="pt-4 2xl:pt-2">
         <LoginForm />
@@ -74,14 +75,6 @@ function Introduce() {
       <div className="pt-4 2xl:pt-2 mt-[20px] 2xl:mb-[0] mb-[60px]">
         <Participants />
       </div>
-      <p className="dark:text-normal text-black text-[11px] 2xl:text-[9px] w-[80%] font-light 2xl:mb-[70px] 3xl:mb-[180px]">
-        Loyalty™ là một nền tảng đã được đăng ký nhãn hiệu dành riêng cho việc
-        trợ giúp ngành dược phẩm các nhà bán lẻ mua với số lượng lớn một cách
-        hiệu quả. Tên thương hiệu, logo của chúng tôi và các tài liệu liên quan
-        được bảo vệ về mặt pháp lý, đảm bảo tính xác thực và tin tưởng vào
-        ngành. Việc sử dụng trái phép, sao chép hoặc bắt chước Quyền sở hữu trí
-        tuệ của Loyalty bị nghiêm cấm.
-      </p>
     </div>
   );
 }
