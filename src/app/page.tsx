@@ -283,8 +283,6 @@ function EmailVerification() {
         return;
       } else {
         setIsLoading(false);
-        localStorage?.setItem("account", JSON.stringify(data.user));
-        localStorage?.setItem("token", JSON.stringify(data.apiToken));
         router.push("/dashboard");
       }
     },
