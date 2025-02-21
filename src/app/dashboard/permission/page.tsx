@@ -9,10 +9,11 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "@heroui/dropdown";
-import { IoCheckmarkSharp } from "react-icons/io5";
+import { IoCheckmarkSharp, IoTrashBinOutline } from "react-icons/io5";
 import { showToast } from "@/app/utils/toast";
 import { useGetAccountsByLimit, useGetAllUser } from "@/app/hooks/hook";
 import { useEffect, useState } from "react";
+import { FaPenAlt } from "react-icons/fa";
 export default function CEOPermissionPage() {
   return (
     <div className="flex flex-col font-open py-[20px] ">
@@ -34,16 +35,14 @@ function Table() {
   const [totalPage, setTotalPage] = useState(1);
   const limit = 8;
   const { data: allAccounts } = useGetAllUser();
-  const { data: accounts, isLoading } = useGetAccountsByLimit(page);
-  const filteredAccounts = accounts?.filter(
-    (account) => account.status === false
-  );
+  const { data: accounts, isLoading } = useGetAccountsByLimit(page, "false");
   const filteredAllAccounts = allAccounts?.filter(
-    (account) => account.status === false
+    (user) => user.status === false
   );
   useEffect(() => {
     if (filteredAllAccounts) {
       setTotalPage(Math.ceil(filteredAllAccounts.length / limit));
+      console.log(totalPage);
     }
   }, [filteredAllAccounts]);
   return (
@@ -82,31 +81,34 @@ function Table() {
               <th className="col-span-1 text-[12px] text-normal font-light text-start">
                 ID
               </th>
-              <th className="col-span-3 text-[12px] text-normal font-light text-start">
+              <th className="col-span-2 text-[12px] text-normal font-light text-start">
                 Thông tin
               </th>
               <th className="col-span-2 text-[12px] text-normal font-light text-start">
                 Địa chỉ
               </th>
-              <th className="col-span-2 text-[12px] text-normal font-light text-center">
+              <th className="col-span-1 text-[12px] text-normal font-light text-center">
                 Số điện thoại
               </th>
               <th className="col-span-2 text-[12px] text-normal font-light text-center">
                 Trạng thái
               </th>
-              <th className="col-span-2 text-[12px] text-normal font-light text-end">
+              <th className="col-span-3 text-[12px] text-normal font-light text-center">
+                Ghi chú
+              </th>
+              <th className="col-span-1 text-[12px] text-normal font-light text-end">
                 Thêm
               </th>
             </tr>
           </thead>
           <tbody>
-            {filteredAccounts?.map((user, i) => (
+            {accounts?.map((user, i) => (
               <tr
                 key={user.userId}
                 className="grid grid-cols-12 mx-[20px] px-[20px] py-4 items-center border-b border-gray-600 border-opacity-40"
               >
                 <td className="col-span-1 text-[13px]">{i + 1}</td>
-                <td className="col-span-3 flex items-center gap-x-2">
+                <td className="col-span-2 flex items-center gap-x-2">
                   <div className="flex flex-col">
                     <p className="text-[13px] font-semibold">{user.userName}</p>
                     <p className="text-[11px] text-normal">{user.email}</p>
@@ -116,7 +118,7 @@ function Table() {
                   {" "}
                   {/* {account.address} */}
                 </td>
-                <td className="col-span-2 text-[13px] text-center font-semibold">
+                <td className="col-span-1 text-[13px] text-center font-semibold">
                   {user.phoneNumber}
                 </td>
                 <td className="col-span-2 flex justify-center">
@@ -131,8 +133,10 @@ function Table() {
                     </p>
                   </div>
                 </td>
-
-                <td className="col-span-2 text-[13px] font-semibold flex justify-end">
+                <td className="col-span-3 text-[13px] text-center font-semibold">
+                  {user.note}
+                </td>
+                <td className="col-span-1 text-[13px] font-semibold flex justify-end">
                   <Dropdown>
                     <DropdownTrigger>
                       <Button isIconOnly size="sm" variant="light">
@@ -153,6 +157,34 @@ function Table() {
                       >
                         <p className="group-hover:text-success">
                           Duyệt tài khoản
+                        </p>
+                      </DropdownItem>
+                      <DropdownItem
+                        onPress={() =>
+                          showToast("Tài khoản đã được duyệt!", "success")
+                        }
+                        className="group"
+                        color="default"
+                        startContent={
+                          <FaPenAlt className="text-[16px] group-hover:text-foreground" />
+                        }
+                        key="write-note"
+                      >
+                        <p className="group-hover:text-foreground">Ghi chú</p>
+                      </DropdownItem>
+                      <DropdownItem
+                        onPress={() =>
+                          showToast("Tài khoản đã được duyệt!", "success")
+                        }
+                        className="group"
+                        color="default"
+                        startContent={
+                          <IoTrashBinOutline className="text-[16px] group-hover:text-danger" />
+                        }
+                        key="delete"
+                      >
+                        <p className="group-hover:text-danger">
+                          Xoá tài khoản(test)
                         </p>
                       </DropdownItem>
                     </DropdownMenu>
@@ -176,3 +208,7 @@ function Table() {
     </>
   );
 }
+
+const noteModal = () => {
+  return <div className=""></div>;
+};

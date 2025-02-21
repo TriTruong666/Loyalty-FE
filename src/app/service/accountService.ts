@@ -17,9 +17,11 @@ export const getAllUser = async () => {
     console.error(error);
   }
 };
-export const getUserByLimit = async (page: number) => {
+export const getUserByLimit = async (page: number, mode: string) => {
   try {
-    const res = await axiosClient.get(`/api/user/limit?limit=8&page=${page}`);
+    const res = await axiosClient.get(
+      `/api/user/limit?limit=8&page=${page}&isactive=${mode}`
+    );
     return res.data;
   } catch (error) {
     console.error(error);

@@ -18,6 +18,7 @@ import { logoutService } from "../service/authenticateService";
 import { useMutation } from "@tanstack/react-query";
 import { useAtomValue } from "jotai";
 import { userInfoState } from "../store/accountAtoms";
+import { useAllProduct, useGetAllUser } from "../hooks/hook";
 
 export default function DashboardSidebar() {
   const userInfo = useAtomValue(userInfoState);
@@ -257,12 +258,17 @@ function MenuItem({
 }
 
 function MenuOnlyForCEO() {
+  const { data: allAccounts } = useGetAllUser();
+  const filteredAllAccounts = allAccounts?.filter(
+    (user) => user.status === false
+  );
+
   const ceoMenu = [
     {
       name: "Xét duyệt",
       icon: IoLockOpenOutline,
       path: "/dashboard/permission",
-      typography: 3,
+      typography: filteredAllAccounts?.length,
     },
   ];
   return (

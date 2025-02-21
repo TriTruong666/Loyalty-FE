@@ -43,19 +43,16 @@ function ProductTable() {
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const limit = 8;
-  const { data: products, isLoading } = useGetProductByLimit(page);
+  const { data: products, isLoading } = useGetProductByLimit(page, "hethang");
   const { data: allProduct } = useAllProduct();
-  const filteredAllProducts = allProduct?.filter(
-    (product) => product.status === "hethang"
-  );
-  const filteredProducts = products?.filter(
+  const filteredAllProduct = allProduct?.filter(
     (product) => product.status === "hethang"
   );
   useEffect(() => {
-    if (filteredAllProducts) {
-      setTotalPage(Math.ceil(filteredAllProducts.length / limit));
+    if (filteredAllProduct) {
+      setTotalPage(Math.ceil(filteredAllProduct.length / limit));
     }
-  }, [filteredAllProducts]);
+  }, [filteredAllProduct]);
   const queryClient = useQueryClient();
   const deleteProductMutation = useMutation({
     mutationKey: ["delete-product"],
@@ -153,7 +150,7 @@ function ProductTable() {
       title: "Tên Z-A",
     },
   ];
-  if (filteredProducts?.length === 0) {
+  if (products?.length === 0) {
     return (
       <>
         <div className="flex flex-col w-full justify-center items-center h-[500px] gap-y-[20px]">
@@ -201,7 +198,7 @@ function ProductTable() {
             </tr>
           </thead>
           <tbody>
-            {filteredProducts?.map((item) => (
+            {products?.map((item) => (
               <tr
                 key={item.productId}
                 className="grid grid-cols-12 mx-[20px] px-[20px] py-4 items-center border-b border-gray-600 border-opacity-40"

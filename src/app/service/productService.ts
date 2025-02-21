@@ -12,9 +12,9 @@ export const getAllProductService = async () => {
   }
 };
 
-export const getProductServiceByLimit = async (page: number) => {
+export const getProductServiceByLimit = async (page: number, mode: string) => {
   try {
-    const url = `${API_URL}/api/product/limit?page=${page}&limit=8`;
+    const url = `${API_URL}/api/product/limit?page=${page}&limit=8&mode=${mode}`;
     const res = await axiosClient.get(url);
     return res.data;
   } catch (error) {

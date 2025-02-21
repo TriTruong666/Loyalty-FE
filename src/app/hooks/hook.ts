@@ -30,9 +30,9 @@ export function useAllProduct() {
   );
 }
 
-export function useGetProductByLimit(page: number) {
+export function useGetProductByLimit(page: number, mode: string) {
   return useFetch<Product[]>(["products", page], async () =>
-    ProductService.getProductServiceByLimit(page)
+    ProductService.getProductServiceByLimit(page, mode)
   );
 }
 
@@ -48,9 +48,9 @@ export function useGetAllAssetByLimit(page: number) {
   );
 }
 
-export function useGetAccountsByLimit(page: number) {
+export function useGetAccountsByLimit(page: number, mode: string) {
   return useFetch<User[]>(["users", page], async () =>
-    AccountService.getUserByLimit(page)
+    AccountService.getUserByLimit(page, mode)
   );
 }
 
