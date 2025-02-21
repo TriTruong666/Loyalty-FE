@@ -12,8 +12,12 @@ import {
 } from "react-icons/io5";
 import { PiRanking } from "react-icons/pi";
 import { profileSettingDropdownState } from "../store/dropdownAtoms";
+import { logoutService } from "../service/authenticateService";
+import { useMutation } from "@tanstack/react-query";
+import { userInfoState } from "../store/accountAtoms";
 
 export default function ProfileSettingDropdown() {
+  const userInfo = useAtomValue(userInfoState);
   const isToggleDropdown = useAtomValue(profileSettingDropdownState);
   const rankingTheme = (title: string) => {
     switch (title) {
@@ -27,7 +31,17 @@ export default function ProfileSettingDropdown() {
         return "";
     }
   };
-
+  const logoutMutation = useMutation({
+    mutationKey: ["logout"],
+    mutationFn: logoutService,
+  });
+  const handleLogout = async () => {
+    try {
+      await logoutMutation.mutateAsync();
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <div className="">
       <AnimatePresence>
@@ -43,11 +57,27 @@ export default function ProfileSettingDropdown() {
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-x-[5px]">
                   <div className="w-[35px] h-[35px] flex items-center justify-center rounded-full font-bold text-white cursor-pointer relative bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-indigo-200 via-pink-900 to-stone-800">
-                    T
+                    {userInfo?.userName.charAt(0).toUpperCase()}
                   </div>
                   <div className="flex flex-col">
-                    <p className="text-[13px]">TRUONG HOANG TRI</p>
-                    <p className="text-[11px] font-light">BUSINESS</p>
+                    <p className="text-[13px]">
+                      {userInfo?.userName.toUpperCase()}
+                    </p>
+                    {userInfo?.type === "business" && (
+                      <p className="text-[11px] font-light">Doanh nghiệp</p>
+                    )}
+                    {userInfo?.type === "admin" && (
+                      <p className="text-[11px] font-light">Admin</p>
+                    )}
+                    {userInfo?.type === "staff" && (
+                      <p className="text-[11px] font-light">Nhân viên</p>
+                    )}
+                    {userInfo?.type === "ceo" && (
+                      <p className="text-[11px] font-light">CEO</p>
+                    )}
+                    {userInfo?.type === "personal" && (
+                      <p className="text-[11px] font-light">Cá nhân</p>
+                    )}
                   </div>
                 </div>
                 <div
@@ -94,10 +124,19 @@ export default function ProfileSettingDropdown() {
                   title="Trợ giúp"
                   icon={<GrHelpBook className="text-[18px]" />}
                 />
-                <Item
-                  title="Đăng xuất"
-                  icon={<IoLogOutOutline className="text-[18px]" />}
-                />
+
+                <Button
+                  onPress={handleLogout}
+                  variant="light"
+                  className="flex items-center justify-between"
+                >
+                  <div className="flex items-center gap-x-[10px]">
+                    <div className="">
+                      <IoLogOutOutline className="text-[18px]" />
+                    </div>
+                    <p className="text-sm font-light">Đăng xuất</p>
+                  </div>
+                </Button>
               </div>
             </div>
           </motion.div>

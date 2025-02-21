@@ -1,17 +1,42 @@
 "use client";
 import LoginHeader from "../components/LoginHeader";
-import { useAtomValue, useSetAtom } from "jotai";
-import { useRef, useState } from "react";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import React, { useEffect, useRef, useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { FaKey } from "react-icons/fa";
 import { IoMailUnreadOutline } from "react-icons/io5";
 import { MdEmail } from "react-icons/md";
 import { PiLockKeyOpenFill } from "react-icons/pi";
-import { resetProgressState } from "../store/resetAtoms";
+import {
+  dataForgetState,
+  dataForgetVerifyState,
+  dataResetState,
+  resetProgressState,
+} from "../store/resetAtoms";
+import { useGetUserInfo } from "../hooks/hook";
+import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import {
+  forgetPassService,
+  resetPassService,
+  verifyForgetService,
+} from "../service/authenticateService";
+import { showToast } from "../utils/toast";
+import { Button } from "@heroui/react";
 
 export default function ResetPage() {
   const progressState = useAtomValue(resetProgressState);
-
+  const { data: info } = useGetUserInfo();
+  const router = useRouter();
+  useEffect(() => {
+    const isError = info?.code === "UNKNOWN_ERROR";
+    if (isError) {
+      router.push("/reset");
+    }
+    if (!isError) {
+      router.push("/dashboard");
+    }
+  }, [info]);
   return (
     <>
       <div className="font-inter relative w-screen h-screen overflow-hidden">
@@ -40,9 +65,46 @@ export default function ResetPage() {
 
 function EmailForm() {
   const setProgress = useSetAtom(resetProgressState);
+  const [submitData, setSubmitData] = useAtom(dataForgetState);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const forgetMutation = useMutation({
+    mutationKey: ["forget"],
+    mutationFn: forgetPassService,
+    onMutate() {
+      setIsLoading(true);
+    },
+    onSuccess(data) {
+      if (data.code === "UNABLE_TO_FIND_THE_CUSTOMER_BY_THE_GIVEN_EMAIL") {
+        setError("Chúng tôi không tìm thấy email của bạn trong hệ thống.");
+      } else {
+        setIsLoading(false);
+        setProgress(2);
+      }
+    },
+  });
+  const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setSubmitData({
+      email: value,
+    });
+  };
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  const handleSubmit = () => {
-    setProgress(2);
+  const handleSubmit = async () => {
+    if (submitData.email === "") {
+      setError("Vui lòng nhập email của bạn để tiếp tục!");
+      return;
+    }
+    if (!emailPattern.test(submitData.email)) {
+      setError("Email không hợp lệ. Vui lòng nhập đúng định dạng.");
+      return;
+    }
+    try {
+      await forgetMutation.mutateAsync(submitData);
+    } catch (error) {
+      console.error(error);
+    }
   };
   return (
     <div className="flex flex-col w-[50%] border-gray-400 border-opacity-40 border-l justify-center pl-[150px] gap-y-3 mb-[70px]">
@@ -65,21 +127,25 @@ function EmailForm() {
             <MdEmail size={20} />
             <input
               type="text"
+              onChange={handleOnChange}
               placeholder="hello@company.com"
               className="outline-none bg-transparent border-none w-full 2xl:text-[13px]"
             />
           </div>
-          {/* <p className="text-[11px] 2xl:text-[9px] mt-1 text-dangerous">
-            Your email not linked to our system.
-          </p> */}
-          <button
-            className="mt-6 2xl:mt-3 2xl:text-sm w-[80%] border py-2 rounded-md transition-all duration-300 bg-gray-300 text-gray-500
-             disabled:bg-[#141414] disabled:text-gray-600 disabled:border-gray-400 disabled:border-opacity-20
-             enabled:bg-primary enabled:text-black enabled:hover:bg-black enabled:hover:text-white enabled:border-transparent enabled:hover:border-white"
-            onClick={handleSubmit}
+          {error && (
+            <p className="2xl:text-[11px] mt-1 text-dangerous">{error}</p>
+          )}
+
+          <Button
+            variant="flat"
+            color="secondary"
+            className="w-[80%] mt-[10px]"
+            isLoading={isLoading}
+            isDisabled={isLoading}
+            onPress={handleSubmit}
           >
-            Xác thực email
-          </button>
+            <p>Xác thực email</p>
+          </Button>
         </div>
       </div>
     </div>
@@ -87,20 +153,62 @@ function EmailForm() {
 }
 
 function EmailVerification() {
+  const forgetData = useAtomValue(dataForgetState);
   const setProgress = useSetAtom(resetProgressState);
+  const [isSpam, setIsSpam] = useState(false);
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [submitData, setSubmitData] = useAtom<{ email: string; otp: string }>(
+    dataForgetVerifyState
+  );
+  const forgetMutation = useMutation({
+    mutationKey: ["forget"],
+    mutationFn: forgetPassService,
+    onMutate() {
+      setIsLoading(true);
+    },
+    onSuccess() {
+      setIsLoading(false);
+    },
+  });
+  const verifyMutation = useMutation({
+    mutationKey: ["verify-forget"],
+    mutationFn: verifyForgetService,
+    onMutate() {
+      setIsLoading(true);
+    },
+    onSuccess(data) {
+      if (data.code === "INVALID_OTP_CODE") {
+        setError("OTP bạn vừa nhập không đúng, vui lòng kiểm tra lại");
+        setIsLoading(false);
+        return;
+      }
+      if (data.code === "THIS_OTP_CODE_HAS_BEEN_EXPIRED") {
+        setError("OTP của bạn đã hết hạn xin vui lòng gửi lại OTP ");
+        setIsLoading(false);
+        return;
+      } else {
+        setProgress(3);
+        setIsLoading(false);
+      }
+    },
+  });
+  const [otp, setOtp] = useState<string>("".padStart(6, ""));
 
-  const handleSubmit = () => {
-    setProgress(3);
-  };
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const inputRefs = useRef<HTMLInputElement[]>([]);
 
   const handleChange = (index: number, value: string) => {
     if (!/^\d?$/.test(value)) return;
 
-    const newOtp = [...otp];
-    newOtp[index] = value;
+    const newOtpArray = otp.split("");
+    newOtpArray[index] = value;
+    const newOtp = newOtpArray.join("");
+
     setOtp(newOtp);
+    setSubmitData({
+      email: forgetData.email,
+      otp: newOtp,
+    });
 
     if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
@@ -111,29 +219,55 @@ function EmailVerification() {
     index: number,
     e: React.KeyboardEvent<HTMLInputElement>
   ) => {
-    if (e.key === "Backspace" && !otp[index] && index > 0) {
+    if (e.key === "Backspace" && index > 0 && !otp[index]) {
       inputRefs.current[index - 1]?.focus();
     }
   };
 
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
-    const pasteData = e.clipboardData.getData("text").slice(0, 6).split("");
-    const newOtp = pasteData.concat(Array(6 - pasteData.length).fill(""));
-    setOtp(newOtp);
-    inputRefs.current[newOtp.findIndex((val) => val === "")]?.focus();
-  };
+    const pasteData = e.clipboardData.getData("text").slice(0, 6);
+    setOtp(pasteData);
 
+    setSubmitData({
+      email: forgetData.email,
+      otp: pasteData,
+    });
+
+    inputRefs.current[pasteData.length]?.focus();
+  };
+  const handleSubmit = async () => {
+    if (otp.trim() === "" || otp.length < 6) {
+      setError("Vui lòng nhập đầy đủ mã OTP gồm 6 chữ số.");
+      return;
+    }
+    try {
+      await verifyMutation.mutateAsync(submitData);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleResendOTP = async () => {
+    try {
+      await forgetMutation.mutateAsync(forgetData);
+      showToast("Đã gửi lại OTP vui lòng kiểm tra gmail", "success");
+      setIsSpam(true);
+      setTimeout(() => {
+        setIsSpam(false);
+      }, 300000);
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
-    <div className="flex flex-col w-full justify-center items-center gap-y-6 min-h-screen bg-background text-foreground p-4">
-      {/* Icon & Tiêu đề */}
-      <IoMailUnreadOutline className="text-[60px] text-foreground" />
-      <p className="text-[40px] font-semibold text-foreground">
-        Kiểm tra email của bạn.
-      </p>
+    <div className="flex flex-col w-full justify-center items-center gap-y-6 min-h-screen bg-background text-white p-4">
+      {/* Icon & Title */}
+      <IoMailUnreadOutline className="text-[60px]" />
+      <p className="text-[40px] font-semibold">Kiểm tra email của bạn.</p>
+
       {/* OTP Input Fields */}
       <div className="flex space-x-6 p-4">
-        {otp.map((digit, index) => (
+        {[...Array(6)].map((_, index) => (
           <input
             key={index}
             ref={(el) => {
@@ -141,7 +275,7 @@ function EmailVerification() {
             }}
             type="text"
             maxLength={1}
-            value={digit}
+            value={otp[index] || ""}
             onChange={(e) => handleChange(index, e.target.value)}
             onKeyDown={(e) => handleKeyDown(index, e)}
             onPaste={handlePaste}
@@ -151,31 +285,48 @@ function EmailVerification() {
           />
         ))}
       </div>
-      <button
-        className="mt-6 2xl:mt-3 2xl:text-sm w-[30%] border py-2 rounded-md transition-all duration-300 bg-gray-300 text-gray-500
-             disabled:bg-[#141414] disabled:text-gray-600 disabled:border-gray-400 disabled:border-opacity-20
-             enabled:bg-primary enabled:text-black enabled:hover:bg-black enabled:hover:text-white enabled:border-transparent enabled:hover:border-white"
-        onClick={handleSubmit}
+      {error && (
+        <p className="text-[12px] 2xl:text-[11px] mt-1 text-dangerous">
+          {error}
+        </p>
+      )}
+      <Button
+        variant="flat"
+        color="secondary"
+        className="w-[30%] mt-[10px]"
+        isLoading={isLoading}
+        isDisabled={isLoading}
+        onPress={handleSubmit}
       >
-        Verify OTP
-      </button>
+        <p>Xác nhận</p>
+      </Button>
+
       <div className="max-w-md text-center mb-[90px]">
         <p className="text-normal text-sm">
-          We&apos;ve sent a 6-digit code to{" "}
-          <span className="text-primary">email123@gmail.com</span>. Enter OTP to
-          reset your password.
+          Hệ thống đã gửi mã OTP 6 số đến{" "}
+          <span className="text-primary">{forgetData.email}</span>. Nhập OTP để
+          xác minh quyền sở hữu của bạn và tiếp tục.
         </p>
       </div>
+
       <div className="flex flex-col items-center">
         <p className="text-normal text-[11px]">
-          It may take a few minutes for the email to arrive. Double-check your
-          spam folder.
+          Có thể mất vài phút để email đến. Kiểm tra lại thư mục thư rác.
         </p>
-        <p className="text-normal text-[11px]">
-          Didn&apos;t get it?{" "}
-          <span className="text-white cursor-pointer hover:underline">
-            Resend Email.
-          </span>
+        <p className="text-[11px] text-normal">
+          OTP hết hạn?{" "}
+          {isSpam ? (
+            <span className="text-[11px] text-white cursor-pointer hover:underline">
+              Gửi lại sau 5 phút
+            </span>
+          ) : (
+            <span
+              onClick={handleResendOTP}
+              className="text-[11px] text-white cursor-pointer hover:underline"
+            >
+              Gửi lại OTP
+            </span>
+          )}
         </p>
       </div>
     </div>
@@ -183,27 +334,76 @@ function EmailVerification() {
 }
 
 function ResetForm() {
+  const forgetData = useAtomValue(dataForgetState);
   const [showPassword, setShowPassword] = useState(false);
+  const [submitData, setSubmitData] = useAtom<{
+    email: string;
+    newPassword: string;
+    confirmPassword: string;
+  }>(dataResetState);
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
+  const resetMutation = useMutation({
+    mutationKey: ["reset-pass"],
+    mutationFn: resetPassService,
+    onMutate() {
+      setIsLoading(true);
+    },
+    onSuccess(data) {
+      if (data === "Password reset successfully") {
+        if (typeof window !== "undefined") {
+          window.location.href = "/";
+        }
+      }
+      setIsLoading(false);
+    },
+  });
+  const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setSubmitData({
+      ...submitData,
+      [name]: value,
+    });
+  };
+  const handleSubmit = async () => {
+    if (submitData.newPassword === "" || submitData.confirmPassword === "") {
+      setError("Vui lòng nhập mật khẩu mới và xác nhận mật khẩu");
+      return;
+    }
+    if (submitData.newPassword !== submitData.confirmPassword) {
+      setError("Cả hai mật khẩu phải giống nhau");
+      return;
+    }
+    try {
+      await resetMutation.mutateAsync({
+        email: forgetData.email,
+        newPassword: submitData.newPassword,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div className="flex flex-col w-full justify-center items-center gap-y-6 min-h-screen bg-background text-white p-4">
       <PiLockKeyOpenFill className="text-[60px] text-foreground" />
       <p className="text-[40px] font-semibold text-foreground">
-        Enter your new password.
+        Tạo mật khẩu mới
       </p>
       <div className="flex flex-col gap-y-2">
         <label
           htmlFor="password"
           className="font-semibold 2xl:text-[12px] mb-1 mt-3"
         >
-          New Password *
+          Mật khẩu mới *
         </label>
         <div className="relative group flex items-center w-[500px] py-3 px-3 border space-x-4 border-gray-400-40 rounded-md transition-all duration-300 hover:border-gray-400 hover:border-opacity-40 focus-within:border-gray-400 focus-within:border-opacity-40 hover:shadow-md focus-within:shadow-md">
           <FaKey size={20} />
           <input
+            onChange={handleOnChange}
+            name="newPassword"
             type={showPassword ? "text" : "password"} // Toggle Password Visibility
-            placeholder="Set new password"
+            placeholder="Mật khẩu mới của bạn"
             className="outline-none bg-transparent border-none w-full 2xl:text-[13px]"
           />
           {/* Toggle Button */}
@@ -223,13 +423,15 @@ function ResetForm() {
           htmlFor="password"
           className="font-semibold 2xl:text-[12px] mb-1 mt-3"
         >
-          Confirm Password *
+          Xác nhận mật khẩu *
         </label>
         <div className="relative group flex items-center w-[500px] py-3 px-3 border space-x-4 border-gray-400-40 rounded-md transition-all duration-300 hover:border-gray-400 hover:border-opacity-40 focus-within:border-gray-400 focus-within:border-opacity-40 hover:shadow-md focus-within:shadow-md">
           <FaKey size={20} />
           <input
+            onChange={handleOnChange}
+            name="confirmPassword"
             type={showConfirmPassword ? "text" : "password"} // Toggle Password Visibility
-            placeholder="Your confirm pass"
+            placeholder="Nhập lại lần nữa"
             className="outline-none bg-transparent border-none w-full 2xl:text-[13px]"
           />
           {/* Toggle Button */}
@@ -238,23 +440,24 @@ function ResetForm() {
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
             className="absolute right-3 text-gray-500 hover:text-white transition"
           >
-            {showPassword ? (
+            {showConfirmPassword ? (
               <AiOutlineEyeInvisible size={22} />
             ) : (
               <AiOutlineEye size={22} />
             )}
           </button>
         </div>
-        <p className="text-[11px] 2xl:text-[9px] mt-1 text-dangerous">
-          Wrong email or password
-        </p>
-        <button
-          className="mt-6 mb-[100px] 2xl:mt-3 2xl:text-sm border py-2 rounded-md transition-all duration-300 bg-gray-300 text-gray-500
-             disabled:bg-[#141414] disabled:text-gray-600 disabled:border-gray-400 disabled:border-opacity-20
-             enabled:bg-primary enabled:text-black enabled:hover:bg-black enabled:hover:text-white enabled:border-transparent enabled:hover:border-white"
+        {error && <p className="text-[11px] mt-1 text-dangerous">{error}</p>}
+        <Button
+          variant="flat"
+          color="secondary"
+          className="w-[500px] mt-[10px]"
+          isLoading={isLoading}
+          isDisabled={isLoading}
+          onPress={handleSubmit}
         >
-          Reset Password
-        </button>
+          <p>Tạo lại mật khẩu</p>
+        </Button>
       </div>
     </div>
   );

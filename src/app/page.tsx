@@ -22,27 +22,35 @@ import {
 import { Button } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { showToast } from "./utils/toast";
+import { useGetUserInfo } from "./hooks/hook";
 
 export default function Home() {
   const progressState = useAtomValue(loginProgressState);
+  const router = useRouter();
+  const { data: info } = useGetUserInfo();
+  useEffect(() => {
+    const isError = info?.code === "UNKNOWN_ERROR";
+    if (isError) {
+      router.push("/");
+    }
+    if (!isError) {
+      router.push("/dashboard");
+    }
+  }, [info]);
   return (
-    <>
-      <div className="font-inter font-light relative w-screen h-screen overflow-hidden">
-        <LoginHeader />
-        {progressState === 1 && (
-          <div className="flex h-full">
-            <Introduce />
-            {/* missing image section */}
-          </div>
-        )}
-        {progressState === 2 && (
-          <div className="flex h-full">
-            <EmailVerification />
-            {/* missing image section */}
-          </div>
-        )}
-      </div>
-    </>
+    <div className="font-inter font-light relative w-screen h-screen overflow-hidden">
+      <LoginHeader />
+      {progressState === 1 && (
+        <div className="flex h-full">
+          <Introduce />
+        </div>
+      )}
+      {progressState === 2 && (
+        <div className="flex h-full">
+          <EmailVerification />
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -54,12 +62,12 @@ function Introduce() {
           text="Hi, chào mừng bạn đã đến với nền tảng Loyalty Picare."
           characters="LTAOTY!Hchád"
           animateOn="view"
-          encryptedClassName="font-semibold 2xl:text-[40px] text-[50px] w-[80%] mt-[70px] 2xl:mt-[5px] bg-[conic-gradient(at_right,_var(--tw-gradient-stops))] from-yellow-600 via-primary to-emerald-50 bg-clip-text text-transparent"
+          encryptedClassName="font-semibold 2xl:text-[30px] text-[40px] w-[80%] mt-[70px] 2xl:mt-[5px] bg-[conic-gradient(at_right,_var(--tw-gradient-stops))] from-yellow-600 via-primary to-emerald-50 bg-clip-text text-transparent"
           revealDirection="start"
           maxIterations={10}
           sequential
           speed={60}
-          className="font-semibold 2xl:text-[40px] text-[50px] w-[80%] mt-[70px] 2xl:mt-[5px] bg-[conic-gradient(at_right,_var(--tw-gradient-stops))] from-yellow-600 via-primary to-emerald-50 bg-clip-text text-transparent"
+          className="font-semibold 2xl:text-[30px] text-[40px] w-[80%] mt-[70px] 2xl:mt-[5px] bg-[conic-gradient(at_right,_var(--tw-gradient-stops))] from-yellow-600 via-primary to-emerald-50 bg-clip-text text-transparent"
         />
       </div>
 
@@ -175,11 +183,7 @@ function LoginForm() {
           )}
         </button>
       </div>
-      {error && (
-        <p className="text-[12px] 2xl:text-[11px] mt-1 text-dangerous">
-          {error}
-        </p>
-      )}
+      {error && <p className="2xl:text-[11px] mt-1 text-dangerous">{error}</p>}
       {/* Submit Button */}
       <Button
         variant="flat"
@@ -241,7 +245,6 @@ function Participants() {
 }
 
 function EmailVerification() {
-  const router = useRouter();
   const loginData = useAtomValue(dataLoginState);
   const [submitData, setSubmitData] = useAtom<{ email: string; pass: string }>(
     dataVerifyOTPState
@@ -278,8 +281,10 @@ function EmailVerification() {
         setIsLoading(false);
         return;
       } else {
+        if (typeof window !== "undefined") {
+          window.location.href = "/dashboard";
+        }
         setIsLoading(false);
-        router.push("/dashboard");
       }
     },
   });

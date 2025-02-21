@@ -1,6 +1,6 @@
 "use client";
 import { Toaster } from "react-hot-toast";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect } from "react";
 import DashboardSidebar from "../components/DashboardSidebar";
 import DashboardHeader from "../components/DashboardHeader";
 import DashboardLoadingLayout from "./loading";
@@ -18,11 +18,16 @@ import {
   profileSettingDropdownState,
 } from "../store/dropdownAtoms";
 import { useGetUserInfo } from "../hooks/hook";
+import { userInfoState } from "../store/accountAtoms";
+import { showToast } from "../utils/toast";
+import { useRouter } from "next/navigation";
+import UpdateProductModal from "../components/UpdateProductModal";
 
 export default function DashboardLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const setNotiDropdown = useSetAtom(notificationDropdownState);
+  const setInfo = useSetAtom(userInfoState);
   const setCartDropdown = useSetAtom(cartDropdownState);
   const setProfileDropdown = useSetAtom(profileSettingDropdownState);
   const handleToggleOffDropdown = () => {
@@ -30,12 +35,20 @@ export default function DashboardLayout({
     setNotiDropdown(false);
     setCartDropdown(false);
   };
+  const router = useRouter();
   const { data: info } = useGetUserInfo();
+  useEffect(() => {
+    setInfo(info);
+    if (info?.code === "UNKNOWN_ERROR") {
+      router.replace("/");
+    }
+  }, [info]);
 
   return (
     <div className="flex min-h-screen relative overflow-hidden">
       <Toaster position="top-center" reverseOrder={false} />
       {/* {tokenTimeoutModal && <TokenTimeout />} */}
+      <UpdateProductModal />
       <ProfileSettingDropdown />
       <CartDropdown />
       <NotificationDropdown />

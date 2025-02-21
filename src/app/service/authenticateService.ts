@@ -14,6 +14,20 @@ export const loginService = async (data: Login) => {
   }
 };
 
+export const logoutService = async () => {
+  try {
+    const res = await axiosClient.post("/api/user/logout");
+
+    if (typeof window !== "undefined") {
+      window.location.reload();
+    }
+
+    return res.data;
+  } catch (error) {
+    console.error("Logout failed:", error);
+  }
+};
+
 export const verifyLoginService = async (data: Login) => {
   try {
     const res = await axiosClient.post("/api/user/otp", data);
@@ -23,7 +37,37 @@ export const verifyLoginService = async (data: Login) => {
   }
 };
 
-export const logoutService = () => {
-  localStorage?.removeItem("token");
-  localStorage?.removeItem("account");
+interface Forget {
+  email: string;
+}
+
+export const forgetPassService = async (data: Forget) => {
+  try {
+    const res = await axiosClient.post("/api/user/forgot-password", data);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const verifyForgetService = async (data: Forget) => {
+  try {
+    const res = await axiosClient.post("/api/user/verify-otp", data);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+interface Reset {
+  email: string;
+  newPassword: string;
+}
+export const resetPassService = async (data: Reset) => {
+  try {
+    const res = await axiosClient.post("/api/user/reset-password", data);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
 };

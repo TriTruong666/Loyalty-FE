@@ -5,13 +5,8 @@ import { Button } from "@heroui/button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-import {
-  IoCloudUploadOutline,
-  IoKeyOutline,
-  IoLinkOutline,
-} from "react-icons/io5";
+import React, { useState } from "react";
+import { IoCloudUploadOutline, IoKeyOutline } from "react-icons/io5";
 import NormalInput from "./NormalInput";
 import { PiPackageDuotone } from "react-icons/pi";
 import { MdOutlineAttachMoney } from "react-icons/md";
@@ -21,8 +16,8 @@ import TiptapEditor from "./TiptapEditor";
 import { dataCreateProductState } from "../store/productAtoms";
 import { showToast } from "../utils/toast";
 import { createProductService } from "../service/productService";
-import { User } from "../interfaces/Account";
 import { useGetAllBrand } from "../hooks/hook";
+import { userInfoState } from "../store/accountAtoms";
 
 const createProductProgress = atom(1);
 
@@ -33,7 +28,7 @@ export default function AddProductModal() {
     return <></>;
   }
   return (
-    <div className="fixed w-screen h-screen top-0 left-0 flex items-center justify-center z-50 bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur-[2px] bg-opacity-10 backdrop-saturate-100 backdrop-contrast-100">
+    <div className="fixed w-screen h-screen top-0 left-0 flex items-center justify-center z-50 bg-black bg-opacity-70">
       <div className="w-[700px] 2xl:max-h-[700px] bg-black flex flex-col transition-all duration-300 items-center relative py-[40px] px-[40px] rounded-[15px] shadow-[2px_2px_60px_6px_rgba(19,_19,_19,_0.63)]">
         {addProductModalProgress === 1 && <ProductForm />}
         {addProductModalProgress === 2 && <ImageDropZone />}
@@ -105,8 +100,7 @@ function ProductForm() {
       submitData.productName.trim() === "" ||
       submitData.brandId.trim() === "" ||
       submitData.description.trim() === "" ||
-      submitData.unit.trim() === "" ||
-      submitData.handle.trim() === ""
+      submitData.unit.trim() === ""
     ) {
       showToast("Vui lòng nhập đầy đủ thông tin", "error");
       return;
@@ -149,14 +143,6 @@ function ProductForm() {
           label="Giá sản phẩm (giá sỉ)"
           placeholder="Nhập giá"
           icon={<MdOutlineAttachMoney size={20} />}
-        />
-        <NormalInput
-          name="handle"
-          onChange={handleOnChange}
-          defaultValue={submitData.handle}
-          label="Handle"
-          placeholder="Nhập đường link mà khách hàng có thể truy cập"
-          icon={<IoLinkOutline size={20} />}
         />
         <div className="flex items-center gap-x-3">
           <div className="flex flex-col w-full gap-y-2 font-inter">
@@ -257,20 +243,13 @@ function ProductForm() {
 
 function ImageDropZone() {
   const setModal = useSetAtom(addProductModalState);
-  const [parsedUserInfo, setParsedUserInfo] = useState<User | null>(null);
   const [submitData, setSubmitData] = useAtom(dataCreateProductState);
+  const userInfo = useAtomValue(userInfoState);
   const setProductModalProgress = useSetAtom(createProductProgress);
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [isSubmitFile, setIsSubmitFile] = useState<boolean>(false);
-
-  useEffect(() => {
-    const userInfo = localStorage.getItem("account");
-    if (userInfo) {
-      setParsedUserInfo(JSON.parse(userInfo));
-    }
-  }, []);
 
   const queryClient = useQueryClient();
 
@@ -285,6 +264,11 @@ function ImageDropZone() {
           "Sản phẩm này đã tồn tại, vui lòng đổi SKU sản phẩm",
           "error"
         );
+        return;
+      }
+      if (data.code === "PRODUCT_NAME_ALREADY_EXISTS") {
+        showToast("Tên sản phẩm này đã bị trùng, hãy thử lại", "error");
+        return;
       } else {
         showToast("Tạo sản phẩm thành công", "success");
         queryClient.invalidateQueries({ queryKey: ["products"] });
@@ -293,7 +277,6 @@ function ImageDropZone() {
           productId: "",
           productName: "",
           unit: "",
-          handle: "",
           imageUrl: "",
           status: "dangban",
           brandId: "",
@@ -361,9 +344,9 @@ function ImageDropZone() {
       setSubmitData(updatedSubmitData);
 
       // Step 3: Call the create API with updated data
-      if (parsedUserInfo?.userId) {
+      if (userInfo?.userId) {
         await createMutation.mutateAsync({
-          userId: parsedUserInfo.userId,
+          userId: userInfo.userId,
           data: updatedSubmitData,
         });
       }

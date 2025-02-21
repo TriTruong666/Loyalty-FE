@@ -9,4 +9,5 @@ export interface User {
   type: string;
   userId: string;
   userName: string;
+  code: string;
 }
