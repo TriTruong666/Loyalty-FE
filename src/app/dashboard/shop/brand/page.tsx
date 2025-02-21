@@ -38,10 +38,7 @@ export default function BrandProductShopPage() {
 function ProductSection() {
   const [layout, setLayout] = useAtom(layoutState);
   const [page, setPage] = useState(1);
-  const { data: products, isLoading } = useGetProductByLimit(page);
-  const filteredProducts = products?.filter(
-    (product) => product.status === "dangban"
-  );
+  const { data: products, isLoading } = useGetProductByLimit(page, "dangban");
   const handleChangeLayout = (layout: string) => {
     setLayout(layout);
   };
@@ -97,7 +94,7 @@ function ProductSection() {
           layout === "layout2" && "grid-cols-4 gap-[50px]"
         }  px-[40px] mt-[40px]`}
       >
-        {filteredProducts?.map((item) => (
+        {products?.map((item) => (
           <ProductItem key={item.productId} product={item} />
         ))}
       </div>
