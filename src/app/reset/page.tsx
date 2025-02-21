@@ -108,10 +108,10 @@ function EmailForm() {
   };
   return (
     <div className="flex flex-col w-[50%] border-gray-400 border-opacity-40 border-l justify-center pl-[150px] gap-y-3 mb-[70px]">
-      <p className="font-semibold 2xl:text-[40px] text-[50px] w-[80%] mt-[70px] 2xl:mt-[5px] bg-[conic-gradient(at_right,_var(--tw-gradient-stops))] from-yellow-600 via-primary to-emerald-50 bg-clip-text text-transparent">
+      <p className="font-semibold 2xl:text-[40px] xl:text-[35px] text-[50px] w-[80%] mt-[70px] 2xl:mt-[5px] bg-[conic-gradient(at_right,_var(--tw-gradient-stops))] from-yellow-600 via-primary to-emerald-50 bg-clip-text text-transparent">
         Quên mật khẩu hả? Đừng có lo nha.
       </p>
-      <p className="dark:text-normal text-sm 2xl:text-[11px] w-[80%] text-black">
+      <p className="dark:text-normal text-sm 2xl:text-[11px] xl:text-[13px] w-[80%] text-black">
         Đầu tiên bạn cần nhập email của mình, sau đó hệ thống sẽ gửi OTP mã vào
         gmail đã được xác thực của bạn.
       </p>
@@ -119,7 +119,7 @@ function EmailForm() {
         <div className="flex flex-col gap-y-2">
           <label
             htmlFor="email"
-            className="font-semibold text-sm 2xl:text-[12px] mb-1"
+            className="font-semibold text-sm 2xl:text-[12px] xl:text-[14px] mb-1"
           >
             Email *
           </label>
@@ -129,11 +129,13 @@ function EmailForm() {
               type="text"
               onChange={handleOnChange}
               placeholder="hello@company.com"
-              className="outline-none bg-transparent border-none w-full 2xl:text-[13px]"
+              className="outline-none bg-transparent border-none w-full 2xl:text-[13px] xl:text-[14px]"
             />
           </div>
           {error && (
-            <p className="2xl:text-[11px] mt-1 text-dangerous">{error}</p>
+            <p className="2xl:text-[11px] xl:text-[12px] mt-1 text-dangerous">
+              {error}
+            </p>
           )}
 
           <Button

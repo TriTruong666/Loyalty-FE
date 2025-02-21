@@ -62,25 +62,25 @@ function Introduce() {
           text="Hi, chào mừng bạn đã đến với nền tảng Loyalty Picare."
           characters="LTAOTY!Hchád"
           animateOn="view"
-          encryptedClassName="font-semibold 2xl:text-[30px] text-[40px] w-[80%] mt-[70px] 2xl:mt-[5px] bg-[conic-gradient(at_right,_var(--tw-gradient-stops))] from-yellow-600 via-primary to-emerald-50 bg-clip-text text-transparent"
+          encryptedClassName="font-semibold xl:text-[25px] 2xl:text-[30px] text-[40px] w-[80%] mt-[70px] 2xl:mt-[5px] bg-[conic-gradient(at_right,_var(--tw-gradient-stops))] from-yellow-600 via-primary to-emerald-50 bg-clip-text text-transparent"
           revealDirection="start"
           maxIterations={10}
           sequential
           speed={60}
-          className="font-semibold 2xl:text-[30px] text-[40px] w-[80%] mt-[70px] 2xl:mt-[5px] bg-[conic-gradient(at_right,_var(--tw-gradient-stops))] from-yellow-600 via-primary to-emerald-50 bg-clip-text text-transparent"
+          className="font-semibold xl:text-[25px] 2xl:text-[30px] text-[40px] w-[80%] mt-[70px] 2xl:mt-[5px] bg-[conic-gradient(at_right,_var(--tw-gradient-stops))] from-yellow-600 via-primary to-emerald-50 bg-clip-text text-transparent"
         />
       </div>
 
-      <p className="dark:text-normal text-sm 2xl:text-[11px] w-[80%] text-black">
+      <p className="dark:text-normal text-sm xl:text-[10px] 2xl:text-[11px] w-[80%] text-black">
         Chúng tôi cung cấp giải pháp toàn diện, giúp khách hàng xây dựng mối
         quan hệ gắn kết bền vững, gia tăng lợi nhuận và nâng tầm dịch vụ. Với hệ
         thống quản lý điểm thưởng linh hoạt và các chương trình ưu đãi hấp dẫn,
         chúng tôi cam kết mang đến cho bạn những trải nghiệm tuyệt vời.
       </p>
-      <div className="pt-4 2xl:pt-2">
+      <div className="pt-4 xl:pt-1 2xl:pt-2">
         <LoginForm />
       </div>
-      <div className="pt-4 2xl:pt-2 mt-[20px] 2xl:mb-[0] mb-[60px]">
+      <div className="pt-4 xl:pt-1 2xl:pt-2 mt-[20px] 2xl:mb-[0] mb-[60px]">
         <Participants />
       </div>
     </div>
@@ -139,7 +139,7 @@ function LoginForm() {
       {/* Email Field */}
       <label
         htmlFor="email"
-        className="font-semibold text-sm 2xl:text-[12px] mb-1"
+        className="font-semibold text-sm 2xl:text-[12px] xl:text-[13px] mb-1"
       >
         Email *
       </label>
@@ -150,14 +150,14 @@ function LoginForm() {
           name="email"
           type="text"
           placeholder="hello@company.com"
-          className="outline-none bg-transparent border-none w-full 2xl:text-[13px]"
+          className="outline-none bg-transparent border-none w-full 2xl:text-[13px] xl:text-[13px]"
         />
       </div>
 
       {/* Password Field */}
       <label
         htmlFor="password"
-        className="font-semibold 2xl:text-[12px] mb-1 mt-3"
+        className="font-semibold 2xl:text-[12px] xl:text-[13px] mb-1 mt-3"
       >
         Mật khẩu *
       </label>
@@ -168,7 +168,7 @@ function LoginForm() {
           name="pass"
           type={showPassword ? "text" : "password"} // Toggle Password Visibility
           placeholder="yourpass123"
-          className="outline-none bg-transparent border-none w-full 2xl:text-[13px]"
+          className="outline-none bg-transparent border-none w-full 2xl:text-[13px] xl:text-[13px]"
         />
         {/* Toggle Button */}
         <button
@@ -183,7 +183,11 @@ function LoginForm() {
           )}
         </button>
       </div>
-      {error && <p className="2xl:text-[11px] mt-1 text-dangerous">{error}</p>}
+      {error && (
+        <p className="xl:text-[12px] 2xl:text-[11px] mt-1 text-dangerous">
+          {error}
+        </p>
+      )}
       {/* Submit Button */}
       <Button
         variant="flat"
@@ -204,7 +208,7 @@ function Participants() {
     <div className="flex flex-col mb-[10px]">
       {/* Stacked Images */}
       <div className="flex">
-        <div className="flex">
+        <div className="flex xl:mt-[-10px]">
           <Avatar
             name="Cty TNHH Trung Hanh"
             role="Doanh nghiệp"
@@ -236,7 +240,7 @@ function Participants() {
       {/* Verified Message */}
       <div className="flex items-center gap-x-3 mt-2">
         <FaCircleCheck className="dark:text-normal text-black 2xl:text-[14px]" />
-        <p className="text-sm dark:text-normal text-black 2xl:text-[12px]">
+        <p className="text-sm dark:text-normal text-black xl:text-[12px] 2xl:text-[12px]">
           +36 doanh nghiệp & cá nhân đã tham gia Loyalty.
         </p>
       </div>
