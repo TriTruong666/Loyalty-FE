@@ -2,3 +2,19 @@ import { atom } from "jotai";
 import { User } from "../interfaces/Account";
 
 export const userInfoState = atom<User>();
+
+export const dataCreateAccountState = atom({
+  userName: "",
+  email: "",
+  phoneNumber: "",
+  password: "",
+  birthday: "",
+  address: {
+    provinceCode: "",
+    districtCode: "",
+    wardCode: "",
+    street: "",
+  },
+  mst: "",
+  type: "",
+});

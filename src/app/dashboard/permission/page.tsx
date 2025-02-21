@@ -1,6 +1,5 @@
 "use client";
 import { Pagination } from "@heroui/pagination";
-import Image from "next/image";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { Button } from "@heroui/button";
@@ -12,12 +11,10 @@ import {
 } from "@heroui/dropdown";
 import { IoCheckmarkSharp } from "react-icons/io5";
 import { showToast } from "@/app/utils/toast";
-import LoadingScreen from "../loading";
+import { useGetAccountsByLimit, useGetAllUser } from "@/app/hooks/hook";
+import { useEffect, useState } from "react";
 export default function CEOPermissionPage() {
   return (
-    // <>
-    //   <LoadingScreen />
-    // </>
     <div className="flex flex-col font-open py-[20px] ">
       <div className="flex flex-col gap-y-[5px] px-[40px]">
         <p className="text-[28px] font-light select-none">Xét duyệt đăng ký</p>
@@ -33,68 +30,22 @@ export default function CEOPermissionPage() {
 }
 
 function Table() {
-  const statusTheme = (status: string) => {
-    switch (status) {
-      case "inactive":
-        return "border-gray-400-40";
-      case "active":
-        return "border-[#45A834]";
-      default:
-        return "";
+  const [page, setPage] = useState(1);
+  const [totalPage, setTotalPage] = useState(1);
+  const limit = 8;
+  const { data: allAccounts } = useGetAllUser();
+  const { data: accounts, isLoading } = useGetAccountsByLimit(page);
+  const filteredAccounts = accounts?.filter(
+    (account) => account.status === false
+  );
+  const filteredAllAccounts = allAccounts?.filter(
+    (account) => account.status === false
+  );
+  useEffect(() => {
+    if (filteredAllAccounts) {
+      setTotalPage(Math.ceil(filteredAllAccounts.length / limit));
     }
-  };
-  const titleStatusTheme = (status: string) => {
-    switch (status) {
-      case "inactive":
-        return "text-normal";
-      case "active":
-        return "text-[#45A834]";
-      default:
-        return "";
-    }
-  };
-  const sampleData = [
-    {
-      id: 1,
-      name: "Truong Hoang Tri",
-      email: "tritruonghoang3@gmail.com",
-      address: "98/7 Nam Chau, Phuong 11, Quan Tan Binh, TP.HCM",
-      phone: "0776003669",
-      status: "active",
-    },
-    {
-      id: 2,
-      name: "Nguyen Van A",
-      email: "nguyenvana@example.com",
-      address: "12 Nguyen Hue, Quan 1, TP.HCM",
-      phone: "0903123456",
-      status: "inactive",
-    },
-    {
-      id: 3,
-      name: "Le Thi B",
-      email: "lethib@example.com",
-      address: "45 Hoang Hoa Tham, Quan Phu Nhuan, TP.HCM",
-      phone: "0914556677",
-      status: "active",
-    },
-    {
-      id: 4,
-      name: "Pham Van C",
-      email: "phamvanc@example.com",
-      address: "23 Le Loi, Quan 3, TP.HCM",
-      phone: "0987112233",
-      status: "inactive",
-    },
-    {
-      id: 5,
-      name: "Pham Van C",
-      email: "phamvanc@example.com",
-      address: "23 Le Loi, Quan 3, TP.HCM",
-      phone: "0987112233",
-      status: "inactive",
-    },
-  ];
+  }, [filteredAllAccounts]);
   return (
     <>
       <div className="flex items-center px-[40px] py-[20px] mt-[10px] justify-end gap-x-4">
@@ -149,49 +100,38 @@ function Table() {
             </tr>
           </thead>
           <tbody>
-            {sampleData.map((account) => (
+            {filteredAccounts?.map((user, i) => (
               <tr
-                key={account.id}
+                key={user.userId}
                 className="grid grid-cols-12 mx-[20px] px-[20px] py-4 items-center border-b border-gray-600 border-opacity-40"
               >
-                <td className="col-span-1 text-[13px]">{account.id}</td>
+                <td className="col-span-1 text-[13px]">{i + 1}</td>
                 <td className="col-span-3 flex items-center gap-x-2">
-                  <Image
-                    alt=""
-                    src="/woman-1.jpg"
-                    width={35}
-                    height={35}
-                    className="w-[35px] h-[35px] object-cover rounded-full"
-                  />
                   <div className="flex flex-col">
-                    <p className="text-[13px] font-semibold">{account.name}</p>
-                    <p className="text-[11px] text-normal">{account.email}</p>
+                    <p className="text-[13px] font-semibold">{user.userName}</p>
+                    <p className="text-[11px] text-normal">{user.email}</p>
                   </div>
                 </td>
                 <td className="col-span-2 text-[11px] font-semibold">
                   {" "}
-                  {account.address}
+                  {/* {account.address} */}
                 </td>
                 <td className="col-span-2 text-[13px] text-center font-semibold">
-                  {account.phone}
+                  {user.phoneNumber}
+                </td>
+                <td className="col-span-2 flex justify-center">
+                  <div
+                    className={` flex justify-center w-fit px-3 gap-x-1 py-[2px] border border-warning rounded-lg`}
+                  >
+                    <IoIosInformationCircleOutline className={`text-warning`} />
+                    <p
+                      className={`text-[11px] font-semibold font-open text-warning`}
+                    >
+                      Chờ duyệt
+                    </p>
+                  </div>
                 </td>
 
-                <td
-                  className={`col-span-2 flex justify-center w-fit px-3 gap-x-1 py-[2px] border ml-[60px] ${statusTheme(
-                    account.status
-                  )} rounded-lg`}
-                >
-                  <IoIosInformationCircleOutline
-                    className={`${titleStatusTheme(account.status)}`}
-                  />
-                  <p
-                    className={`text-[11px] font-semibold font-open ${titleStatusTheme(
-                      account.status
-                    )}`}
-                  >
-                    Active
-                  </p>
-                </td>
                 <td className="col-span-2 text-[13px] font-semibold flex justify-end">
                   <Dropdown>
                     <DropdownTrigger>
@@ -227,8 +167,9 @@ function Table() {
             loop
             showControls
             color="default"
-            initialPage={1}
-            total={10}
+            initialPage={page}
+            total={totalPage}
+            onChange={(newPage) => setPage(newPage)}
           />
         </div>
       </div>

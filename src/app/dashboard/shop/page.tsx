@@ -1,7 +1,5 @@
 "use client";
 import Image from "next/image";
-// import brand from "/brand.png";
-// import brand2 from "/brand2.png";
 import Link from "next/link";
 
 export default function ShopPage() {

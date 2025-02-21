@@ -5,9 +5,11 @@ import * as ProductService from "@/app/service/productService";
 import * as CloudinaryService from "@/app/service/cloudinaryService";
 import * as BrandService from "@/app/service/brandService";
 import * as AccountService from "@/app/service/accountService";
+import * as LocationService from "@/app/service/locationService";
 import { CloudinaryAsset } from "../interfaces/Cloudinary";
 import { Brand } from "../interfaces/Brand";
 import { User } from "../interfaces/Account";
+import { District, Province, Ward } from "../interfaces/Location";
 function useFetch<T>(
   queryKey: any[],
   queryFn: () => Promise<T>,
@@ -46,6 +48,12 @@ export function useGetAllAssetByLimit(page: number) {
   );
 }
 
+export function useGetAccountsByLimit(page: number) {
+  return useFetch<User[]>(["users", page], async () =>
+    AccountService.getUserByLimit(page)
+  );
+}
+
 export function useGetAllBrand() {
   return useFetch<Brand[]>(["brands"], async () => BrandService.getAllBrand());
 }
@@ -53,5 +61,26 @@ export function useGetAllBrand() {
 export function useGetUserInfo() {
   return useFetch<User>(["user-info"], async () =>
     AccountService.getUserInfo()
+  );
+}
+
+export function useGetAllUser() {
+  return useFetch<User[]>(["users"], async () => AccountService.getAllUser());
+}
+
+export function useGetAllProvince() {
+  return useFetch<Province[]>(["provinces"], async () =>
+    LocationService.getAllProvinces()
+  );
+}
+
+export function useGetDistrictByProvince(provinceId: string) {
+  return useFetch<District[]>(["districts", provinceId], async () =>
+    LocationService.getDistrictsByProvinceId(provinceId)
+  );
+}
+export function useGetWardByDistrict(districtId: string) {
+  return useFetch<Ward[]>(["wards", districtId], async () =>
+    LocationService.getWardsByDistrictId(districtId)
   );
 }

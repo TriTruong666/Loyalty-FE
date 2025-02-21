@@ -13,7 +13,7 @@ interface customProps {
 
 export const LoadingDashboard = () => {
   return (
-    <div className="flex flex-col items-center justify-center h-[calc(100vh-80px)] bg-black">
+    <div className="flex flex-col items-center justify-center h-[calc(100vh-80px)] bg-background">
       <DynamicLottie
         animationData={loadingAnimation1}
         loop={true}

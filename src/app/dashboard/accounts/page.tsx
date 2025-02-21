@@ -2,16 +2,18 @@
 import Image from "next/image";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import { Pagination } from "@heroui/pagination";
+import { useGetAllUser } from "@/app/hooks/hook";
 export default function AccountPage() {
   return (
     <div className="flex flex-col">
       {/* <LoadingTable /> */}
-      <AccountCompanyTable />
+      <AccountAdminTable />
     </div>
   );
 }
 
-function AccountCompanyTable() {
+function AccountAdminTable() {
+  const { data: accounts, isLoading } = useGetAllUser();
   const statusTheme = (status: string) => {
     switch (status) {
       case "inactive":

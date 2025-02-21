@@ -101,6 +101,8 @@ function LoginForm() {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const setProgress = useSetAtom(loginProgressState);
+  const passwordRef = useRef<HTMLInputElement>(null);
+
   const loginMutation = useMutation({
     mutationKey: ["login"],
     mutationFn: loginService,
@@ -119,10 +121,12 @@ function LoginForm() {
       setIsLoading(false);
     },
   });
+
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setSubmitData((prev) => ({ ...prev, [name]: value }));
   };
+
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const handleSubmit = async () => {
@@ -142,6 +146,13 @@ function LoginForm() {
       console.log(error);
     }
   };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSubmit();
+    }
+  };
+
   return (
     <div className="flex flex-col gap-y-2">
       {/* Email Field */}
@@ -159,6 +170,7 @@ function LoginForm() {
           type="text"
           placeholder="hello@company.com"
           className="outline-none bg-transparent border-none w-full 2xl:text-[13px]"
+          onKeyDown={handleKeyDown} // Add keydown listener
         />
       </div>
 
@@ -172,11 +184,13 @@ function LoginForm() {
       <div className="relative group flex items-center w-[80%] py-3 px-3 border space-x-4 border-gray-400-40 rounded-md transition-all duration-300 hover:border-gray-400 hover:border-opacity-40 focus-within:border-gray-400 focus-within:border-opacity-40 hover:shadow-md focus-within:shadow-md">
         <FaKey size={20} />
         <input
+          ref={passwordRef}
           onChange={handleOnChange}
           name="pass"
           type={showPassword ? "text" : "password"} // Toggle Password Visibility
           placeholder="yourpass123"
           className="outline-none bg-transparent border-none w-full 2xl:text-[13px]"
+          onKeyDown={handleKeyDown} // Add keydown listener
         />
         {/* Toggle Button */}
         <button
@@ -192,6 +206,7 @@ function LoginForm() {
         </button>
       </div>
       {error && <p className="2xl:text-[11px] mt-1 text-dangerous">{error}</p>}
+
       {/* Submit Button */}
       <Button
         variant="flat"
@@ -319,6 +334,9 @@ function EmailVerification() {
     index: number,
     e: React.KeyboardEvent<HTMLInputElement>
   ) => {
+    if (e.key === "Enter") {
+      handleSubmit();
+    }
     if (e.key === "Backspace" && index > 0 && !otp[index]) {
       inputRefs.current[index - 1]?.focus();
     }

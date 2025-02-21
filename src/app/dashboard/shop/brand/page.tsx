@@ -8,6 +8,9 @@ import { formatPrice } from "@/app/utils/format";
 import { atom, useAtom, useAtomValue } from "jotai";
 import { Link as HeroLink } from "@heroui/link";
 import Link from "next/link";
+import { FC, useState } from "react";
+import { Product as ProductProps } from "@/app/interfaces/Product";
+import { useGetProductByLimit } from "@/app/hooks/hook";
 const layoutState = atom("layout1");
 export default function BrandProductShopPage() {
   return (
@@ -34,6 +37,11 @@ export default function BrandProductShopPage() {
 
 function ProductSection() {
   const [layout, setLayout] = useAtom(layoutState);
+  const [page, setPage] = useState(1);
+  const { data: products, isLoading } = useGetProductByLimit(page);
+  const filteredProducts = products?.filter(
+    (product) => product.status === "dangban"
+  );
   const handleChangeLayout = (layout: string) => {
     setLayout(layout);
   };
@@ -89,40 +97,39 @@ function ProductSection() {
           layout === "layout2" && "grid-cols-4 gap-[50px]"
         }  px-[40px] mt-[40px]`}
       >
-        <ProductItem />
-        <ProductItem />
-        <ProductItem />
-        <ProductItem />
-        <ProductItem />
+        {filteredProducts?.map((item) => (
+          <ProductItem key={item.productId} product={item} />
+        ))}
       </div>
     </div>
   );
 }
 
-function ProductItem() {
+const ProductItem: FC<{ product: ProductProps }> = ({ product }) => {
   const layout = useAtomValue(layoutState);
 
   return (
     <div className="flex flex-col gap-y-[10px]">
       <Image
         loading="lazy"
-        alt="Product Image"
-        src="/product.webp"
+        alt={product.productName || "Product Image"}
+        src={product.imageUrl || "/placeholder.jpg"}
         width={316}
         height={316}
         className="w-full h-auto object-cover rounded-[20px]"
       />
 
-      <p className="text-[12px] text-normal mt-2">La Roche Posay</p>
+      <p className="text-[12px] text-normal mt-2">
+        {product.brand?.brandName || "Unknown Brand"}
+      </p>
 
       <Link
-        href="/dashboard/shop/brand/detail"
+        href={`/dashboard/shop/brand/detail/${product.handle}`}
         className={`font-semibold text-foreground duration-300 transition-all hover:text-primary line-clamp-2 ${
           layout === "layout2" && "text-sm"
         }`}
       >
-        Sữa Rửa Mặt Và Tắm Toàn Thân Cho Da Nhạy Cảm Sebamed Liquid Face & Body
-        Wash 300ml
+        {product.productName}
       </Link>
 
       <div className="flex mt-[10px] items-center justify-between">
@@ -131,7 +138,7 @@ function ProductItem() {
             layout === "layout2" && "!text-[16px]"
           }`}
         >
-          {formatPrice(400000)}
+          {formatPrice(product.price || 0)}
         </p>
         <Button variant="flat" color="secondary" size="md">
           Thêm vào giỏ
@@ -139,4 +146,4 @@ function ProductItem() {
       </div>
     </div>
   );
-}
+};

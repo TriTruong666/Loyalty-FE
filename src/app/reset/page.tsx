@@ -64,6 +64,7 @@ export default function ResetPage() {
 }
 
 function EmailForm() {
+  const emailRef = useRef<HTMLInputElement>(null);
   const setProgress = useSetAtom(resetProgressState);
   const [submitData, setSubmitData] = useAtom(dataForgetState);
   const [isLoading, setIsLoading] = useState(false);
@@ -106,6 +107,11 @@ function EmailForm() {
       console.error(error);
     }
   };
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSubmit();
+    }
+  };
   return (
     <div className="flex flex-col w-[50%] border-gray-400 border-opacity-40 border-l justify-center pl-[150px] gap-y-3 mb-[70px]">
       <p className="font-semibold 2xl:text-[40px] text-[50px] w-[80%] mt-[70px] 2xl:mt-[5px] bg-[conic-gradient(at_right,_var(--tw-gradient-stops))] from-yellow-600 via-primary to-emerald-50 bg-clip-text text-transparent">
@@ -126,6 +132,8 @@ function EmailForm() {
           <div className="relative group flex items-center w-[80%] py-3 px-3 border space-x-4 border-gray-400-40 rounded-md transition-all duration-300 hover:border-gray-400 hover:border-opacity-40 focus-within:border-gray-400 focus-within:border-opacity-40 hover:shadow-md focus-within:shadow-md">
             <MdEmail size={20} />
             <input
+              ref={emailRef}
+              onKeyDown={handleKeyDown}
               type="text"
               onChange={handleOnChange}
               placeholder="hello@company.com"
@@ -219,6 +227,9 @@ function EmailVerification() {
     index: number,
     e: React.KeyboardEvent<HTMLInputElement>
   ) => {
+    if (e.key === "Enter") {
+      handleSubmit();
+    }
     if (e.key === "Backspace" && index > 0 && !otp[index]) {
       inputRefs.current[index - 1]?.focus();
     }

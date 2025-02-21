@@ -5,7 +5,6 @@ import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { addAccountModalState } from "../store/modalAtoms";
 import NormalInput from "./NormalInput";
 import { FaUserTie } from "react-icons/fa";
-import { DatePicker } from "@heroui/date-picker";
 import { IoMail } from "react-icons/io5";
 import { MdLocalPhone } from "react-icons/md";
 import { RiBuilding2Fill } from "react-icons/ri";
@@ -13,7 +12,19 @@ import { Select, SelectItem } from "@heroui/select";
 import { IoIosPin } from "react-icons/io";
 import { Button } from "@heroui/button";
 import { GrUserWorker } from "react-icons/gr";
-import { ReactNode } from "react";
+import { ChangeEvent, ReactNode, useState } from "react";
+import { dataCreateAccountState } from "../store/accountAtoms";
+import { showToast } from "../utils/toast";
+import { DateInput } from "@heroui/react";
+import { parseDate } from "@internationalized/date";
+import { nanoid } from "nanoid";
+import {
+  useGetAllProvince,
+  useGetDistrictByProvince,
+  useGetWardByDistrict,
+} from "../hooks/hook";
+import { useMutation } from "@tanstack/react-query";
+import { createAccountService } from "../service/accountService";
 
 const createAccountProgress = atom(1);
 const selectedAccountType = atom("");
@@ -25,7 +36,7 @@ export default function AddAccountModal() {
     return <></>;
   }
   return (
-    <div className="fixed w-screen h-screen top-0 left-0 flex items-center justify-center z-50 bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur-[2px] bg-opacity-10 backdrop-saturate-100 backdrop-contrast-100">
+    <div className="fixed w-screen h-screen top-0 left-0 flex items-center justify-center z-50 bg-black bg-opacity-70">
       <div className="w-[700px] bg-black flex flex-col transition-all duration-300 items-center relative py-[40px] px-[40px] rounded-[15px] shadow-[2px_2px_60px_6px_rgba(19,_19,_19,_0.63)]">
         {accountModalProgress === 1 && <ChooseAccountType />}
         {accountModalProgress === 2 && <RegistrationForm />}
@@ -39,10 +50,20 @@ function ChooseAccountType() {
   const [selected, setSelected] = useAtom(selectedAccountType);
   const setAddAccountModal = useSetAtom(addAccountModalState);
   const setAccountModalProgress = useSetAtom(createAccountProgress);
+  const [submitData, setSubmitData] = useAtom(dataCreateAccountState);
+
   const handleCloseModal = () => {
     setAddAccountModal(false);
   };
   const handleGoNext = () => {
+    if (selected === "") {
+      showToast("Vui lòng chọn loại tài khoản bạn muốn tạo", "error");
+      return;
+    }
+    setSubmitData({
+      ...submitData,
+      type: selected,
+    });
     setAccountModalProgress(2);
   };
   return (
@@ -116,11 +137,48 @@ function ChooseAccountType() {
 }
 
 function RegistrationForm() {
+  const [value, setValue] = useState(parseDate("2024-04-04"));
+  const [submitData, setSubmitData] = useAtom(dataCreateAccountState);
   const setAccountModalProgress = useSetAtom(createAccountProgress);
+  const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setSubmitData({
+      ...submitData,
+      [name]: value,
+    });
+  };
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
   const handleGoNext = () => {
+    setSubmitData({
+      ...submitData,
+      birthday: value.toString(),
+    });
+    if (
+      submitData.email === "" ||
+      submitData.userName === "" ||
+      submitData.phoneNumber === ""
+    ) {
+      showToast("Vui lòng nhập đủ thông tin", "error");
+      return;
+    }
+    if (!emailPattern.test(submitData.email)) {
+      showToast("Email không hợp lệ. Vui lòng nhập đúng định dạng.", "error");
+      return;
+    }
+    if (submitData.phoneNumber.length !== 10) {
+      showToast("Vui lòng nhập số điện thoại hợp lệ.", "error");
+      return;
+    }
     setAccountModalProgress(3);
   };
   const handleGoPrev = () => {
+    setSubmitData({
+      ...submitData,
+      type: "",
+      mst: "",
+      birthday: "",
+    });
     setAccountModalProgress(1);
   };
   return (
@@ -131,39 +189,60 @@ function RegistrationForm() {
       </p>
       <div className="flex flex-col gap-3 w-full">
         <NormalInput
+          onChange={handleOnChange}
+          name="email"
+          defaultValue={submitData.email}
           label="Địa chỉ email"
           placeholder="email123@gmail.com"
           icon={<IoMail size={20} />}
         />
         <div className="flex items-center gap-x-3">
           <NormalInput
-            label="Tên khách hàng"
+            onChange={handleOnChange}
+            defaultValue={submitData.userName}
+            name="userName"
+            label="Tên người dùng"
             placeholder="Nguyễn Văn A"
             icon={<FaUserTie size={20} />}
           />
           <NormalInput
+            onChange={handleOnChange}
+            name="phoneNumber"
+            defaultValue={submitData.phoneNumber}
             label="Số điện thoại"
-            placeholder="0776003669"
+            placeholder="0921191360"
             icon={<MdLocalPhone size={20} />}
             max={10}
           />
         </div>
         {/* mst */}
-        <NormalInput
-          label="Mã số thuế"
-          placeholder="2803148208"
-          icon={<RiBuilding2Fill size={20} />}
-        />
+        {submitData.type === "business" && (
+          <NormalInput
+            onChange={handleOnChange}
+            defaultValue={submitData.mst}
+            name="mst"
+            label="Mã số thuế"
+            placeholder="2803148208"
+            icon={<RiBuilding2Fill size={20} />}
+          />
+        )}
+
         {/* date picker */}
-        <div className="flex flex-col w-full gap-y-2 font-inter">
-          <label
-            htmlFor="date"
-            className="font-semibold text-sm 2xl:text-[12px] mb-1"
-          >
-            Ngày sinh
-          </label>
-          <DatePicker variant="underlined" />
-        </div>
+        {(submitData.type === "business" || submitData.type === "personal") && (
+          <div className="flex flex-col w-full gap-y-2 font-inter">
+            <label
+              htmlFor="date"
+              className="font-semibold text-sm 2xl:text-[12px] mb-1"
+            >
+              {submitData.type === "business" ? "Sinh nhật" : "Ngày sinh"}
+            </label>
+            <DateInput
+              label="Sinh nhật"
+              value={value as any}
+              onChange={setValue as any}
+            />
+          </div>
+        )}
       </div>
       <div className="flex items-center w-full mt-[20px] gap-x-4">
         <Button
@@ -190,28 +269,120 @@ function RegistrationForm() {
 }
 
 function LocationForm() {
+  const setModal = useSetAtom(addAccountModalState);
   const setAccountModalProgress = useSetAtom(createAccountProgress);
-  const handleGoNext = () => {
-    setAccountModalProgress(3);
+  const [submitData, setSubmitData] = useAtom(dataCreateAccountState);
+  const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
+  const [isLoadingSubmit, setIsLoadingSubmit] = useState(false);
+  const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
+  const [selectedWard, setSelectedWard] = useState<string | null>(null);
+  const { data: provinces, isLoading } = useGetAllProvince();
+  const { data: districts } = useGetDistrictByProvince(
+    selectedProvince as string
+  );
+  const { data: wards } = useGetWardByDistrict(selectedDistrict as string);
+
+  const handleProvinceChange = (provinceCode: string) => {
+    setSubmitData({
+      ...submitData,
+      address: {
+        ...submitData.address,
+        provinceCode: provinceCode,
+      },
+    });
+    setSelectedProvince(provinceCode);
+    setSelectedDistrict(null);
+    setSelectedWard(null);
+  };
+  const handleDistrictChange = (districtCode: string) => {
+    setSubmitData({
+      ...submitData,
+      address: {
+        ...submitData.address,
+        districtCode: districtCode,
+      },
+    });
+    setSelectedDistrict(districtCode);
+    setSelectedWard(null);
+  };
+  const handleWardChange = (wardCode: string) => {
+    setSubmitData({
+      ...submitData,
+      address: {
+        ...submitData.address,
+        wardCode: wardCode,
+      },
+    });
+    setSelectedWard(wardCode);
+  };
+  const createAccountMutation = useMutation({
+    mutationKey: ["create-user"],
+    mutationFn: createAccountService,
+    onMutate() {
+      setIsLoadingSubmit(true);
+    },
+    onSuccess(data) {
+      if (data.code === "THE_EMAIL_IS_ALREADY_BOUND_TO_AN_ACCOUNT") {
+        showToast(
+          "Email này đã tồn tại trong hệ thống vui lòng thử lại.",
+          "error"
+        );
+        setIsLoadingSubmit(false);
+        return;
+      }
+      if (data.code === "THE_PHONE_NUMBER_IS_ALREADY_BOUND_TO_AN_ACCOUNT") {
+        showToast("Số điện thoại này đã tồn tại trong hệ thống.", "error");
+        setIsLoadingSubmit(false);
+        return;
+      } else {
+        setModal(false);
+        setAccountModalProgress(1);
+        setSubmitData({
+          userName: "",
+          email: "",
+          password: "",
+          phoneNumber: "",
+          birthday: "",
+          address: {
+            provinceCode: "",
+            districtCode: "",
+            wardCode: "",
+            street: "",
+          },
+          mst: "",
+          type: "",
+        });
+        showToast("Tạo tài khoản thành công", "success");
+        setIsLoadingSubmit(false);
+      }
+    },
+  });
+
+  const handleSubmit = async () => {
+    const newPassword = nanoid(12);
+
+    setSubmitData((prev) => ({
+      ...prev,
+      password: newPassword,
+    }));
+
+    if (submitData.address.street === "") {
+      showToast("Vui lòng nhập địa chỉ số nhà", "error");
+      return;
+    }
+
+    try {
+      await createAccountMutation.mutateAsync({
+        ...submitData,
+        password: newPassword,
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
   const handleGoPrev = () => {
     setAccountModalProgress(2);
   };
-  const animals = [
-    { key: "cat", label: "Cat" },
-    { key: "dog", label: "Dog" },
-    { key: "elephant", label: "Elephant" },
-    { key: "lion", label: "Lion" },
-    { key: "tiger", label: "Tiger" },
-    { key: "giraffe", label: "Giraffe" },
-    { key: "dolphin", label: "Dolphin" },
-    { key: "penguin", label: "Penguin" },
-    { key: "zebra", label: "Zebra" },
-    { key: "shark", label: "Shark" },
-    { key: "whale", label: "Whale" },
-    { key: "otter", label: "Otter" },
-    { key: "crocodile", label: "Crocodile" },
-  ];
   return (
     <div className="flex flex-col justify-center items-center gap-y-3 w-full">
       <p className="text-[28px] font-bold font-inter">Địa chỉ khách hàng</p>
@@ -226,12 +397,20 @@ function LocationForm() {
           Tỉnh / Thành phố
         </label>
         <Select
+          aria-label="province"
           isVirtualized
           variant="underlined"
           placeholder="Tỉnh / Thành phố"
+          isLoading={isLoading}
+          onSelectionChange={(keys) => {
+            const selectedKey = Array.from(keys)[0] as string;
+            handleProvinceChange(selectedKey);
+          }}
         >
-          {animals.map((animal) => (
-            <SelectItem key={animal.key}>{animal.label}</SelectItem>
+          {(provinces ?? []).map((province) => (
+            <SelectItem value={province.code} key={province.code}>
+              {province.fullName}
+            </SelectItem>
           ))}
         </Select>
       </div>
@@ -243,13 +422,20 @@ function LocationForm() {
           Quận / Huyện
         </label>
         <Select
+          aria-label="district"
           isVirtualized
           variant="underlined"
           placeholder="Quận / Huyện"
-          isDisabled
+          isDisabled={!selectedProvince}
+          onSelectionChange={(keys) => {
+            const selectedKey = Array.from(keys)[0] as string;
+            handleDistrictChange(selectedKey);
+          }}
         >
-          {animals.map((animal) => (
-            <SelectItem key={animal.key}>{animal.label}</SelectItem>
+          {(districts ?? []).map((district) => (
+            <SelectItem value={district.code} key={district.code}>
+              {district.fullName}
+            </SelectItem>
           ))}
         </Select>
       </div>
@@ -261,19 +447,35 @@ function LocationForm() {
           Phường / Xã
         </label>
         <Select
+          aria-label="ward"
           isVirtualized
           variant="underlined"
           placeholder="Phường / Xã"
-          isDisabled
+          isDisabled={!selectedDistrict}
+          onSelectionChange={(keys) => {
+            const selectedKey = Array.from(keys)[0] as string;
+            handleWardChange(selectedKey);
+          }}
         >
-          {animals.map((animal) => (
-            <SelectItem key={animal.key}>{animal.label}</SelectItem>
+          {(wards ?? []).map((ward) => (
+            <SelectItem value={ward.code} key={ward.code}>
+              {ward.fullName}
+            </SelectItem>
           ))}
         </Select>
       </div>
       <NormalInput
+        onChange={(e) =>
+          setSubmitData({
+            ...submitData,
+            address: {
+              ...submitData.address,
+              street: e.target.value,
+            },
+          })
+        }
         label="Địa chỉ giao hàng"
-        placeholder="2/35 Chấn Hưng"
+        placeholder="Vinhomes Grand Central Park"
         icon={<IoIosPin size={20} />}
       />
       <div className="flex items-center w-full mt-[20px] gap-x-4">
@@ -291,7 +493,9 @@ function LocationForm() {
           variant="flat"
           color="secondary"
           size="lg"
-          onPress={handleGoNext}
+          isDisabled={isLoadingSubmit}
+          isLoading={isLoadingSubmit}
+          onPress={handleSubmit}
         >
           <p className="text-secondary font-bold">Tạo tài khoản</p>
         </Button>

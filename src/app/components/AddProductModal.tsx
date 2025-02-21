@@ -94,6 +94,13 @@ function ProductForm() {
       productName: value.toUpperCase(),
     });
   };
+  const handleOnChangeNameSKU = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setSubmitData({
+      ...submitData,
+      productId: value.toUpperCase(),
+    });
+  };
   const handleGoNext = () => {
     if (
       submitData.productId.trim() === "" ||
@@ -122,7 +129,7 @@ function ProductForm() {
       <div className="flex flex-col gap-2 w-full overflow-auto max-h-[490px]">
         <NormalInput
           name="productId"
-          onChange={handleOnChange}
+          onChange={handleOnChangeNameSKU}
           defaultValue={submitData.productId}
           label="SKU sản phẩm"
           placeholder="ES0421"

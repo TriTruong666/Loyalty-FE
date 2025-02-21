@@ -16,8 +16,11 @@ import { IoLockOpenOutline } from "react-icons/io5";
 import { MdOutlinePermMedia } from "react-icons/md";
 import { logoutService } from "../service/authenticateService";
 import { useMutation } from "@tanstack/react-query";
+import { useAtomValue } from "jotai";
+import { userInfoState } from "../store/accountAtoms";
 
 export default function DashboardSidebar() {
+  const userInfo = useAtomValue(userInfoState);
   return (
     <div className="flex flex-col justify-between w-[270px] border-gray-400-40 h-screen border-r font-open overflow-hidden">
       {/* main */}
@@ -32,11 +35,18 @@ export default function DashboardSidebar() {
           />
         </div>
         <div className="py-2">
-          <AdminMenu />
+          {userInfo?.type === "business" && <UserMenu />}
+          {userInfo?.type === "sales" && <UserMenu />}
+          {userInfo?.type === "personal" && <UserMenu />}
+          {userInfo?.type === "admin" && <AdminMenu />}
+          {userInfo?.type === "ceo" && <AdminMenu />}
+          {userInfo?.type === "staff" && <StaffMenu />}
         </div>
-        <div className="border-t border-gray-400-40 pb-2">
-          <MenuOnlyForCEO />
-        </div>
+        {userInfo?.type === "ceo" && (
+          <div className="border-t border-gray-400-40 pb-2">
+            <MenuOnlyForCEO />
+          </div>
+        )}
         <div className="border-t border-gray-400-40">
           <UtilityItem />
         </div>
