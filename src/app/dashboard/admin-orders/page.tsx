@@ -85,6 +85,7 @@ function AllOrderTable() {
   const handleToggleModalOn = () => {
     setModal(true);
   };
+
   return (
     <div className="flex mt-[20px] flex-col items-center">
       <table className="flex flex-col w-full">
@@ -123,7 +124,7 @@ function AllOrderTable() {
               50$
             </td>
             <td
-              className={`col-span-2 flex justify-center w-fit px-3 gap-x-1 py-[2px] border ml-[60px] ${statusTheme(
+              className={`col-span-2 flex justify-center w-fit px-3 gap-x-1 py-[2px] border ml-[60px] xl:w-[102px] xl:text-[16px] ${statusTheme(
                 "pending"
               )} rounded-lg`}
             >
@@ -158,9 +159,7 @@ function AllOrderTable() {
                     <p className="group-hover:text-success">Xác Nhận</p>
                   </DropdownItem>
                   <DropdownItem
-                    onPress={() =>
-                      showToast("Đơn hàng đã bị từ chối!", "success")
-                    }
+                    onPress={() => showToast("Đã từ chối đơn hàng!", "success")}
                     className="group"
                     color="default"
                     startContent={

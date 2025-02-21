@@ -2,7 +2,6 @@
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import { Pagination } from "@heroui/pagination";
 import { FaInbox } from "react-icons/fa";
-import { FaXmark } from "react-icons/fa6";
 import {
   Dropdown,
   DropdownItem,
@@ -12,7 +11,7 @@ import {
 import { Button } from "@heroui/button";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { showToast } from "@/app/utils/toast";
-import { IoCheckmarkSharp } from "react-icons/io5";
+import { TbTruckDelivery } from "react-icons/tb";
 
 export default function OrderPage() {
   return (
@@ -78,6 +77,7 @@ function AllOrderTable() {
         return "";
     }
   };
+
   return (
     <div className="flex mt-[20px] flex-col items-center">
       <table className="flex flex-col w-full">
@@ -116,19 +116,19 @@ function AllOrderTable() {
               50$
             </td>
             <td
-              className={`col-span-2 flex justify-center w-fit px-3 gap-x-1 py-[2px] border ml-[60px] ${statusTheme(
-                "pending"
+              className={`col-span-2 flex justify-center w-fit px-3 gap-x-1 py-[2px] border ml-[60px]  ${statusTheme(
+                "confirm"
               )} rounded-lg`}
             >
               <IoIosInformationCircleOutline
-                className={`${titleStatusTheme("pending")}`}
+                className={`${titleStatusTheme("confirm")}`}
               />
               <p
                 className={`text-[11px] font-semibold font-open ${titleStatusTheme(
-                  "pending"
+                  "confirm"
                 )}`}
               >
-                Chờ Duyệt
+                Đã duyệt
               </p>
             </td>
             <td className="col-span-2 text-[13px] font-semibold flex justify-end">
@@ -141,29 +141,16 @@ function AllOrderTable() {
                 <DropdownMenu>
                   <DropdownItem
                     onPress={() =>
-                      showToast("Đơn hàng đã được duyệt!", "success")
+                      showToast("Bắt đầu giao đơn hàng!", "success")
                     }
                     className="group"
                     color="default"
                     startContent={
-                      <IoCheckmarkSharp className="text-[16px] group-hover:text-success" />
+                      <TbTruckDelivery className="text-[16px] group-hover:text-success" />
                     }
                     key="approve"
                   >
-                    <p className="group-hover:text-success">Xác Nhận</p>
-                  </DropdownItem>
-                  <DropdownItem
-                    onPress={() =>
-                      showToast("Đơn hàng đã bị từ chối!", "success")
-                    }
-                    className="group"
-                    color="default"
-                    startContent={
-                      <FaXmark className="text-[16px] group-hover:text-success" />
-                    }
-                    key="deny"
-                  >
-                    <p className="group-hover:text-success">Từ chối</p>
+                    <p className="group-hover:text-success">Giao hàng</p>
                   </DropdownItem>
                   <DropdownItem
                     className="group"

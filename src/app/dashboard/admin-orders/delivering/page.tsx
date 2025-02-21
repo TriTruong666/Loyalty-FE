@@ -2,7 +2,6 @@
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import { Pagination } from "@heroui/pagination";
 import { FaInbox } from "react-icons/fa";
-import { FaXmark } from "react-icons/fa6";
 import {
   Dropdown,
   DropdownItem,
@@ -116,19 +115,19 @@ function AllOrderTable() {
               50$
             </td>
             <td
-              className={`col-span-2 flex justify-center w-fit px-3 gap-x-1 py-[2px] border ml-[60px] ${statusTheme(
-                "pending"
+              className={`col-span-2 flex justify-center w-fit px-3 gap-x-1 py-[2px] border ml-[60px] xl:w-[100px] xl:text-[16px] ${statusTheme(
+                "processing"
               )} rounded-lg`}
             >
               <IoIosInformationCircleOutline
-                className={`${titleStatusTheme("pending")}`}
+                className={`${titleStatusTheme("processing")}`}
               />
               <p
                 className={`text-[11px] font-semibold font-open ${titleStatusTheme(
-                  "pending"
+                  "processing"
                 )}`}
               >
-                Chờ Duyệt
+                Đang giao
               </p>
             </td>
             <td className="col-span-2 text-[13px] font-semibold flex justify-end">
@@ -141,7 +140,7 @@ function AllOrderTable() {
                 <DropdownMenu>
                   <DropdownItem
                     onPress={() =>
-                      showToast("Đơn hàng đã được duyệt!", "success")
+                      showToast("Đơn hàng đã được giao!", "success")
                     }
                     className="group"
                     color="default"
@@ -150,21 +149,9 @@ function AllOrderTable() {
                     }
                     key="approve"
                   >
-                    <p className="group-hover:text-success">Xác Nhận</p>
+                    <p className="group-hover:text-success">Đã giao</p>
                   </DropdownItem>
-                  <DropdownItem
-                    onPress={() =>
-                      showToast("Đơn hàng đã bị từ chối!", "success")
-                    }
-                    className="group"
-                    color="default"
-                    startContent={
-                      <FaXmark className="text-[16px] group-hover:text-success" />
-                    }
-                    key="deny"
-                  >
-                    <p className="group-hover:text-success">Từ chối</p>
-                  </DropdownItem>
+
                   <DropdownItem
                     className="group"
                     color="default"

@@ -62,35 +62,27 @@ function Introduce() {
           text="Hi, chào mừng bạn đã đến với nền tảng Loyalty Picare."
           characters="LTAOTY!Hchád"
           animateOn="view"
-          encryptedClassName="font-semibold 2xl:text-[30px] text-[40px] w-[80%] mt-[70px] 2xl:mt-[5px] bg-[conic-gradient(at_right,_var(--tw-gradient-stops))] from-yellow-600 via-primary to-emerald-50 bg-clip-text text-transparent"
+          encryptedClassName="font-semibold xl:text-[25px] 2xl:text-[30px] text-[40px] w-[80%] mt-[70px] 2xl:mt-[5px] bg-[conic-gradient(at_right,_var(--tw-gradient-stops))] from-yellow-600 via-primary to-emerald-50 bg-clip-text text-transparent"
           revealDirection="start"
           maxIterations={10}
           sequential
           speed={60}
-          className="font-semibold 2xl:text-[30px] text-[40px] w-[80%] mt-[70px] 2xl:mt-[5px] bg-[conic-gradient(at_right,_var(--tw-gradient-stops))] from-yellow-600 via-primary to-emerald-50 bg-clip-text text-transparent"
+          className="font-semibold xl:text-[25px] 2xl:text-[30px] text-[40px] w-[80%] mt-[70px] 2xl:mt-[5px] bg-[conic-gradient(at_right,_var(--tw-gradient-stops))] from-yellow-600 via-primary to-emerald-50 bg-clip-text text-transparent"
         />
       </div>
 
-      <p className="dark:text-normal text-sm 2xl:text-[11px] w-[80%] text-black">
+      <p className="dark:text-normal text-sm xl:text-[10px] 2xl:text-[11px] w-[80%] text-black">
         Chúng tôi cung cấp giải pháp toàn diện, giúp khách hàng xây dựng mối
         quan hệ gắn kết bền vững, gia tăng lợi nhuận và nâng tầm dịch vụ. Với hệ
         thống quản lý điểm thưởng linh hoạt và các chương trình ưu đãi hấp dẫn,
         chúng tôi cam kết mang đến cho bạn những trải nghiệm tuyệt vời.
       </p>
-      <div className="pt-4 2xl:pt-2">
+      <div className="pt-4 xl:pt-1 2xl:pt-2">
         <LoginForm />
       </div>
-      <div className="pt-4 2xl:pt-2 mt-[20px] 2xl:mb-[0] mb-[60px]">
+      <div className="pt-4 xl:pt-1 2xl:pt-2 mt-[20px] 2xl:mb-[0] mb-[60px]">
         <Participants />
       </div>
-      <p className="dark:text-normal text-black text-[11px] 2xl:text-[9px] w-[80%] font-light 2xl:mb-[70px] 3xl:mb-[180px]">
-        Loyalty™ là một nền tảng đã được đăng ký nhãn hiệu dành riêng cho việc
-        trợ giúp ngành dược phẩm các nhà bán lẻ mua với số lượng lớn một cách
-        hiệu quả. Tên thương hiệu, logo của chúng tôi và các tài liệu liên quan
-        được bảo vệ về mặt pháp lý, đảm bảo tính xác thực và tin tưởng vào
-        ngành. Việc sử dụng trái phép, sao chép hoặc bắt chước Quyền sở hữu trí
-        tuệ của Loyalty bị nghiêm cấm.
-      </p>
     </div>
   );
 }
@@ -158,7 +150,7 @@ function LoginForm() {
       {/* Email Field */}
       <label
         htmlFor="email"
-        className="font-semibold text-sm 2xl:text-[12px] mb-1"
+        className="font-semibold text-sm 2xl:text-[12px] xl:text-[13px] mb-1"
       >
         Email *
       </label>
@@ -177,7 +169,7 @@ function LoginForm() {
       {/* Password Field */}
       <label
         htmlFor="password"
-        className="font-semibold 2xl:text-[12px] mb-1 mt-3"
+        className="font-semibold 2xl:text-[12px] xl:text-[13px] mb-1 mt-3"
       >
         Mật khẩu *
       </label>
@@ -227,7 +219,7 @@ function Participants() {
     <div className="flex flex-col mb-[10px]">
       {/* Stacked Images */}
       <div className="flex">
-        <div className="flex">
+        <div className="flex xl:mt-[-10px]">
           <Avatar
             name="Cty TNHH Trung Hanh"
             role="Doanh nghiệp"
@@ -259,7 +251,7 @@ function Participants() {
       {/* Verified Message */}
       <div className="flex items-center gap-x-3 mt-2">
         <FaCircleCheck className="dark:text-normal text-black 2xl:text-[14px]" />
-        <p className="text-sm dark:text-normal text-black 2xl:text-[12px]">
+        <p className="text-sm dark:text-normal text-black xl:text-[12px] 2xl:text-[12px]">
           +36 doanh nghiệp & cá nhân đã tham gia Loyalty.
         </p>
       </div>

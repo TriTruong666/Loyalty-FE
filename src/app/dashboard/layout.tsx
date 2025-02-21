@@ -19,7 +19,6 @@ import {
 } from "../store/dropdownAtoms";
 import { useGetUserInfo } from "../hooks/hook";
 import { userInfoState } from "../store/accountAtoms";
-import { showToast } from "../utils/toast";
 import { useRouter } from "next/navigation";
 import UpdateProductModal from "../components/UpdateProductModal";
 

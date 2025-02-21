@@ -6,8 +6,19 @@ import { FaAddressCard, FaCity } from "react-icons/fa";
 import { FiSave } from "react-icons/fi";
 
 // Add these types near the top of the file
-type ProvinceKey = 'HN' | 'HCM' | 'DN';
-type DistrictKey = 'BTL' | 'NTL' | 'CG' | 'HK' | 'Q1' | 'Q3' | 'Q5' | 'TB' | 'HC' | 'TK' | 'LC';
+type ProvinceKey = "HN" | "HCM" | "DN";
+type DistrictKey =
+  | "BTL"
+  | "NTL"
+  | "CG"
+  | "HK"
+  | "Q1"
+  | "Q3"
+  | "Q5"
+  | "TB"
+  | "HC"
+  | "TK"
+  | "LC";
 
 const PROVINCES = [
   { value: "HN", label: "Hà Nội" },
@@ -46,38 +57,24 @@ const WARDS: Record<DistrictKey, { value: string; label: string }[]> = {
     { value: "TD", label: "Tây Mỗ" },
     { value: "PD", label: "Phú Đô" },
   ],
-  CG: [
-    { value: "DG", label: "Dịch Vọng" },
-  ],
-  HK: [
-    { value: "HL", label: "Hàng Lược" },
-  ],
-  Q1: [
-    { value: "BN", label: "Bến Nghé" },
-  ],
-  Q3: [
-    { value: "1", label: "Phường 1" },
-  ],
-  Q5: [
-    { value: "2", label: "Phường 2" },
-  ],
-  TB: [
-    { value: "3", label: "Phường 3" },
-  ],
-  HC: [
-    { value: "TT", label: "Thanh Thuận" },
-  ],
-  TK: [
-    { value: "XH", label: "Xuân Hà" },
-  ],
-  LC: [
-    { value: "HM", label: "Hòa Minh" },
-  ],
+  CG: [{ value: "DG", label: "Dịch Vọng" }],
+  HK: [{ value: "HL", label: "Hàng Lược" }],
+  Q1: [{ value: "BN", label: "Bến Nghé" }],
+  Q3: [{ value: "1", label: "Phường 1" }],
+  Q5: [{ value: "2", label: "Phường 2" }],
+  TB: [{ value: "3", label: "Phường 3" }],
+  HC: [{ value: "TT", label: "Thanh Thuận" }],
+  TK: [{ value: "XH", label: "Xuân Hà" }],
+  LC: [{ value: "HM", label: "Hòa Minh" }],
 };
 
 export default function SettingPage() {
-  const [selectedProvince, setSelectedProvince] = useState<ProvinceKey | ''>('');
-  const [selectedDistrict, setSelectedDistrict] = useState<DistrictKey | ''>('');
+  const [selectedProvince, setSelectedProvince] = useState<ProvinceKey | "">(
+    ""
+  );
+  const [selectedDistrict, setSelectedDistrict] = useState<DistrictKey | "">(
+    ""
+  );
   const [selectedWard, setSelectedWard] = useState("");
   const [address, setAddress] = useState("");
 
