@@ -74,3 +74,34 @@ export const createAccountService = async (data: User) => {
     console.error(error);
   }
 };
+
+export const deleteAccountService = async (userId: string) => {
+  try {
+    const res = await axiosClient.delete(`/api/user/${userId}`);
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+interface Note {
+  note: string;
+}
+
+export const updateUserNote = async (userId: string, note: Note) => {
+  try {
+    const res = await axiosClient.put(`/api/user/update/${userId}`, note);
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const approveUser = async (userId: string) => {
+  try {
+    const res = await axiosClient.put(`/api/user/approve/${userId}`);
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};

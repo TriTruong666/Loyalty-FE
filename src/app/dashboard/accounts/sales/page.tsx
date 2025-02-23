@@ -9,6 +9,8 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
+  Select,
+  SelectItem,
 } from "@heroui/react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { showToast } from "@/app/utils/toast";
@@ -48,7 +50,16 @@ function AccountSalesTable() {
       </>
     );
   }
-
+  const accountSort = [
+    {
+      key: "nameASC",
+      title: "Tên A-Z",
+    },
+    {
+      key: "nameDESC",
+      title: "Tên Z-A",
+    },
+  ];
   if (filteredAccounts?.length === 0) {
     return (
       <>
@@ -65,29 +76,11 @@ function AccountSalesTable() {
     <>
       <div className="flex items-center px-[40px] py-[20px] mt-[10px] justify-end gap-x-4">
         <div className="w-[250px]">
-          {/* <ThemeProvider value={selectTheme}>
-            <Select
-              label="Sắp xếp"
-              variant="standard"
-              className="font-inter font-semibold"
-            >
-              <Option>Tên khách hàng (A → Z)</Option>
-              <Option>Tên khách hàng (Z → A)</Option>
-            </Select>
-          </ThemeProvider> */}
-        </div>
-        <div className="w-[250px]">
-          {/* <ThemeProvider value={selectTheme}>
-            <Select
-              label="Bộ lọc"
-              variant="standard"
-              className="font-inter font-semibold"
-            >
-              <Option>Bởi trạng thái</Option>
-              <Option>Bởi ID (Tăng dần)</Option>
-              <Option>Bởi ID (Giảm dần)</Option>
-            </Select>
-          </ThemeProvider> */}
+          <Select placeholder="Sắp xếp" variant="underlined">
+            {accountSort.map((item) => (
+              <SelectItem key={item.key}>{item.title}</SelectItem>
+            ))}
+          </Select>
         </div>
       </div>
       <div className="flex mt-[20px] flex-col items-center">

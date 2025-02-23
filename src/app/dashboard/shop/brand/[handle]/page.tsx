@@ -8,19 +8,42 @@ import { formatPrice } from "@/app/utils/format";
 import { atom, useAtom, useAtomValue } from "jotai";
 import { Link as HeroLink } from "@heroui/link";
 import Link from "next/link";
-import { FC, useState } from "react";
+import { FC } from "react";
 import { Product as ProductProps } from "@/app/interfaces/Product";
-import { useGetProductByLimit } from "@/app/hooks/hook";
-const layoutState = atom("layout1");
+import { useGetProductByBrand } from "@/app/hooks/hook";
+import { useParams } from "next/navigation";
+const layoutState = atom("layout2");
 export default function BrandProductShopPage() {
+  const params = useParams();
+  const handle = params.handle;
+  const brandTitle = (handle: string) => {
+    switch (handle) {
+      case "easydew":
+        return "Easydew";
+      case "dr-ciccarelli":
+        return "DR Ciccarelli";
+      case "eclat-du-teint":
+        return "Eclat Du Teint";
+      case "juve-head":
+        return "Juve Head";
+      case "sebamed":
+        return "Sebamed";
+      default:
+        return "";
+    }
+  };
   return (
     <div className="flex flex-col font-open py-[20px] h-full overflow-auto">
       <div className="flex items-center justify-between px-[40px]">
         <div className="flex flex-col gap-y-1">
-          <p className="text-[28px] font-light select-none">La Roche Posay</p>
+          <p className="text-[28px] font-light select-none">
+            {brandTitle(handle as string)}
+          </p>
           <p className="text-sm text-normal">
             Các sản phẩm đến từ nhà{" "}
-            <span className="font-bold text-primary">La Roche Posay</span>
+            <span className="font-bold text-primary">
+              {brandTitle(handle as string)}
+            </span>
           </p>
         </div>
         <HeroLink href="/dashboard/shop" className="flex items-center gap-x-2">
@@ -36,9 +59,10 @@ export default function BrandProductShopPage() {
 }
 
 function ProductSection() {
+  const params = useParams();
+  const handle = params.handle;
+  const { data: products } = useGetProductByBrand(handle as string);
   const [layout, setLayout] = useAtom(layoutState);
-  const [page, setPage] = useState(1);
-  const { data: products, isLoading } = useGetProductByLimit(page, "dangban");
   const handleChangeLayout = (layout: string) => {
     setLayout(layout);
   };

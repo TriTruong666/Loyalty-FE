@@ -29,7 +29,11 @@ export function useAllProduct() {
     ProductService.getAllProductService()
   );
 }
-
+export function useGetProductByBrand(handle: string) {
+  return useFetch<Product[]>(["shop", handle], async () =>
+    ProductService.getProductByBrand(handle)
+  );
+}
 export function useGetProductByLimit(page: number, mode: string) {
   return useFetch<Product[]>(["products", page], async () =>
     ProductService.getProductServiceByLimit(page, mode)

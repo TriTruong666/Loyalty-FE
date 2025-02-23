@@ -1,6 +1,9 @@
 "use client";
 import { Pagination } from "@heroui/pagination";
-import { IoIosInformationCircleOutline } from "react-icons/io";
+import {
+  IoIosCheckboxOutline,
+  IoIosInformationCircleOutline,
+} from "react-icons/io";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { Button } from "@heroui/button";
 import {
@@ -12,17 +15,25 @@ import {
 import { IoCheckmarkSharp, IoTrashBinOutline } from "react-icons/io5";
 import { showToast } from "@/app/utils/toast";
 import { useGetAccountsByLimitPending, useGetAllUser } from "@/app/hooks/hook";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { FaPenAlt } from "react-icons/fa";
 import { Input } from "@heroui/react";
 import { atom, useAtom, useSetAtom } from "jotai";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  deleteAccountService,
+  updateUserNote,
+} from "@/app/service/accountService";
+import { LoadingTable } from "@/app/components/loading";
 const noteModalState = atom<string | null>(null);
-
+const noteContentState = atom<string | null>(null);
 export default function CEOPermissionPage() {
   const setNoteModal = useSetAtom(noteModalState);
+  const setNoteContent = useSetAtom(noteContentState);
   const handleOffModal = (event: React.MouseEvent) => {
     if (!(event.target as HTMLElement).closest(".modal-content")) {
       setNoteModal(null);
+      setNoteContent(null);
     }
   };
 
@@ -51,9 +62,68 @@ function Table() {
   const limit = 8;
   const { data: allAccounts } = useGetAllUser();
   const { data: accounts, isLoading } = useGetAccountsByLimitPending(page);
+  const [note, setNote] = useAtom(noteContentState);
+  const [isSubmit, setIsSubmit] = useState(false);
+  const inputRefs = useRef<HTMLInputElement[]>([]);
   const filteredAllAccounts = allAccounts?.filter(
     (user) => user.status === "pending"
   );
+  const queryClient = useQueryClient();
+  const deleteAccountMutation = useMutation({
+    mutationKey: ["delete-user"],
+    mutationFn: deleteAccountService,
+    onSuccess() {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      showToast("Xoá tài khoản thành công", "success");
+    },
+  });
+  const updateNoteMutation = useMutation({
+    mutationKey: ["update-note-user"],
+    mutationFn: async ({ userId, note }: { userId: string; note: string }) =>
+      updateUserNote(userId, { note }),
+    onMutate() {
+      setIsSubmit(true);
+    },
+    onSuccess() {
+      setModalId(null);
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      setIsSubmit(false);
+      showToast("Ghi chú thành công", "success");
+    },
+  });
+  const handleOnChangeNote = (e: ChangeEvent<HTMLInputElement>) => {
+    setNote(e.target.value);
+  };
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    userId: string
+  ) => {
+    if (e.key === "Enter") {
+      handleSubmitNote(userId);
+    }
+  };
+
+  const handleSubmitNote = async (userId: string) => {
+    if (note === null) {
+      showToast("Vui lòng nhập ghi chú", "error");
+      return;
+    }
+    try {
+      await updateNoteMutation.mutateAsync({
+        userId: userId,
+        note: note,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const handleDeleteUser = async (userId: string) => {
+    try {
+      await deleteAccountMutation.mutateAsync(userId);
+    } catch (error) {
+      console.error(error);
+    }
+  };
   useEffect(() => {
     if (filteredAllAccounts) {
       setTotalPage(Math.ceil(filteredAllAccounts.length / limit));
@@ -63,6 +133,26 @@ function Table() {
   const handleToggleNoteModal = (userId: string) => {
     setModalId(userId);
   };
+  if (isLoading) {
+    return (
+      <>
+        <LoadingTable />
+      </>
+    );
+  }
+  if (accounts?.length === 0) {
+    return (
+      <>
+        <div className="flex flex-col w-full justify-center items-center h-[550px] gap-y-[20px]">
+          <IoIosCheckboxOutline className="text-[50px] text-normal " />
+          <p className="text-normal">
+            Không có bất kì tài khoản nào đang chờ bạn duyệt.
+          </p>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <div className="flex items-center px-[40px] py-[20px] mt-[10px] justify-end gap-x-4">
@@ -189,9 +279,7 @@ function Table() {
                         <p className="group-hover:text-foreground">Ghi chú</p>
                       </DropdownItem>
                       <DropdownItem
-                        onPress={() =>
-                          showToast("Tài khoản đã được duyệt!", "success")
-                        }
+                        onPress={() => handleDeleteUser(user.userId)}
                         className="group"
                         color="default"
                         startContent={
@@ -210,11 +298,13 @@ function Table() {
                 {modalId === user.userId && (
                   <td
                     className="absolute 3xl:left-[80%] 2xl:left-[75%] top-[7px] w-[300px] p-[10px] bg-default-50 rounded-[15px] z-10 modal-content"
-                    onClick={(e) => e.stopPropagation()} // 🛑 Ngăn chặn sự kiện click lan ra ngoài
+                    onClick={(e) => e.stopPropagation()}
                   >
                     <div className="">
                       <Input
-                        isClearable
+                        defaultValue={note as string}
+                        onChange={handleOnChangeNote}
+                        onKeyDown={(e) => handleKeyDown(e, user.userId)}
                         placeholder="Viết ghi chú..."
                         size="sm"
                         variant="underlined"

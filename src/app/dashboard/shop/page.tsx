@@ -1,6 +1,8 @@
 "use client";
+import { useGetAllBrand } from "@/app/hooks/hook";
 import Image from "next/image";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 
 export default function ShopPage() {
   return (
@@ -19,49 +21,55 @@ export default function ShopPage() {
 }
 
 function BrandSection() {
-  const brands = [
-    "/brand.png",
-    "/brand2.png",
-    "/brand.png",
-    "/brand2.png",
-    "/brand.png",
-    "/brand.png",
-    "/brand2.png",
-    "/brand.png",
-    "/brand2.png",
-    "/brand.png",
-    "/brand2.png",
-    "/brand.png",
-    "/brand2.png",
-  ];
+  const { data: brands = [] } = useGetAllBrand();
+
+  const brandImage = (brandId: string) => {
+    switch (brandId) {
+      case "DRCICA":
+        return "/brand-dr-ci.png";
+      case "EASYDE":
+        return "/brand2.png";
+      case "ECLATD":
+        return "/brand3.png";
+      case "JUVEHE":
+        return "/brand4.png";
+      case "SEBAME":
+        return "/brand5.png";
+      default:
+        return "";
+    }
+  };
 
   const totalItems = 16;
   const filledBrands = [
     ...brands,
-    ...new Array(totalItems - brands.length).fill(null),
+    ...new Array(Math.max(totalItems - brands.length, 0)).fill(null),
   ];
 
   return (
     <div className="grid grid-cols-4 px-[40px] gap-[15px]">
-      {filledBrands.map((brandItem, index) => (
-        <Link
-          href="/dashboard/shop/brand"
-          key={index}
-          className="w-full h-[120px] bg-foreground bg-opacity-40 rounded-[15px] flex items-center justify-center backdrop-blur-sm"
-        >
-          {brandItem ? (
+      {filledBrands.map((brandItem, index) =>
+        brandItem ? (
+          <Link
+            href={`/dashboard/shop/brand/${brandItem.handle}`}
+            key={index}
+            className="w-full h-[120px] bg-foreground bg-opacity-40 rounded-[15px] flex items-center justify-center backdrop-blur-sm"
+          >
             <Image
-              alt=""
-              src={brandItem}
+              alt={brandItem.brandName}
+              src={brandImage(brandItem.brandId)}
               width={150}
               height={60}
               className="w-[150px] h-[60px] object-cover"
             />
-          ) : (
-            <div className="w-[150px] h-[60px] opacity-30"></div>
-          )}
-        </Link>
-      ))}
+          </Link>
+        ) : (
+          <div
+            key={index}
+            className="w-full h-[120px] bg-foreground bg-opacity-40 rounded-[15px] flex items-center justify-center"
+          />
+        )
+      )}
     </div>
   );
 }

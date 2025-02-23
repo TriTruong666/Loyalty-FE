@@ -2,15 +2,53 @@
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useGetAllUser } from "../hooks/hook";
 export function AccountRoleMenu() {
   const pathname = usePathname();
-
+  const { data: allAccounts } = useGetAllUser();
+  const filteredAdmin = allAccounts
+    ?.filter((account) => account.type === "admin")
+    .filter((account) => account.status === "active");
+  const filteredSales = allAccounts
+    ?.filter((account) => account.type === "sales")
+    .filter((account) => account.status === "active");
+  const filteredStaff = allAccounts
+    ?.filter((account) => account.type === "staff")
+    .filter((account) => account.status === "active");
+  const filteredInactive = allAccounts?.filter(
+    (account) => account.status === "inactive"
+  );
+  const filteredBusiness = allAccounts
+    ?.filter(
+      (account) => account.type === "business" || account.type === "personal"
+    )
+    .filter((account) => account.status === "active");
   const roles = [
-    { name: "Admin", path: "/dashboard/accounts", count: 10 },
-    { name: "Doanh nghiệp", path: "/dashboard/accounts/company", count: 10 },
-    { name: "Sales", path: "/dashboard/accounts/sales", count: 10 },
-    { name: "Nhân viên", path: "/dashboard/accounts/staff", count: 1 },
-    { name: "Bị khoá", path: "/dashboard/accounts/inactive", count: 1 },
+    {
+      name: "Admin",
+      path: "/dashboard/accounts",
+      count: filteredAdmin?.length,
+    },
+    {
+      name: "Doanh nghiệp",
+      path: "/dashboard/accounts/company",
+      count: filteredBusiness?.length,
+    },
+    {
+      name: "Sales",
+      path: "/dashboard/accounts/sales",
+      count: filteredSales?.length,
+    },
+    {
+      name: "Nhân viên",
+      path: "/dashboard/accounts/staff",
+      count: filteredStaff?.length,
+    },
+    {
+      name: "Bị khoá",
+      path: "/dashboard/accounts/inactive",
+      count: filteredInactive?.length,
+    },
   ];
 
   return (
