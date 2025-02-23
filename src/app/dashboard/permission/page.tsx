@@ -11,12 +11,26 @@ import {
 } from "@heroui/dropdown";
 import { IoCheckmarkSharp, IoTrashBinOutline } from "react-icons/io5";
 import { showToast } from "@/app/utils/toast";
-import { useGetAccountsByLimit, useGetAllUser } from "@/app/hooks/hook";
+import { useGetAccountsByLimitPending, useGetAllUser } from "@/app/hooks/hook";
 import { useEffect, useState } from "react";
 import { FaPenAlt } from "react-icons/fa";
+import { Input } from "@heroui/react";
+import { atom, useAtom, useSetAtom } from "jotai";
+const noteModalState = atom<string | null>(null);
+
 export default function CEOPermissionPage() {
+  const setNoteModal = useSetAtom(noteModalState);
+  const handleOffModal = (event: React.MouseEvent) => {
+    if (!(event.target as HTMLElement).closest(".modal-content")) {
+      setNoteModal(null);
+    }
+  };
+
   return (
-    <div className="flex flex-col font-open py-[20px] ">
+    <div
+      className="flex flex-col font-open py-[20px] overflow-x-hidden"
+      onClick={handleOffModal}
+    >
       <div className="flex flex-col gap-y-[5px] px-[40px]">
         <p className="text-[28px] font-light select-none">Xét duyệt đăng ký</p>
         <p className="text-sm text-normal">
@@ -31,13 +45,14 @@ export default function CEOPermissionPage() {
 }
 
 function Table() {
+  const [modalId, setModalId] = useAtom(noteModalState);
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const limit = 8;
   const { data: allAccounts } = useGetAllUser();
-  const { data: accounts, isLoading } = useGetAccountsByLimit(page, "false");
+  const { data: accounts, isLoading } = useGetAccountsByLimitPending(page);
   const filteredAllAccounts = allAccounts?.filter(
-    (user) => user.status === false
+    (user) => user.status === "pending"
   );
   useEffect(() => {
     if (filteredAllAccounts) {
@@ -45,6 +60,9 @@ function Table() {
       console.log(totalPage);
     }
   }, [filteredAllAccounts]);
+  const handleToggleNoteModal = (userId: string) => {
+    setModalId(userId);
+  };
   return (
     <>
       <div className="flex items-center px-[40px] py-[20px] mt-[10px] justify-end gap-x-4">
@@ -75,7 +93,7 @@ function Table() {
         </div>
       </div>
       <div className="flex mt-[20px] flex-col items-center">
-        <table className="flex flex-col w-full max-h-[407px]">
+        <table className="flex flex-col w-full">
           <thead>
             <tr className="grid grid-cols-12 mx-[20px] px-[20px] py-4 bg-[#111111] rounded-lg">
               <th className="col-span-1 text-[12px] text-normal font-light text-start">
@@ -84,7 +102,7 @@ function Table() {
               <th className="col-span-2 text-[12px] text-normal font-light text-start">
                 Thông tin
               </th>
-              <th className="col-span-2 text-[12px] text-normal font-light text-start">
+              <th className="col-span-3 text-[12px] text-normal font-light text-start">
                 Địa chỉ
               </th>
               <th className="col-span-1 text-[12px] text-normal font-light text-center">
@@ -93,7 +111,7 @@ function Table() {
               <th className="col-span-2 text-[12px] text-normal font-light text-center">
                 Trạng thái
               </th>
-              <th className="col-span-3 text-[12px] text-normal font-light text-center">
+              <th className="col-span-2 text-[12px] text-normal font-light text-center">
                 Ghi chú
               </th>
               <th className="col-span-1 text-[12px] text-normal font-light text-end">
@@ -105,7 +123,7 @@ function Table() {
             {accounts?.map((user, i) => (
               <tr
                 key={user.userId}
-                className="grid grid-cols-12 mx-[20px] px-[20px] py-4 items-center border-b border-gray-600 border-opacity-40"
+                className="grid grid-cols-12 mx-[20px] px-[20px] py-4 items-center border-b border-gray-600 border-opacity-40 relative"
               >
                 <td className="col-span-1 text-[13px]">{i + 1}</td>
                 <td className="col-span-2 flex items-center gap-x-2">
@@ -114,9 +132,9 @@ function Table() {
                     <p className="text-[11px] text-normal">{user.email}</p>
                   </div>
                 </td>
-                <td className="col-span-2 text-[11px] font-semibold">
-                  {" "}
-                  {/* {account.address} */}
+                <td className="col-span-3 text-[11px] font-semibold">
+                  {user.address.street}, {user.address.wardName},{" "}
+                  {user.address.districtName}, {user.address.provinceName}
                 </td>
                 <td className="col-span-1 text-[13px] text-center font-semibold">
                   {user.phoneNumber}
@@ -133,7 +151,7 @@ function Table() {
                     </p>
                   </div>
                 </td>
-                <td className="col-span-3 text-[13px] text-center font-semibold">
+                <td className="col-span-2 text-[13px] text-center font-semibold">
                   {user.note}
                 </td>
                 <td className="col-span-1 text-[13px] font-semibold flex justify-end">
@@ -160,9 +178,7 @@ function Table() {
                         </p>
                       </DropdownItem>
                       <DropdownItem
-                        onPress={() =>
-                          showToast("Tài khoản đã được duyệt!", "success")
-                        }
+                        onPress={() => handleToggleNoteModal(user.userId)}
                         className="group"
                         color="default"
                         startContent={
@@ -190,6 +206,22 @@ function Table() {
                     </DropdownMenu>
                   </Dropdown>
                 </td>
+                {/* note modal */}
+                {modalId === user.userId && (
+                  <td
+                    className="absolute 3xl:left-[80%] 2xl:left-[75%] top-[7px] w-[300px] p-[10px] bg-default-50 rounded-[15px] z-10 modal-content"
+                    onClick={(e) => e.stopPropagation()} // 🛑 Ngăn chặn sự kiện click lan ra ngoài
+                  >
+                    <div className="">
+                      <Input
+                        isClearable
+                        placeholder="Viết ghi chú..."
+                        size="sm"
+                        variant="underlined"
+                      />
+                    </div>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
@@ -208,7 +240,3 @@ function Table() {
     </>
   );
 }
-
-const noteModal = () => {
-  return <div className=""></div>;
-};

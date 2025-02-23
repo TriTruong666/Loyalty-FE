@@ -1,74 +1,66 @@
 "use client";
-import Image from "next/image";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import { Pagination } from "@heroui/pagination";
-import { useGetAllUser } from "@/app/hooks/hook";
+import { useGetAccountsByLimitActive, useGetAllUser } from "@/app/hooks/hook";
+import { useEffect, useState } from "react";
+import {
+  Button,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+} from "@heroui/react";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { showToast } from "@/app/utils/toast";
+import { IoCheckmarkSharp } from "react-icons/io5";
+import { LoadingTable } from "@/app/components/loading";
+import { FaUserXmark } from "react-icons/fa6";
 export default function AccountPage() {
   return (
     <div className="flex flex-col">
-      {/* <LoadingTable /> */}
       <AccountAdminTable />
     </div>
   );
 }
 
 function AccountAdminTable() {
-  const { data: accounts, isLoading } = useGetAllUser();
-  const statusTheme = (status: string) => {
-    switch (status) {
-      case "inactive":
-        return "border-gray-400-40";
-      case "active":
-        return "border-[#45A834]";
-      default:
-        return "";
+  const [page, setPage] = useState(1);
+  const [totalPage, setTotalPage] = useState(1);
+  const limit = 8;
+  const { data: allAccounts } = useGetAllUser();
+  const { data: accounts, isLoading } = useGetAccountsByLimitActive(page);
+  const filteredAccounts = accounts?.filter(
+    (account) => account.type === "admin"
+  );
+  const filteredAllAccounts = allAccounts?.filter(
+    (account) => account.type === "admin"
+  );
+  useEffect(() => {
+    if (filteredAllAccounts) {
+      setTotalPage(Math.ceil(filteredAllAccounts.length / limit));
+      console.log(totalPage);
     }
-  };
-  const titleStatusTheme = (status: string) => {
-    switch (status) {
-      case "inactive":
-        return "text-normal";
-      case "active":
-        return "text-[#45A834]";
-      default:
-        return "";
-    }
-  };
-  const sampleData = [
-    {
-      id: 1,
-      name: "Truong Hoang Tri",
-      email: "tritruonghoang3@gmail.com",
-      address: "98/7 Nam Chau, Phuong 11, Quan Tan Binh, TP.HCM",
-      phone: "0776003669",
-      status: "active",
-    },
-    {
-      id: 2,
-      name: "Nguyen Van A",
-      email: "nguyenvana@example.com",
-      address: "12 Nguyen Hue, Quan 1, TP.HCM",
-      phone: "0903123456",
-      status: "inactive",
-    },
-    {
-      id: 3,
-      name: "Le Thi B",
-      email: "lethib@example.com",
-      address: "45 Hoang Hoa Tham, Quan Phu Nhuan, TP.HCM",
-      phone: "0914556677",
-      status: "active",
-    },
-    {
-      id: 4,
-      name: "Pham Van C",
-      email: "phamvanc@example.com",
-      address: "23 Le Loi, Quan 3, TP.HCM",
-      phone: "0987112233",
-      status: "inactive",
-    },
-  ];
+  }, [filteredAllAccounts]);
+  if (isLoading) {
+    return (
+      <>
+        <LoadingTable />
+      </>
+    );
+  }
 
+  if (filteredAccounts?.length === 0) {
+    return (
+      <>
+        <div className="flex flex-col w-full justify-center items-center h-[500px] gap-y-[20px]">
+          <FaUserXmark className="text-[50px] text-normal " />
+          <p className="text-normal">
+            Không tìm thấy bất kỳ tài khoản nào trong hệ thống
+          </p>
+        </div>
+      </>
+    );
+  }
   return (
     <>
       <div className="flex items-center px-[40px] py-[20px] mt-[10px] justify-end gap-x-4">
@@ -99,16 +91,16 @@ function AccountAdminTable() {
         </div>
       </div>
       <div className="flex mt-[20px] flex-col items-center">
-        <table className="flex flex-col w-full max-h-[350px]">
+        <table className="flex flex-col w-full">
           <thead>
             <tr className="grid grid-cols-12 mx-[20px] px-[20px] py-4 bg-[#111111] rounded-lg">
               <th className="col-span-1 text-[12px] text-normal font-light text-start">
                 ID
               </th>
-              <th className="col-span-3 text-[12px] text-normal font-light text-start">
+              <th className="col-span-2 text-[12px] text-normal font-light text-start">
                 Thông tin
               </th>
-              <th className="col-span-2 text-[12px] text-normal font-light text-start">
+              <th className="col-span-3 text-[12px] text-normal font-light text-start">
                 Địa chỉ
               </th>
               <th className="col-span-2 text-[12px] text-normal font-light text-center">
@@ -123,51 +115,64 @@ function AccountAdminTable() {
             </tr>
           </thead>
           <tbody>
-            {sampleData.map((account) => (
+            {filteredAccounts?.map((user, i) => (
               <tr
-                key={account.id}
+                key={user.userId}
                 className="grid grid-cols-12 mx-[20px] px-[20px] py-4 items-center border-b border-gray-600 border-opacity-40"
               >
-                <td className="col-span-1 text-[13px]">{account.id}</td>
-                <td className="col-span-3 flex items-center gap-x-2">
-                  <Image
-                    alt=""
-                    src="/woman-1.jpg"
-                    width={35}
-                    height={35}
-                    className="w-[35px] h-[35px] object-cover rounded-full"
-                  />
+                <td className="col-span-1 text-[13px]">{i + 1}</td>
+                <td className="col-span-2 flex items-center gap-x-2">
                   <div className="flex flex-col">
-                    <p className="text-[13px] font-semibold">{account.name}</p>
-                    <p className="text-[11px] text-normal">{account.email}</p>
+                    <p className="text-[13px] font-semibold">{user.userName}</p>
+                    <p className="text-[11px] text-normal">{user.email}</p>
                   </div>
                 </td>
-                <td className="col-span-2 text-[11px] font-semibold">
+                <td className="col-span-3 text-[11px] font-semibold">
                   {" "}
-                  {account.address}
+                  {user.address.street}, {user.address.wardName},{" "}
+                  {user.address.districtName}, {user.address.provinceName}
                 </td>
                 <td className="col-span-2 text-[13px] text-center font-semibold">
-                  {account.phone}
+                  {user.phoneNumber}
+                </td>
+                <td className="col-span-2 flex justify-center">
+                  <div
+                    className={`flex justify-center w-fit px-3 gap-x-1 py-[2px] border border-success rounded-lg`}
+                  >
+                    <IoIosInformationCircleOutline className={`text-success`} />
+                    <p
+                      className={`text-[11px] font-semibold font-open text-success`}
+                    >
+                      Đang hoạt động
+                    </p>
+                  </div>
                 </td>
 
-                <td
-                  className={`col-span-2 flex justify-center w-fit px-3 gap-x-1 py-[2px] border ml-[60px] ${statusTheme(
-                    account.status
-                  )} rounded-lg`}
-                >
-                  <IoIosInformationCircleOutline
-                    className={`${titleStatusTheme(account.status)}`}
-                  />
-                  <p
-                    className={`text-[11px] font-semibold font-open ${titleStatusTheme(
-                      account.status
-                    )}`}
-                  >
-                    Active
-                  </p>
-                </td>
-                <td className="col-span-2 text-[13px] font-semibold text-end">
-                  Actions
+                <td className="col-span-2 text-[13px] font-semibold flex justify-end">
+                  <Dropdown>
+                    <DropdownTrigger>
+                      <Button isIconOnly size="sm" variant="light">
+                        <BsThreeDotsVertical className="text-normal text-[16px]" />
+                      </Button>
+                    </DropdownTrigger>
+                    <DropdownMenu>
+                      <DropdownItem
+                        onPress={() =>
+                          showToast("Tài khoản đã được duyệt!", "success")
+                        }
+                        className="group"
+                        color="default"
+                        startContent={
+                          <IoCheckmarkSharp className="text-[16px] group-hover:text-success" />
+                        }
+                        key="approve"
+                      >
+                        <p className="group-hover:text-success">
+                          Duyệt tài khoản
+                        </p>
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </Dropdown>
                 </td>
               </tr>
             ))}
@@ -178,8 +183,9 @@ function AccountAdminTable() {
             loop
             showControls
             color="default"
-            initialPage={1}
-            total={10}
+            initialPage={page}
+            total={totalPage}
+            onChange={(newPage) => setPage(newPage)}
           />
         </div>
       </div>

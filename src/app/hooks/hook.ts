@@ -48,9 +48,19 @@ export function useGetAllAssetByLimit(page: number) {
   );
 }
 
-export function useGetAccountsByLimit(page: number, mode: string) {
+export function useGetAccountsByLimitPending(page: number) {
   return useFetch<User[]>(["users", page], async () =>
-    AccountService.getUserByLimit(page, mode)
+    AccountService.getUserByLimitPending(page)
+  );
+}
+export function useGetAccountsByLimitActive(page: number) {
+  return useFetch<User[]>(["users", page], async () =>
+    AccountService.getUserByLimitActive(page)
+  );
+}
+export function useGetAccountsByLimitInactive(page: number) {
+  return useFetch<User[]>(["users", page], async () =>
+    AccountService.getUserByLimitInactive(page)
   );
 }
 

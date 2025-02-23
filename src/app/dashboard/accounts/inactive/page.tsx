@@ -18,22 +18,22 @@ import { FaUserXmark } from "react-icons/fa6";
 export default function AccountPage() {
   return (
     <div className="flex flex-col">
-      <AccountSalesTable />
+      <AccountInactiveTable />
     </div>
   );
 }
 
-function AccountSalesTable() {
+function AccountInactiveTable() {
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const limit = 8;
   const { data: allAccounts } = useGetAllUser();
   const { data: accounts, isLoading } = useGetAccountsByLimitActive(page);
   const filteredAccounts = accounts?.filter(
-    (account) => account.type === "sales"
+    (account) => account.status === "inactive"
   );
   const filteredAllAccounts = allAccounts?.filter(
-    (account) => account.type === "sales"
+    (account) => account.status === "inactive"
   );
   useEffect(() => {
     if (filteredAllAccounts) {

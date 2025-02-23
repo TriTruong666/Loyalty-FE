@@ -1,17 +1,76 @@
 "use client";
-import Image from "next/image";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import { Pagination } from "@heroui/pagination";
-export default function AccountStaffPage() {
+import { useGetAccountsByLimitActive, useGetAllUser } from "@/app/hooks/hook";
+import { useEffect, useState } from "react";
+import {
+  Button,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+} from "@heroui/react";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { showToast } from "@/app/utils/toast";
+import { IoCheckmarkSharp } from "react-icons/io5";
+import { LoadingTable } from "@/app/components/loading";
+import { FaUserXmark } from "react-icons/fa6";
+export default function AccountPage() {
   return (
     <div className="flex flex-col">
+      <AccountStaffTable />
+    </div>
+  );
+}
+
+function AccountStaffTable() {
+  const [page, setPage] = useState(1);
+  const [totalPage, setTotalPage] = useState(1);
+  const limit = 8;
+  const { data: allAccounts } = useGetAllUser();
+  const { data: accounts, isLoading } = useGetAccountsByLimitActive(page);
+  const filteredAccounts = accounts?.filter(
+    (account) => account.type === "staff"
+  );
+  const filteredAllAccounts = allAccounts?.filter(
+    (account) => account.type === "staff"
+  );
+  useEffect(() => {
+    if (filteredAllAccounts) {
+      setTotalPage(Math.ceil(filteredAllAccounts.length / limit));
+      console.log(totalPage);
+    }
+  }, [filteredAllAccounts]);
+  if (isLoading) {
+    return (
+      <>
+        <LoadingTable />
+      </>
+    );
+  }
+
+  if (filteredAccounts?.length === 0) {
+    return (
+      <>
+        <div className="flex flex-col w-full justify-center items-center h-[500px] gap-y-[20px]">
+          <FaUserXmark className="text-[50px] text-normal " />
+          <p className="text-normal">
+            Không tìm thấy bất kỳ tài khoản nào trong hệ thống
+          </p>
+        </div>
+      </>
+    );
+  }
+  return (
+    <>
       <div className="flex items-center px-[40px] py-[20px] mt-[10px] justify-end gap-x-4">
         <div className="w-[250px]">
           {/* <ThemeProvider value={selectTheme}>
             <Select
               label="Sắp xếp"
               variant="standard"
-              className="font-inter font-semibold" children={undefined} placeholder={undefined} onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined}            >
+              className="font-inter font-semibold"
+            >
               <Option>Tên khách hàng (A → Z)</Option>
               <Option>Tên khách hàng (Z → A)</Option>
             </Select>
@@ -31,114 +90,105 @@ export default function AccountStaffPage() {
           </ThemeProvider> */}
         </div>
       </div>
-      <AccountStaffTable />
-    </div>
-  );
-}
-
-function AccountStaffTable() {
-  const statusTheme = (status: string) => {
-    switch (status) {
-      case "inactive":
-        return "border-gray-400-40";
-      case "active":
-        return "border-[#45A834]";
-      default:
-        return "";
-    }
-  };
-  const titleStatusTheme = (status: string) => {
-    switch (status) {
-      case "inactive":
-        return "text-normal";
-      case "active":
-        return "text-[#45A834]";
-      default:
-        return "";
-    }
-  };
-  return (
-    <div className="flex mt-[20px] flex-col items-center">
-      <table className="flex flex-col w-full">
-        <thead>
-          <tr className="grid grid-cols-12 mx-[20px] px-[20px] py-4 bg-[#111111] rounded-lg">
-            <th className="col-span-1 text-[12px] text-normal font-light text-start">
-              ID
-            </th>
-            <th className="col-span-3 text-[12px] text-normal font-light text-start">
-              Thông tin
-            </th>
-            <th className="col-span-2 text-[12px] text-normal font-light text-start">
-              Địa chỉ
-            </th>
-            <th className="col-span-2 text-[12px] text-normal font-light text-center">
-              Số điện thoại
-            </th>
-            <th className="col-span-2 text-[12px] text-normal font-light text-center">
-              Trạng thái
-            </th>
-            <th className="col-span-2 text-[12px] text-normal font-light text-end">
-              Thêm
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr className="grid grid-cols-12 mx-[20px] px-[20px] py-4 items-center border-b border-gray-600 border-opacity-40">
-            <td className="col-span-1 text-[13px]">1</td>
-            <td className="col-span-3 flex items-center gap-x-2">
-              <Image
-                alt=""
-                src="/woman-1.jpg"
-                width={35}
-                height={35}
-                className="w-[35px] h-[35px] object-cover rounded-full"
-              />
-              <div className="flex flex-col">
-                <p className="text-[13px] font-semibold">Truong Hoang Tri</p>
-                <p className="text-[11px] text-normal">
-                  tritruonghoang3@gmail.com
-                </p>
-              </div>
-            </td>
-            <td className="col-span-2 text-[11px] font-semibold">
-              {" "}
-              98/7 Nam Chau, Phuong 11, Quan Tan Binh, TP.HCM
-            </td>
-            <td className="col-span-2 text-[13px] text-center font-semibold">
-              0776003669
-            </td>
-
-            <td
-              className={`col-span-2 flex justify-center w-fit px-3 gap-x-1 py-[2px] border ml-[60px] ${statusTheme(
-                "active"
-              )} rounded-lg`}
-            >
-              <IoIosInformationCircleOutline
-                className={`${titleStatusTheme("active")}`}
-              />
-              <p
-                className={`text-[11px] font-semibold font-open ${titleStatusTheme(
-                  "active"
-                )}`}
+      <div className="flex mt-[20px] flex-col items-center">
+        <table className="flex flex-col w-full">
+          <thead>
+            <tr className="grid grid-cols-12 mx-[20px] px-[20px] py-4 bg-[#111111] rounded-lg">
+              <th className="col-span-1 text-[12px] text-normal font-light text-start">
+                ID
+              </th>
+              <th className="col-span-2 text-[12px] text-normal font-light text-start">
+                Thông tin
+              </th>
+              <th className="col-span-3 text-[12px] text-normal font-light text-start">
+                Địa chỉ
+              </th>
+              <th className="col-span-2 text-[12px] text-normal font-light text-center">
+                Số điện thoại
+              </th>
+              <th className="col-span-2 text-[12px] text-normal font-light text-center">
+                Trạng thái
+              </th>
+              <th className="col-span-2 text-[12px] text-normal font-light text-end">
+                Thêm
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredAccounts?.map((user, i) => (
+              <tr
+                key={user.userId}
+                className="grid grid-cols-12 mx-[20px] px-[20px] py-4 items-center border-b border-gray-600 border-opacity-40"
               >
-                Active
-              </p>
-            </td>
-            <td className="col-span-2 text-[13px] font-semibold text-end">
-              Actions
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <div className="mt-[20px]">
-        <Pagination
-          loop
-          showControls
-          color="default"
-          initialPage={1}
-          total={10}
-        />
+                <td className="col-span-1 text-[13px]">{i + 1}</td>
+                <td className="col-span-2 flex items-center gap-x-2">
+                  <div className="flex flex-col">
+                    <p className="text-[13px] font-semibold">{user.userName}</p>
+                    <p className="text-[11px] text-normal">{user.email}</p>
+                  </div>
+                </td>
+                <td className="col-span-3 text-[11px] font-semibold">
+                  {" "}
+                  {user.address.street}, {user.address.wardName},{" "}
+                  {user.address.districtName}, {user.address.provinceName}
+                </td>
+                <td className="col-span-2 text-[13px] text-center font-semibold">
+                  {user.phoneNumber}
+                </td>
+                <td className="col-span-2 flex justify-center">
+                  <div
+                    className={`flex justify-center w-fit px-3 gap-x-1 py-[2px] border border-success rounded-lg`}
+                  >
+                    <IoIosInformationCircleOutline className={`text-success`} />
+                    <p
+                      className={`text-[11px] font-semibold font-open text-success`}
+                    >
+                      Đang hoạt động
+                    </p>
+                  </div>
+                </td>
+
+                <td className="col-span-2 text-[13px] font-semibold flex justify-end">
+                  <Dropdown>
+                    <DropdownTrigger>
+                      <Button isIconOnly size="sm" variant="light">
+                        <BsThreeDotsVertical className="text-normal text-[16px]" />
+                      </Button>
+                    </DropdownTrigger>
+                    <DropdownMenu>
+                      <DropdownItem
+                        onPress={() =>
+                          showToast("Tài khoản đã được duyệt!", "success")
+                        }
+                        className="group"
+                        color="default"
+                        startContent={
+                          <IoCheckmarkSharp className="text-[16px] group-hover:text-success" />
+                        }
+                        key="approve"
+                      >
+                        <p className="group-hover:text-success">
+                          Duyệt tài khoản
+                        </p>
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </Dropdown>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div className="mt-[20px]">
+          <Pagination
+            loop
+            showControls
+            color="default"
+            initialPage={page}
+            total={totalPage}
+            onChange={(newPage) => setPage(newPage)}
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -10,6 +10,7 @@ export function AccountRoleMenu() {
     { name: "Doanh nghiệp", path: "/dashboard/accounts/company", count: 10 },
     { name: "Sales", path: "/dashboard/accounts/sales", count: 10 },
     { name: "Nhân viên", path: "/dashboard/accounts/staff", count: 1 },
+    { name: "Bị khoá", path: "/dashboard/accounts/inactive", count: 1 },
   ];
 
   return (

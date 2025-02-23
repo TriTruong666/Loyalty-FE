@@ -260,7 +260,7 @@ function MenuItem({
 function MenuOnlyForCEO() {
   const { data: allAccounts } = useGetAllUser();
   const filteredAllAccounts = allAccounts?.filter(
-    (user) => user.status === false
+    (user) => user.status === "pending"
   );
 
   const ceoMenu = [

@@ -123,13 +123,6 @@ function ProductTable() {
     setUpdateModal(true);
     setSelectedProduct(data);
   };
-  if (isLoading) {
-    return (
-      <>
-        <LoadingTable />
-      </>
-    );
-  }
   const productSort = [
     {
       key: "nameASC",
@@ -140,6 +133,14 @@ function ProductTable() {
       title: "Tên Z-A",
     },
   ];
+  if (isLoading) {
+    return (
+      <>
+        <LoadingTable />
+      </>
+    );
+  }
+
   if (products?.length === 0) {
     return (
       <>

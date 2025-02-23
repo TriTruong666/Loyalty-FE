@@ -17,10 +17,30 @@ export const getAllUser = async () => {
     console.error(error);
   }
 };
-export const getUserByLimit = async (page: number, mode: string) => {
+export const getUserByLimitPending = async (page: number) => {
   try {
     const res = await axiosClient.get(
-      `/api/user/limit?limit=8&page=${page}&isactive=${mode}`
+      `/api/user/limit?limit=8&page=${page}&status=pending`
+    );
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+export const getUserByLimitActive = async (page: number) => {
+  try {
+    const res = await axiosClient.get(
+      `/api/user/limit?limit=8&page=${page}&status=active`
+    );
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+export const getUserByLimitInactive = async (page: number) => {
+  try {
+    const res = await axiosClient.get(
+      `/api/user/limit?limit=8&page=${page}&status=inactive`
     );
     return res.data;
   } catch (error) {
