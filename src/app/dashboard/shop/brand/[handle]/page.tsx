@@ -5,7 +5,7 @@ import { RiLayoutGrid2Line } from "react-icons/ri";
 import { TfiLayoutGrid4 } from "react-icons/tfi";
 import Image from "next/image";
 import { formatPrice } from "@/app/utils/format";
-import { atom, useAtom, useAtomValue } from "jotai";
+import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Link as HeroLink } from "@heroui/link";
 import Link from "next/link";
 import { FC, useEffect, useState } from "react";
@@ -15,6 +15,10 @@ import { useParams } from "next/navigation";
 import { ItemSkeleton } from "@/app/components/skeleton";
 import { useInView } from "react-intersection-observer";
 import { FaRegSadCry } from "react-icons/fa";
+import { cartState } from "@/app/store/cartAtoms";
+import { addToCart } from "@/app/service/cartService";
+import { showToast } from "@/app/utils/toast";
+import { BsBox2 } from "react-icons/bs";
 const layoutState = atom("layout2");
 const ITEMS_PER_LOAD = 8;
 export default function BrandProductShopPage() {
@@ -25,7 +29,7 @@ export default function BrandProductShopPage() {
       case "easydew":
         return "Easydew";
       case "dr-ciccarelli":
-        return "DR Ciccarelli";
+        return "Dr.Ciccarelli";
       case "eclat-du-teint":
         return "Eclat Du Teint";
       case "juve-head":
@@ -103,7 +107,7 @@ function ProductSection() {
   if (allProducts?.length === 0) {
     return (
       <div className="w-full h-[550px] flex flex-col justify-center items-center gap-y-[20px]">
-        <FaRegSadCry className="text-[70px] text-normal" />
+        <BsBox2 className="text-[70px] text-normal" />
         <p className="text-[20px] text-normal">
           Không có sản phẩm nào được hiển thị.
         </p>
@@ -162,6 +166,7 @@ function ProductSection() {
 
 const ProductItem: FC<{ product: ProductProps }> = ({ product }) => {
   const layout = useAtomValue(layoutState);
+  const setCart = useSetAtom(cartState);
 
   return (
     <div className="flex flex-col gap-y-[10px]">
@@ -195,7 +200,17 @@ const ProductItem: FC<{ product: ProductProps }> = ({ product }) => {
         >
           {formatPrice(product.price || 0)}
         </p>
-        <Button variant="flat" color="secondary" size="md">
+        <Button
+          variant="flat"
+          color="secondary"
+          size="md"
+          onPress={() => {
+            if (product) {
+              addToCart(product, 1, setCart);
+              showToast("Đã thêm vào giỏ hàng.", "success");
+            }
+          }}
+        >
           Thêm vào giỏ
         </Button>
       </div>

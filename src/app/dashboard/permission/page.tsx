@@ -15,12 +15,13 @@ import {
 import { IoCheckmarkSharp, IoTrashBinOutline } from "react-icons/io5";
 import { showToast } from "@/app/utils/toast";
 import { useGetAccountsByLimitPending, useGetAllUser } from "@/app/hooks/hook";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { FaPenAlt } from "react-icons/fa";
 import { Input } from "@heroui/react";
 import { atom, useAtom, useSetAtom } from "jotai";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
+  approveUser,
   deleteAccountService,
   updateUserNote,
 } from "@/app/service/accountService";
@@ -64,7 +65,6 @@ function Table() {
   const { data: accounts, isLoading } = useGetAccountsByLimitPending(page);
   const [note, setNote] = useAtom(noteContentState);
   const [isSubmit, setIsSubmit] = useState(false);
-  const inputRefs = useRef<HTMLInputElement[]>([]);
   const filteredAllAccounts = allAccounts?.filter(
     (user) => user.status === "pending"
   );
@@ -75,6 +75,18 @@ function Table() {
     onSuccess() {
       queryClient.invalidateQueries({ queryKey: ["users"] });
       showToast("Xoá tài khoản thành công", "success");
+    },
+  });
+  const approveAccountMutation = useMutation({
+    mutationKey: ["approve-user"],
+    mutationFn: approveUser,
+    onMutate() {
+      setIsSubmit(true);
+    },
+    onSuccess() {
+      setIsSubmit(false);
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      showToast("Duyệt tài khoản thành công", "success");
     },
   });
   const updateNoteMutation = useMutation({
@@ -117,6 +129,13 @@ function Table() {
       console.error(error);
     }
   };
+  const handleApproveUser = async (userId: string) => {
+    try {
+      await approveAccountMutation.mutateAsync(userId);
+    } catch (error) {
+      console.error(error);
+    }
+  };
   const handleDeleteUser = async (userId: string) => {
     try {
       await deleteAccountMutation.mutateAsync(userId);
@@ -133,7 +152,7 @@ function Table() {
   const handleToggleNoteModal = (userId: string) => {
     setModalId(userId);
   };
-  if (isLoading) {
+  if (isLoading || isSubmit) {
     return (
       <>
         <LoadingTable />
@@ -253,9 +272,7 @@ function Table() {
                     </DropdownTrigger>
                     <DropdownMenu>
                       <DropdownItem
-                        onPress={() =>
-                          showToast("Tài khoản đã được duyệt!", "success")
-                        }
+                        onPress={() => handleApproveUser(user.userId)}
                         className="group"
                         color="default"
                         startContent={

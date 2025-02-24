@@ -76,8 +76,9 @@ function EmailForm() {
       setIsLoading(true);
     },
     onSuccess(data) {
-      if (data.code === "UNABLE_TO_FIND_THE_CUSTOMER_BY_THE_GIVEN_EMAIL") {
+      if (data.code === "EMAIL_DOES_NOT_BOUND_TO_ANY_EXISING_USER") {
         setError("Chúng tôi không tìm thấy email của bạn trong hệ thống.");
+        setIsLoading(false);
       } else {
         setIsLoading(false);
         setProgress(2);

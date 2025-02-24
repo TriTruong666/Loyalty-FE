@@ -16,9 +16,12 @@ import { IoLockOpenOutline } from "react-icons/io5";
 import { MdOutlinePermMedia } from "react-icons/md";
 import { logoutService } from "../service/authenticateService";
 import { useMutation } from "@tanstack/react-query";
-import { useAtomValue } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { userInfoState } from "../store/accountAtoms";
-import { useAllProduct, useGetAllUser } from "../hooks/hook";
+import { useGetAllUser } from "../hooks/hook";
+import { cartState } from "../store/cartAtoms";
+import { getCartFromStorage } from "../service/cartService";
+import { useEffect } from "react";
 
 export default function DashboardSidebar() {
   const userInfo = useAtomValue(userInfoState);
@@ -259,16 +262,18 @@ function MenuItem({
 
 function MenuOnlyForCEO() {
   const { data: allAccounts } = useGetAllUser();
-  const filteredAllAccounts = allAccounts?.filter(
-    (user) => user.status === "pending"
-  );
+  const filteredAllAccounts =
+    allAccounts?.filter((user) => user.status === "pending") ?? [];
 
   const ceoMenu = [
     {
       name: "Xét duyệt",
       icon: IoLockOpenOutline,
       path: "/dashboard/permission",
-      typography: filteredAllAccounts?.length,
+      typography:
+        filteredAllAccounts?.length > 0
+          ? filteredAllAccounts?.length
+          : undefined,
     },
   ];
   return (
@@ -290,6 +295,16 @@ function MenuOnlyForCEO() {
 }
 
 function UserMenu() {
+  const [cart, setCart] = useAtom(cartState);
+  useEffect(() => {
+    const storedCart = getCartFromStorage();
+    setCart(storedCart);
+  }, [setCart]);
+  const totalQuantity = cart.reduce(
+    (sum, item) => sum + (item.quantity || 0),
+    0
+  );
+
   const userMenu = [
     {
       name: "Tổng quan",
@@ -305,6 +320,7 @@ function UserMenu() {
       name: "Giỏ hàng",
       icon: BsCart,
       path: "/dashboard/cart",
+      typography: totalQuantity > 0 ? totalQuantity : undefined,
     },
     {
       name: "Đơn hàng",
