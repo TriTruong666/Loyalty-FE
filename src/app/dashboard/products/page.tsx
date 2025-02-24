@@ -45,6 +45,7 @@ function ProductTable() {
   const limit = 8;
   const { data: products, isLoading } = useGetProductByLimit(page, "dangban");
   const { data: allProduct } = useAllProduct();
+
   const filteredAllProduct = allProduct?.filter(
     (product) => product.status === "dangban"
   );
@@ -132,6 +133,14 @@ function ProductTable() {
       key: "nameDESC",
       title: "Tên Z-A",
     },
+    {
+      key: "priceASC",
+      title: " Giá tăng dần",
+    },
+    {
+      key: "priceDESC",
+      title: "Giá giảm dần",
+    },
   ];
   if (isLoading) {
     return (
@@ -189,7 +198,7 @@ function ProductTable() {
             </tr>
           </thead>
           <tbody>
-            {products?.map((item) => (
+            {filteredAllProduct?.map((item) => (
               <tr
                 key={item.productId}
                 className="grid grid-cols-12 mx-[20px] px-[20px] py-4 items-center border-b border-gray-600 border-opacity-40"

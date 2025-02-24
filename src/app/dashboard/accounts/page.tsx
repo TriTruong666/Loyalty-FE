@@ -31,12 +31,24 @@ function AccountAdminTable() {
   const limit = 8;
   const { data: allAccounts } = useGetAllUser();
   const { data: accounts, isLoading } = useGetAccountsByLimitActive(page);
+  const [sortKey, setSortKey] = useState("nameASC");
   const filteredAccounts = accounts?.filter(
     (account) => account.type === "admin"
   );
   const filteredAllAccounts = allAccounts?.filter(
     (account) => account.type === "admin"
   );
+  const getSortedAccounts = () => {
+    if (!filteredAccounts) return [];
+
+    const sorted = [...filteredAccounts];
+    if (sortKey === "nameASC") {
+      return sorted.sort((a, b) => a.userName.localeCompare(b.userName));
+    } else if (sortKey === "nameDESC") {
+      return sorted.sort((a, b) => b.userName.localeCompare(a.userName));
+    }
+    return sorted;
+  };
   useEffect(() => {
     if (filteredAllAccounts) {
       setTotalPage(Math.ceil(filteredAllAccounts.length / limit));
@@ -77,7 +89,11 @@ function AccountAdminTable() {
     <>
       <div className="flex items-center px-[40px] py-[20px] mt-[10px] justify-end gap-x-4">
         <div className="w-[250px]">
-          <Select placeholder="Sắp xếp" variant="underlined">
+          <Select
+            placeholder="Sắp xếp"
+            variant="underlined"
+            onChange={(e) => setSortKey(e.target.value)}
+          >
             {accountSort.map((item) => (
               <SelectItem key={item.key}>{item.title}</SelectItem>
             ))}
@@ -109,7 +125,7 @@ function AccountAdminTable() {
             </tr>
           </thead>
           <tbody>
-            {filteredAccounts?.map((user, i) => (
+            {getSortedAccounts()?.map((user, i) => (
               <tr
                 key={user.userId}
                 className="grid grid-cols-12 mx-[20px] px-[20px] py-4 items-center border-b border-gray-600 border-opacity-40"
