@@ -32,10 +32,23 @@ function AccountStaffTable() {
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const limit = 8;
-  const { data: allAccounts = [] } = useGetAllUser();
-  const { data: accounts, isLoading } = useGetCustomerUserByLimitByStatus(
-    page,
-    "active"
+  const { data: allAccounts } = useGetAllUser();
+  const { data: accounts, isLoading } = useGetAccountsByLimitActive(page);
+  const [sortKey, setSortKey] = useState("nameASC");
+
+  const getSortedAccounts = () => {
+    if (!filteredAccounts) return [];
+
+    const sorted = [...filteredAccounts];
+    if (sortKey === "nameASC") {
+      return sorted.sort((a, b) => a.userName.localeCompare(b.userName));
+    } else if (sortKey === "nameDESC") {
+      return sorted.sort((a, b) => b.userName.localeCompare(a.userName));
+    }
+    return sorted;
+  };
+  const filteredAccounts = accounts?.filter(
+    (account) => account.type === "business" || account.type === "personal"
   );
   const filteredAllAccounts = allAccounts?.filter(
     (account) =>
@@ -83,7 +96,11 @@ function AccountStaffTable() {
     <>
       <div className="flex items-center px-[40px] py-[20px] mt-[10px] justify-end gap-x-4">
         <div className="w-[250px]">
-          <Select aria-label="sort" placeholder="Sắp xếp" variant="underlined">
+          <Select
+            placeholder="Sắp xếp"
+            variant="underlined"
+            onChange={(e) => setSortKey(e.target.value)}
+          >
             {accountSort.map((item) => (
               <SelectItem key={item.key}>{item.title}</SelectItem>
             ))}
@@ -115,7 +132,7 @@ function AccountStaffTable() {
             </tr>
           </thead>
           <tbody>
-            {accounts?.map((user, i) => (
+            {getSortedAccounts()?.map((user, i) => (
               <tr
                 key={user.userId}
                 className="grid grid-cols-12 mx-[20px] px-[20px] py-4 items-center border-b border-gray-600 border-opacity-40"
