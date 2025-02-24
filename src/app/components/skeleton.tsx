@@ -36,9 +36,9 @@ export const ProductDetailSkeleton: FC<SkeletonProps> = ({ className }) => {
         </div>
       </div>
       <div className="flex flex-col mt-[50px] gap-y-[25px]">
-        {[...Array(10)].map((item) => (
+        {[...Array(10)].map((item, i) => (
           <div
-            key={item}
+            key={i + 1}
             className="w-full h-[15px] bg-[#262626] animate-pulse"
           ></div>
         ))}

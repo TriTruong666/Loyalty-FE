@@ -23,11 +23,12 @@ import { Button } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { showToast } from "./utils/toast";
 import { useGetUserInfo } from "./hooks/hook";
+import { LoadingDashboard } from "./components/loading";
 
 export default function Home() {
   const progressState = useAtomValue(loginProgressState);
   const router = useRouter();
-  const { data: info } = useGetUserInfo();
+  const { data: info, isLoading } = useGetUserInfo();
   useEffect(() => {
     const isError = info?.code === "UNKNOWN_ERROR";
     if (isError) {
@@ -37,6 +38,13 @@ export default function Home() {
       router.push("/dashboard");
     }
   }, [info]);
+  if (isLoading) {
+    return (
+      <div className="fixed w-screen h-screen z-[9999] bg-black flex justify-center items-center">
+        <LoadingDashboard />
+      </div>
+    );
+  }
   return (
     <div className="font-inter font-light relative w-screen h-screen overflow-hidden">
       <LoginHeader />
