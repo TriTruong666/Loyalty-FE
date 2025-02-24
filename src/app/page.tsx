@@ -106,7 +106,7 @@ function LoginForm() {
         setError("Thử lại, sai email hoặc mật khẩu");
         setIsLoading(false);
       }
-      if (data === "Login successfully") {
+      if (data.message === "Login successfully") {
         setIsLoading(false);
         setProgress(2);
       }

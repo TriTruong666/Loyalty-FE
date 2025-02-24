@@ -7,7 +7,7 @@ export interface Product {
   price?: number;
   handle?: string;
   imageUrl?: string;
-  description: string;
+  description: string | Node;
   createdBy?: string | null;
   createdDate?: string | null;
   updatedBy?: string | null;

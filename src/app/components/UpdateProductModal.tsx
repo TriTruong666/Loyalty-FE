@@ -109,7 +109,7 @@ function ProductForm() {
       submitData?.productId?.trim() === "" ||
       submitData?.productName?.trim() === "" ||
       submitData?.brandId?.trim() === "" ||
-      submitData?.description?.trim() === "" ||
+      (submitData?.description as string)?.trim() === "" ||
       submitData?.unit?.trim() === ""
     ) {
       showToast("Vui lòng nhập đầy đủ thông tin", "error");
@@ -223,9 +223,12 @@ function ProductForm() {
           </label>
           <TiptapEditor
             onChange={(value) =>
-              setSubmitData({ ...submitData, description: value })
+              setSubmitData({ ...submitData, description: value as string })
             }
-            content={submitData.description || "<p>Nhập mô tả sản phẩm...</p>"}
+            content={
+              (submitData.description as string) ||
+              "<p>Nhập mô tả sản phẩm...</p>"
+            }
             attributes={{
               class:
                 "p-4 h-[300px] min-h-[300px] max-h-[400px] overflow-auto bg-gray-700 bg-opacity-20 text-normal text-sm border border-gray-600 border-opacity-10 rounded-lg focus:outline-none",

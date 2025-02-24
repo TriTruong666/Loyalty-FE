@@ -34,6 +34,11 @@ export function useGetProductByBrand(handle: string) {
     ProductService.getProductByBrand(handle)
   );
 }
+export function useGetProductDetailByHandle(handle: string) {
+  return useFetch<Product>(["product-detail", handle], async () =>
+    ProductService.getProductDetailByHandle(handle)
+  );
+}
 export function useGetProductByLimit(page: number, mode: string) {
   return useFetch<Product[]>(["products", page], async () =>
     ProductService.getProductServiceByLimit(page, mode)

@@ -77,3 +77,12 @@ export const getProductByBrand = async (handle: string) => {
     console.error(error);
   }
 };
+
+export const getProductDetailByHandle = async (handle: string) => {
+  try {
+    const res = await axiosClient.get(`/api/product/${handle}`);
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
