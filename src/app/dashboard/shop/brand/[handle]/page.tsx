@@ -8,11 +8,15 @@ import { formatPrice } from "@/app/utils/format";
 import { atom, useAtom, useAtomValue } from "jotai";
 import { Link as HeroLink } from "@heroui/link";
 import Link from "next/link";
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { Product as ProductProps } from "@/app/interfaces/Product";
 import { useGetProductByBrand } from "@/app/hooks/hook";
 import { useParams } from "next/navigation";
+import { ItemSkeleton } from "@/app/components/skeleton";
+import { useInView } from "react-intersection-observer";
+import { FaRegSadCry } from "react-icons/fa";
 const layoutState = atom("layout2");
+const ITEMS_PER_LOAD = 8;
 export default function BrandProductShopPage() {
   const params = useParams();
   const handle = params.handle;
@@ -61,67 +65,97 @@ export default function BrandProductShopPage() {
 function ProductSection() {
   const params = useParams();
   const handle = params.handle;
-  const { data: products } = useGetProductByBrand(handle as string);
+  const { data: allProducts, isLoading } = useGetProductByBrand(
+    handle as string
+  );
+  const [displayedProducts, setDisplayedProducts] = useState<ProductProps[]>(
+    []
+  );
+  const [loadCount, setLoadCount] = useState(1); // Missing loadCount fix
   const [layout, setLayout] = useAtom(layoutState);
+  const { ref, inView } = useInView({ threshold: 1.0, triggerOnce: false });
+
+  useEffect(() => {
+    if (allProducts) {
+      setDisplayedProducts(allProducts.slice(0, ITEMS_PER_LOAD));
+    }
+  }, [allProducts]);
+
+  useEffect(() => {
+    if (inView) {
+      loadMoreProducts();
+    }
+  }, [inView]);
+
+  const loadMoreProducts = () => {
+    if (!allProducts) return; //
+
+    const nextLoadCount = loadCount + 1;
+    const newProducts = allProducts.slice(0, nextLoadCount * ITEMS_PER_LOAD);
+
+    setDisplayedProducts(newProducts || []);
+    setLoadCount(nextLoadCount);
+  };
+
   const handleChangeLayout = (layout: string) => {
     setLayout(layout);
   };
+  if (allProducts?.length === 0) {
+    return (
+      <div className="w-full h-[550px] flex flex-col justify-center items-center gap-y-[20px]">
+        <FaRegSadCry className="text-[70px] text-normal" />
+        <p className="text-[20px] text-normal">
+          Không có sản phẩm nào được hiển thị.
+        </p>
+      </div>
+    );
+  }
+  if (isLoading) {
+    return (
+      <div
+        className={`grid ${
+          layout === "layout1"
+            ? "grid-cols-3 gap-[70px]"
+            : "grid-cols-4 gap-[50px]"
+        } px-[40px] mt-[40px]`}
+      >
+        {[...Array(8)].map((_, index) => (
+          <ItemSkeleton key={index} />
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col">
       <div className="flex items-center px-[40px] py-[20px] mt-[10px] justify-between">
-        <div className="flex">
-          <ButtonGroup>
-            <Button
-              onPress={() => handleChangeLayout("layout1")}
-              variant={layout === "layout1" ? "bordered" : "shadow"}
-            >
-              <RiLayoutGrid2Line className="text-[20px]" />
-            </Button>
-            <Button
-              onPress={() => handleChangeLayout("layout2")}
-              variant={layout === "layout2" ? "bordered" : "shadow"}
-            >
-              <TfiLayoutGrid4 className="text-[20px]" />
-            </Button>
-          </ButtonGroup>
-        </div>
-        <div className="flex gap-x-4">
-          <div className="w-[250px]">
-            {/* <ThemeProvider value={selectTheme}>
-              <Select
-                label="Sắp xếp"
-                variant="standard"
-                className="font-inter font-semibold"
-              >
-                <Option>Tên khách hàng (A → Z)</Option>
-                <Option>Tên khách hàng (Z → A)</Option>
-              </Select>
-            </ThemeProvider> */}
-          </div>
-          <div className="w-[250px]">
-            {/* <ThemeProvider value={selectTheme}>
-              <Select
-                label="Bộ lọc"
-                variant="standard"
-                className="font-inter font-semibold"
-              >
-                <Option>Bởi trạng thái</Option>
-                <Option>Bởi ID (Tăng dần)</Option>
-                <Option>Bởi ID (Giảm dần)</Option>
-              </Select>
-            </ThemeProvider> */}
-          </div>
-        </div>
+        <ButtonGroup>
+          <Button
+            onPress={() => handleChangeLayout("layout1")}
+            variant={layout === "layout1" ? "bordered" : "shadow"}
+          >
+            <RiLayoutGrid2Line className="text-[20px]" />
+          </Button>
+          <Button
+            onPress={() => handleChangeLayout("layout2")}
+            variant={layout === "layout2" ? "bordered" : "shadow"}
+          >
+            <TfiLayoutGrid4 className="text-[20px]" />
+          </Button>
+        </ButtonGroup>
       </div>
       <div
-        className={`grid ${layout === "layout1" && "grid-cols-3 gap-[70px]"} ${
-          layout === "layout2" && "grid-cols-4 gap-[50px]"
-        }  px-[40px] mt-[40px]`}
+        className={`grid ${
+          layout === "layout1"
+            ? "grid-cols-3 gap-[70px]"
+            : "grid-cols-4 gap-[50px]"
+        } px-[40px] mt-[40px]`}
       >
-        {products?.map((item) => (
+        {displayedProducts.map((item) => (
           <ProductItem key={item.productId} product={item} />
         ))}
       </div>
+      <div ref={ref} className="h-10"></div>
     </div>
   );
 }
