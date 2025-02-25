@@ -1,4 +1,5 @@
 "use client";
+import { LoadingDashboard } from "@/app/components/loading";
 import { CartItem as CartItemProps } from "@/app/interfaces/Cart";
 import {
   getCartFromStorage,
@@ -16,10 +17,15 @@ import { FaTrash } from "react-icons/fa";
 export default function CartPage() {
   const [cart, setCart] = useAtom(cartState);
   const totalCartValue = useAtomValue(totalCartValueAtom);
+  const [isMounted, setIsMounted] = useState(false);
+
   useEffect(() => {
     const storedCart = getCartFromStorage();
     setCart(storedCart);
+    setIsMounted(true);
   }, [setCart]);
+
+  // Avoid hydration errors by preventing rendering on the server
   const filterCartUnique = cart.filter(
     (item) => item.product.brand?.type === "docquyen"
   );
@@ -34,6 +40,13 @@ export default function CartPage() {
           Giỏ hàng của bạn đang trống, vui lòng thêm sản phẩm vào giỏ.
         </p>
       </div>
+    );
+  }
+  if (!isMounted) {
+    return (
+      <>
+        <LoadingDashboard />
+      </>
     );
   }
   return (

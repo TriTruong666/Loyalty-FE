@@ -6,7 +6,7 @@ import { Button } from "@heroui/button";
 import { Link } from "@heroui/link";
 import { Select, SelectItem } from "@heroui/select";
 import { useAtom } from "jotai";
-import { FC, ReactNode } from "react";
+import { FC, ReactNode, useEffect, useState } from "react";
 import { FaRegUser } from "react-icons/fa";
 import { FaRegMoneyBill1 } from "react-icons/fa6";
 import { IoIosArrowRoundBack } from "react-icons/io";
@@ -16,21 +16,31 @@ import {
   MdOutlineMailOutline,
 } from "react-icons/md";
 import { TbCoins, TbTruck } from "react-icons/tb";
+import {
+  useGetAllProvince,
+  useGetDistrictByProvince,
+  useGetUserInfo,
+  useGetWardByDistrict,
+} from "../hooks/hook";
+import { CartItem as CartItemProps } from "../interfaces/Cart";
+import { cartState } from "../store/cartAtoms";
+import { formatPrice } from "../utils/format";
+import { getCartFromStorage } from "../service/cartService";
 
 export default function CheckoutPage() {
   return (
-    <div className="flex flex-col p-[30px] w-screen overflow-x-hidden bg-background font-open">
+    <div className="flex flex-col p-[30px] w-screen overflow-hidden bg-background font-open">
       <Link
         color="foreground"
         href="/dashboard/cart"
-        className="flex items-center text-normal gap-x-[10px]"
+        className="flex items-center text-normal gap-x-[10px] w-fit"
       >
         <IoIosArrowRoundBack className="text-[20px]" />
         <p className="font-light">Quay lại giỏ hàng</p>
       </Link>
-      <div className="flex mt-[20px] gap-x-[30px] justify-between">
+      <div className="flex mt-[20px] gap-x-[30px] justify-between overflow-hidden">
         {/* infomation */}
-        <div className="flex flex-col w-[70%] gap-y-[30px] pr-[50px] border-r border-gray-400-40">
+        <div className="flex flex-col w-[70%] gap-y-[30px] pr-[50px]">
           <InfomationForm />
           <LocationForm />
           <PaymentMethod />
@@ -43,21 +53,55 @@ export default function CheckoutPage() {
 }
 
 function LocationForm() {
-  const animals = [
-    { key: "cat", label: "Cat" },
-    { key: "dog", label: "Dog" },
-    { key: "elephant", label: "Elephant" },
-    { key: "lion", label: "Lion" },
-    { key: "tiger", label: "Tiger" },
-    { key: "giraffe", label: "Giraffe" },
-    { key: "dolphin", label: "Dolphin" },
-    { key: "penguin", label: "Penguin" },
-    { key: "zebra", label: "Zebra" },
-    { key: "shark", label: "Shark" },
-    { key: "whale", label: "Whale" },
-    { key: "otter", label: "Otter" },
-    { key: "crocodile", label: "Crocodile" },
-  ];
+  const { data: info } = useGetUserInfo();
+  const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
+  const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
+  const [selectedWard, setSelectedWard] = useState<string | null>(null);
+  const { data: provinces, isLoading } = useGetAllProvince();
+  const { data: districts } = useGetDistrictByProvince(
+    selectedProvince as string
+  );
+  const { data: wards } = useGetWardByDistrict(selectedDistrict as string);
+
+  useEffect(() => {
+    if (info?.address) {
+      setSelectedProvince((prev) => prev ?? info.address.provinceCode);
+      setSelectedDistrict((prev) => prev ?? info.address.districtCode);
+      setSelectedWard((prev) => prev ?? info.address.wardCode);
+    }
+  }, [info]);
+  useEffect(() => {
+    if (info?.address && districts) {
+      const district = districts.find(
+        (district) => district.code === info.address.districtCode
+      );
+      if (district) {
+        setSelectedDistrict(district.code);
+      }
+    }
+  }, [info, districts]);
+
+  useEffect(() => {
+    if (info?.address && wards) {
+      const ward = wards.find((ward) => ward.code === info.address.wardCode);
+      if (ward) {
+        setSelectedWard(ward.code);
+      }
+    }
+  }, [info, wards]);
+
+  const handleProvinceChange = (provinceCode: string) => {
+    setSelectedProvince(provinceCode);
+    setSelectedDistrict(null);
+    setSelectedWard(null);
+  };
+  const handleDistrictChange = (districtCode: string) => {
+    setSelectedDistrict(districtCode);
+    setSelectedWard(null);
+  };
+  const handleWardChange = (wardCode: string) => {
+    setSelectedWard(wardCode);
+  };
   return (
     <div className="flex flex-col">
       <div className="flex gap-x-[20px] items-center justify-between">
@@ -77,9 +121,19 @@ function LocationForm() {
               variant="underlined"
               placeholder="Tỉnh / Thành phố"
               aria-label="Tỉnh / Thành phố"
+              scrollShadowProps={{
+                isEnabled: false,
+              }}
+              selectedKeys={selectedProvince ? [selectedProvince] : []}
+              onSelectionChange={(keys) => {
+                const selectedKey = Array.from(keys)[0] as string;
+                handleProvinceChange(selectedKey);
+              }}
             >
-              {animals.map((animal) => (
-                <SelectItem key={animal.key}>{animal.label}</SelectItem>
+              {(provinces ?? []).map((province) => (
+                <SelectItem value={province.code} key={province.code}>
+                  {province.fullName}
+                </SelectItem>
               ))}
             </Select>
           </div>
@@ -93,12 +147,21 @@ function LocationForm() {
             <Select
               isVirtualized
               variant="underlined"
-              defaultSelectedKeys={["lion"]}
               placeholder="Quận / Huyện"
               aria-label="Quận / Huyện"
+              scrollShadowProps={{
+                isEnabled: false,
+              }}
+              selectedKeys={selectedDistrict ? [selectedDistrict] : []}
+              onSelectionChange={(keys) => {
+                const selectedKey = Array.from(keys)[0] as string;
+                handleDistrictChange(selectedKey);
+              }}
             >
-              {animals.map((animal) => (
-                <SelectItem key={animal.key}>{animal.label}</SelectItem>
+              {(districts ?? []).map((district) => (
+                <SelectItem value={district.code} key={district.code}>
+                  {district.fullName}
+                </SelectItem>
               ))}
             </Select>
           </div>
@@ -114,9 +177,19 @@ function LocationForm() {
               variant="underlined"
               placeholder="Phường / Xã"
               aria-label="Phường / Xã"
+              scrollShadowProps={{
+                isEnabled: false,
+              }}
+              selectedKeys={selectedWard ? [selectedWard] : []}
+              onSelectionChange={(keys) => {
+                const selectedKey = Array.from(keys)[0] as string;
+                handleWardChange(selectedKey);
+              }}
             >
-              {animals.map((animal) => (
-                <SelectItem key={animal.key}>{animal.label}</SelectItem>
+              {(wards ?? []).map((ward) => (
+                <SelectItem value={ward.code} key={ward.code}>
+                  {ward.fullName}
+                </SelectItem>
               ))}
             </Select>
           </div>
@@ -124,7 +197,7 @@ function LocationForm() {
         <NormalInput
           label="Địa chỉ giao hàng"
           placeholder="Nhập địa chỉ giao hàng"
-          defaultValue="2/35 Chấn Hưng"
+          defaultValue={info?.address.street || ""}
           icon={<TbTruck className="text-[20px]" />}
         />
       </div>
@@ -133,6 +206,7 @@ function LocationForm() {
 }
 
 function InfomationForm() {
+  const { data: info } = useGetUserInfo();
   return (
     <div className="flex flex-col">
       <div className="flex gap-x-[20px] items-center justify-between">
@@ -143,20 +217,20 @@ function InfomationForm() {
           <NormalInput
             label="Tên khách hàng"
             placeholder="Nhập tên của bạn"
-            defaultValue="Trương Hoàng Trí"
+            defaultValue={info?.userName}
             icon={<FaRegUser className="text-[20px]" />}
           />
           <NormalInput
             label="Số điện thoại"
             placeholder="Số điện thoại"
-            defaultValue="0776003669"
+            defaultValue={info?.phoneNumber}
             icon={<MdOutlineLocalPhone className="text-[20px]" />}
           />
         </div>
         <NormalInput
           label="Email"
           placeholder="Email"
-          defaultValue="tritruonghoang3@gmail.com"
+          defaultValue={info?.email}
           icon={<MdOutlineMailOutline className="text-[20px]" />}
         />
       </div>
@@ -207,16 +281,25 @@ function PaymentMethod() {
 }
 
 function Summary() {
+  const [cart, setCart] = useAtom(cartState);
+  useEffect(() => {
+    const storedCart = getCartFromStorage();
+    setCart(storedCart);
+  }, [setCart]);
   return (
-    <div className="flex flex-col w-[30%] justify-between">
+    <div className="flex flex-col w-[30%] ">
       <div className="flex flex-col gap-y-[5px]">
         <p className="text-[22px] font-light select-none">Chi tiết đơn hàng</p>
       </div>
       <div className="flex flex-col mt-[30px] gap-y-[10px]">
-        <CheckoutCartItem />
-        <CheckoutCartItem />
-        <CheckoutCartItem />
-        <p className="text-normal text-[13px]">+15 sản phẩm khác...</p>
+        {cart.slice(0, 3).map((item) => (
+          <CheckoutCartItem key={item.id} {...item} />
+        ))}
+        {cart.length > 3 && (
+          <p className="text-normal text-[13px]">
+            +{cart.length - 3} sản phẩm khác...
+          </p>
+        )}
       </div>
 
       <div className="mt-[20px]">
@@ -263,19 +346,43 @@ function Summary() {
   );
 }
 
-function CheckoutCartItem() {
+function CheckoutCartItem(props: CartItemProps) {
+  const unitProduct = (unit: string) => {
+    switch (unit) {
+      case "1":
+        return "Tuýp";
+      case "2":
+        return "Hộp";
+      case "3":
+        return "Chai";
+      case "4":
+        return "Ống";
+      case "5":
+        return "Gói";
+      case "6":
+        return "Thỏi";
+      case "7":
+        return "Hũ";
+      case "8":
+        return "Miếng";
+    }
+  };
   return (
     <div className="flex justify-between border-b border-gray-400-40 pb-[10px]">
       <div className="flex flex-col gap-y-[5px]">
         <p className="line-clamp-2 text-[13px] font-semibold max-w-[90%]">
-          Dưỡng chất dưỡng da giúp mờ thâm nám dưỡng sáng da La Roche Posay Mela
-          B3 Serum 30ml
+          {props.product.productName}
         </p>
         <p className="text-normal text-[11px]">
-          Số lượng: <span className="text-foreground font-bold">3 thùng</span>
+          Số lượng:{" "}
+          <span className="text-foreground font-bold">
+            {props.quantity} {unitProduct(props.product.unit)}
+          </span>
         </p>
       </div>
-      <p className="font-bold text-primary text-sm">1,300,000₫</p>
+      <p className="font-bold text-primary text-sm">
+        {formatPrice(props.product.price as number)}
+      </p>
     </div>
   );
 }

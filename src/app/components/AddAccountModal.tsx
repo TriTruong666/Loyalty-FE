@@ -272,8 +272,8 @@ function LocationForm() {
   const setModal = useSetAtom(addAccountModalState);
   const setAccountModalProgress = useSetAtom(createAccountProgress);
   const [submitData, setSubmitData] = useAtom(dataCreateAccountState);
-  const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
   const [isLoadingSubmit, setIsLoadingSubmit] = useState(false);
+  const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
   const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
   const [selectedWard, setSelectedWard] = useState<string | null>(null);
   const { data: provinces, isLoading } = useGetAllProvince();

@@ -78,6 +78,9 @@ export default function ProfileSettingDropdown() {
                     {userInfo?.type === "personal" && (
                       <p className="text-[11px] font-light">Cá nhân</p>
                     )}
+                    {userInfo?.type === "sales" && (
+                      <p className="text-[11px] font-light">Sales</p>
+                    )}
                   </div>
                 </div>
                 <div
