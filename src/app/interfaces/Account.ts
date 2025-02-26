@@ -11,6 +11,7 @@ export interface User {
   userName: string;
   code: string;
   address: Address;
+  rank: Rank;
 }
 
 interface Address {
@@ -24,4 +25,14 @@ interface Address {
   street: string;
   zipCode: string;
   defaultAddress: boolean;
+}
+
+interface Rank {
+  rankId: string;
+  rankName: string;
+  pointRange: number;
+  discountBusiness?: number;
+  discountPersonal?: number;
+  discountPP: number;
+  note: string;
 }

@@ -6,26 +6,36 @@ import {
   removeFromCart,
   updateCartItemQuantity,
 } from "@/app/service/cartService";
-import { cartState, totalCartValueAtom } from "@/app/store/cartAtoms";
+import { userInfoState } from "@/app/store/accountAtoms";
+import {
+  cartState,
+  discountPPState,
+  discountUniqueState,
+  subtotalCartValueAtom,
+} from "@/app/store/cartAtoms";
 import { formatPrice } from "@/app/utils/format";
 import { showToast } from "@/app/utils/toast";
 import { Link, Button } from "@heroui/react";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { BsCartX } from "react-icons/bs";
 import { FaTrash } from "react-icons/fa";
 export default function CartPage() {
+  const info = useAtomValue(userInfoState);
   const [cart, setCart] = useAtom(cartState);
-  const totalCartValue = useAtomValue(totalCartValueAtom);
+  const totalCartValue = useAtomValue(subtotalCartValueAtom);
+  const discountByTypeValue = useAtomValue(discountUniqueState);
+  const discountByDistributionValue = useAtomValue(discountPPState);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    const storedCart = getCartFromStorage();
-    setCart(storedCart);
+    if (typeof window !== "undefined") {
+      const storedCart = getCartFromStorage();
+      setCart(storedCart);
+    }
     setIsMounted(true);
   }, [setCart]);
 
-  // Avoid hydration errors by preventing rendering on the server
   const filterCartUnique = cart.filter(
     (item) => item.product.brand?.type === "docquyen"
   );
@@ -95,15 +105,17 @@ export default function CartPage() {
             </div>
             <div className="flex justify-between">
               <p className="font-light text-normal">Chiết khấu độc quyền</p>
-              <p className="font-bold">-11,330,000₫</p>
+              <p className="font-bold">-{formatPrice(discountByTypeValue)}</p>
             </div>
             <div className="flex justify-between">
               <p className="font-light text-normal">Chiết khấu phân phối</p>
-              <p className="font-bold">-11,330,000₫</p>
+              <p className="font-bold">
+                -{formatPrice(discountByDistributionValue)}
+              </p>
             </div>
             <div className="flex justify-between">
               <p className="font-light text-normal">Hạng Loyalty</p>
-              <p className="font-bold">Gold</p>
+              <p className="font-bold">{info?.rank.rankName}</p>
             </div>
             <div className="flex justify-between">
               <p className="font-semibold text-normal">Tổng</p>

@@ -80,7 +80,7 @@ function Introduce() {
       <div className="pt-4 xl:pt-1 2xl:pt-2">
         <LoginForm />
       </div>
-      <div className="pt-4 xl:pt-1 2xl:pt-2 mt-[20px] 2xl:mb-[0] mb-[60px]">
+      <div className="pt-4 xl:pt-1 2xl:pt-2 mt-[20px] 2xl:mb-[0] mb-[120px]">
         <Participants />
       </div>
     </div>

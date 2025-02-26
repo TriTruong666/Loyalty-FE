@@ -1,12 +1,10 @@
 "use client";
-
 import NormalInput from "../components/NormalInput";
-import { paymentMethodState } from "../store/checkoutAtoms";
 import { Button } from "@heroui/button";
 import { Link } from "@heroui/link";
 import { Select, SelectItem } from "@heroui/select";
 import { useAtom } from "jotai";
-import { FC, ReactNode, useEffect, useState } from "react";
+import { ChangeEvent, FC, ReactNode, useEffect, useState } from "react";
 import { FaRegUser } from "react-icons/fa";
 import { FaRegMoneyBill1 } from "react-icons/fa6";
 import { IoIosArrowRoundBack } from "react-icons/io";
@@ -26,6 +24,12 @@ import { CartItem as CartItemProps } from "../interfaces/Cart";
 import { cartState } from "../store/cartAtoms";
 import { formatPrice } from "../utils/format";
 import { getCartFromStorage } from "../service/cartService";
+import {
+  noteCheckoutState,
+  paymentMethodState,
+  shippingAddressState,
+  userInfoCheckoutState,
+} from "../store/checkoutAtoms";
 
 export default function CheckoutPage() {
   return (
@@ -53,6 +57,8 @@ export default function CheckoutPage() {
 }
 
 function LocationForm() {
+  const [submitLocationData, setSubmitLocationData] =
+    useAtom(shippingAddressState);
   const { data: info } = useGetUserInfo();
   const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
   const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
@@ -65,42 +71,55 @@ function LocationForm() {
 
   useEffect(() => {
     if (info?.address) {
+      setSubmitLocationData((prev) => ({
+        provinceCode: prev.provinceCode || info.address.provinceCode,
+        districtCode: prev.districtCode || info.address.districtCode,
+        wardCode: prev.wardCode || info.address.wardCode,
+        street: prev.street || info.address.street,
+      }));
+
       setSelectedProvince((prev) => prev ?? info.address.provinceCode);
       setSelectedDistrict((prev) => prev ?? info.address.districtCode);
       setSelectedWard((prev) => prev ?? info.address.wardCode);
     }
-  }, [info]);
-  useEffect(() => {
-    if (info?.address && districts) {
-      const district = districts.find(
-        (district) => district.code === info.address.districtCode
-      );
-      if (district) {
-        setSelectedDistrict(district.code);
-      }
-    }
-  }, [info, districts]);
-
-  useEffect(() => {
-    if (info?.address && wards) {
-      const ward = wards.find((ward) => ward.code === info.address.wardCode);
-      if (ward) {
-        setSelectedWard(ward.code);
-      }
-    }
-  }, [info, wards]);
+  }, [info, setSubmitLocationData]);
 
   const handleProvinceChange = (provinceCode: string) => {
     setSelectedProvince(provinceCode);
     setSelectedDistrict(null);
     setSelectedWard(null);
+    setSubmitLocationData((prev) => ({
+      ...prev,
+      provinceCode,
+      districtCode: "",
+      wardCode: "",
+    }));
   };
+
   const handleDistrictChange = (districtCode: string) => {
     setSelectedDistrict(districtCode);
     setSelectedWard(null);
+    setSubmitLocationData((prev) => ({
+      ...prev,
+      districtCode,
+      wardCode: "",
+    }));
   };
+
   const handleWardChange = (wardCode: string) => {
     setSelectedWard(wardCode);
+    setSubmitLocationData((prev) => ({
+      ...prev,
+      wardCode,
+    }));
+  };
+
+  const handleStreetChange = (e: ChangeEvent<HTMLInputElement>) => {
+    console.log(submitLocationData);
+    setSubmitLocationData((prev) => ({
+      ...prev,
+      street: e.target.value,
+    }));
   };
   return (
     <div className="flex flex-col">
@@ -195,6 +214,7 @@ function LocationForm() {
           </div>
         </div>
         <NormalInput
+          onChange={handleStreetChange}
           label="Địa chỉ giao hàng"
           placeholder="Nhập địa chỉ giao hàng"
           defaultValue={info?.address.street || ""}
@@ -207,6 +227,25 @@ function LocationForm() {
 
 function InfomationForm() {
   const { data: info } = useGetUserInfo();
+  const [submitInfoData, setSubmitInfoData] = useAtom(userInfoCheckoutState);
+
+  useEffect(() => {
+    if (info && !submitInfoData.customerId) {
+      setSubmitInfoData({
+        customerName: info.userName,
+        customerPhone: info.phoneNumber,
+        customerId: info.userId,
+      });
+    }
+  }, [info, setSubmitInfoData, submitInfoData.customerId]);
+
+  const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setSubmitInfoData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
   return (
     <div className="flex flex-col">
       <div className="flex gap-x-[20px] items-center justify-between">
@@ -215,12 +254,16 @@ function InfomationForm() {
       <div className="flex flex-col mt-[30px] gap-y-[20px]">
         <div className="w-full flex gap-x-[20px]">
           <NormalInput
+            onChange={handleOnChange}
+            name="customerName"
             label="Tên khách hàng"
             placeholder="Nhập tên của bạn"
             defaultValue={info?.userName}
             icon={<FaRegUser className="text-[20px]" />}
           />
           <NormalInput
+            onChange={handleOnChange}
+            name="customerPhone"
             label="Số điện thoại"
             placeholder="Số điện thoại"
             defaultValue={info?.phoneNumber}
@@ -232,6 +275,7 @@ function InfomationForm() {
           placeholder="Email"
           defaultValue={info?.email}
           icon={<MdOutlineMailOutline className="text-[20px]" />}
+          disabled
         />
       </div>
     </div>
@@ -252,7 +296,7 @@ function PaymentMethod() {
           icon={<FaRegMoneyBill1 className="text-[18px]" />}
           name="method"
           description="Bạn sẽ trả tiền mặt khi giao hàng thành công."
-          value="cash"
+          value="cod"
           onChange={setSelected}
           selected={selected}
           title="Tiền mặt"
@@ -261,7 +305,7 @@ function PaymentMethod() {
           icon={<MdOutlineCreditCard className="text-[18px]" />}
           name="method"
           description="Quét QR để chuyển khoản."
-          value="bank"
+          value="bank_transfer"
           onChange={setSelected}
           selected={selected}
           title="Chuyển khoản"
@@ -282,10 +326,15 @@ function PaymentMethod() {
 
 function Summary() {
   const [cart, setCart] = useAtom(cartState);
+  const [note, setNote] = useAtom(noteCheckoutState);
   useEffect(() => {
     const storedCart = getCartFromStorage();
     setCart(storedCart);
   }, [setCart]);
+  const handleNoteOnChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setNote(e.target.value);
+  };
+
   return (
     <div className="flex flex-col w-[30%] ">
       <div className="flex flex-col gap-y-[5px]">
@@ -304,7 +353,8 @@ function Summary() {
 
       <div className="mt-[20px]">
         <textarea
-          name=""
+          onChange={handleNoteOnChange}
+          value={note}
           id=""
           className="appearance-none resize-none max-h-[100px] h-[100px] w-full p-[15px] placeholder:text-[14px] placeholder:text-normal outline-none rounded-md"
           placeholder="Ghi chú cho Loyalty"

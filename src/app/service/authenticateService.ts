@@ -20,6 +20,7 @@ export const logoutService = async () => {
 
     if (typeof window !== "undefined") {
       window.location.reload();
+      localStorage.removeItem("cart");
     }
 
     return res.data;
