@@ -34,18 +34,23 @@ export const discountPPState = atom((get) => {
   const cart = get(cartState);
   const info = get(userInfoState);
 
-  if (!info || !info.rank) return 0; // Không có thông tin, không giảm giá
+  if (!info || !info.rank) return 0;
 
-  const discountPP = info.rank.discountPP ?? 0; // Lấy phần trăm giảm giá PP
+  const discountPP = info.rank.discountPP ?? 0;
 
-  // Lọc ra các sản phẩm có brand.type === "phanphoi"
   const ppCart = cart.filter((item) => item.product.brand?.type === "phanphoi");
 
-  // Tính tổng tiền của các sản phẩm thuộc phân phối
   const ppSubtotal = ppCart.reduce(
     (total, item) => total + (item.product.price ?? 0) * item.quantity,
     0
   );
 
   return (ppSubtotal * discountPP) / 100;
+});
+
+export const totalCartValueAtoms = atom((get) => {
+  const subtotal = get(subtotalCartValueAtom);
+  const discountUnique = get(discountUniqueState);
+  const discountPP = get(discountPPState);
+  return subtotal - discountUnique - discountPP;
 });

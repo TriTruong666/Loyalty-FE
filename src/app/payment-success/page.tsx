@@ -23,7 +23,7 @@ export default function PaymentSuccessPage() {
       <div className="flex items-center w-[40%] justify-center mt-[30px] gap-x-[30px]">
         <Button
           as={Link}
-          href="/"
+          href="/dashboard"
           className="font-bold w-full"
           radius="full"
           variant="flat"

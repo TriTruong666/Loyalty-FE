@@ -19,25 +19,25 @@ export const shippingAddressState = atom({
 
 export const noteCheckoutState = atom("");
 
-// export const checkoutState = atom<Checkout | null>((get) => {
-//   const cart = get(cartState);
-//   const paymentMethod = get(paymentMethodState);
-//   const address = get(shippingAddressState);
-//   const info = get(userInfoCheckoutState);
-//   const note = get(noteCheckoutState);
+export const checkoutState = atom<Checkout | null>((get) => {
+  const cart = get(cartState);
+  const paymentMethod = get(paymentMethodState);
+  const address = get(shippingAddressState);
+  const info = get(userInfoCheckoutState);
+  const note = get(noteCheckoutState);
 
-//   if (!cart || !paymentMethod || !address || !info) return null;
+  if (!paymentMethod || !address || !info) return null;
 
-//   return {
-//     lineItems: cart
-//       .map((item) => ({
-//         id: item.product.productId ?? "", // Ensure it's a string
-//         quantity: item.quantity,
-//       }))
-//       .filter((item) => item.id !== ""), // Filter out invalid items
-//     gateway: paymentMethod,
-//     shippingAddress: address,
-//     note,
-//     customer: info,
-//   };
-// });
+  return {
+    lineItems: cart
+      .map((item) => ({
+        productID: item.product.productId ?? "",
+        amount: item.quantity,
+      }))
+      .filter((item) => item.productID !== ""),
+    gateway: paymentMethod,
+    shippingAddress: address,
+    note,
+    customer: info,
+  };
+});

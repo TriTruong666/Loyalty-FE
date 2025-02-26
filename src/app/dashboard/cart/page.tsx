@@ -12,20 +12,22 @@ import {
   discountPPState,
   discountUniqueState,
   subtotalCartValueAtom,
+  totalCartValueAtoms,
 } from "@/app/store/cartAtoms";
 import { formatPrice } from "@/app/utils/format";
 import { showToast } from "@/app/utils/toast";
 import { Link, Button } from "@heroui/react";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { BsCartX } from "react-icons/bs";
 import { FaTrash } from "react-icons/fa";
 export default function CartPage() {
   const info = useAtomValue(userInfoState);
   const [cart, setCart] = useAtom(cartState);
-  const totalCartValue = useAtomValue(subtotalCartValueAtom);
+  const subtotalCartValue = useAtomValue(subtotalCartValueAtom);
   const discountByTypeValue = useAtomValue(discountUniqueState);
   const discountByDistributionValue = useAtomValue(discountPPState);
+  const totalCartValue = useAtomValue(totalCartValueAtoms);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -101,25 +103,32 @@ export default function CartPage() {
           <div className="flex flex-col gap-y-[20px]">
             <div className="flex justify-between">
               <p className="font-light text-normal">Tạm tính</p>
-              <p className="font-bold">{formatPrice(totalCartValue)}</p>
+              <p className="font-bold">{formatPrice(subtotalCartValue)}</p>
             </div>
-            <div className="flex justify-between">
-              <p className="font-light text-normal">Chiết khấu độc quyền</p>
-              <p className="font-bold">-{formatPrice(discountByTypeValue)}</p>
-            </div>
-            <div className="flex justify-between">
-              <p className="font-light text-normal">Chiết khấu phân phối</p>
-              <p className="font-bold">
-                -{formatPrice(discountByDistributionValue)}
-              </p>
-            </div>
+            {discountByTypeValue !== 0 && (
+              <div className="flex justify-between">
+                <p className="font-light text-normal">Chiết khấu độc quyền</p>
+                <p className="font-bold">-{formatPrice(discountByTypeValue)}</p>
+              </div>
+            )}
+            {discountByDistributionValue !== 0 && (
+              <div className="flex justify-between">
+                <p className="font-light text-normal">Chiết khấu phân phối</p>
+                <p className="font-bold">
+                  -{formatPrice(discountByDistributionValue)}
+                </p>
+              </div>
+            )}
+
             <div className="flex justify-between">
               <p className="font-light text-normal">Hạng Loyalty</p>
               <p className="font-bold">{info?.rank.rankName}</p>
             </div>
             <div className="flex justify-between">
               <p className="font-semibold text-normal">Tổng</p>
-              <p className="font-bold text-primary">101,970,000₫</p>
+              <p className="font-bold text-primary">
+                {formatPrice(totalCartValue)}
+              </p>
             </div>
           </div>
           <div className="mt-[30px] w-full">

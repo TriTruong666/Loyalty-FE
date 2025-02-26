@@ -7,7 +7,7 @@ interface ShippingAddress {
   street: string;
 }
 
-interface LineItem {
+export interface LineItem {
   productID: string;
   amount: number;
 }

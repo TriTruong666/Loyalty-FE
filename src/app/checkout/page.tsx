@@ -3,7 +3,7 @@ import NormalInput from "../components/NormalInput";
 import { Button } from "@heroui/button";
 import { Link } from "@heroui/link";
 import { Select, SelectItem } from "@heroui/select";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { ChangeEvent, FC, ReactNode, useEffect, useState } from "react";
 import { FaRegUser } from "react-icons/fa";
 import { FaRegMoneyBill1 } from "react-icons/fa6";
@@ -21,17 +21,51 @@ import {
   useGetWardByDistrict,
 } from "../hooks/hook";
 import { CartItem as CartItemProps } from "../interfaces/Cart";
-import { cartState } from "../store/cartAtoms";
+import {
+  cartState,
+  discountPPState,
+  discountUniqueState,
+  subtotalCartValueAtom,
+  totalCartValueAtoms,
+} from "../store/cartAtoms";
 import { formatPrice } from "../utils/format";
 import { getCartFromStorage } from "../service/cartService";
 import {
+  checkoutState,
   noteCheckoutState,
   paymentMethodState,
   shippingAddressState,
   userInfoCheckoutState,
 } from "../store/checkoutAtoms";
+import { userInfoState } from "../store/accountAtoms";
+import { useMutation } from "@tanstack/react-query";
+import { createOrderService } from "../service/checkoutService";
+import { showToast } from "../utils/toast";
+import { LoadingDashboard } from "../components/loading";
+import { useRouter } from "next/navigation";
 
 export default function CheckoutPage() {
+  const router = useRouter();
+  const cart = useAtomValue(cartState);
+  const setInfo = useSetAtom(userInfoState);
+  const [isCartLoaded, setIsCartLoaded] = useState(false);
+  const { data: info } = useGetUserInfo();
+  useEffect(() => {
+    if (cart !== undefined) {
+      setIsCartLoaded(true);
+    }
+  }, [cart]);
+  useEffect(() => {
+    if (isCartLoaded && cart.length === 0) {
+      router.push("/dashboard/cart");
+    }
+  }, [cart, isCartLoaded, router]);
+  useEffect(() => {
+    if (info) {
+      setInfo(info);
+    }
+  }, [info]);
+
   return (
     <div className="flex flex-col p-[30px] w-screen overflow-hidden bg-background font-open">
       <Link
@@ -325,16 +359,67 @@ function PaymentMethod() {
 }
 
 function Summary() {
+  const router = useRouter();
+  const subtotalCartValue = useAtomValue(subtotalCartValueAtom);
+  const discountByTypeValue = useAtomValue(discountUniqueState);
+  const discountByDistributionValue = useAtomValue(discountPPState);
+  const totalCartValue = useAtomValue(totalCartValueAtoms);
+  const info = useAtomValue(userInfoState);
+  const gateway = useAtomValue(paymentMethodState);
   const [cart, setCart] = useAtom(cartState);
   const [note, setNote] = useAtom(noteCheckoutState);
+  const [submitData, setSubmitData] = useAtom(checkoutState);
+  const [isMounted, setIsMounted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     const storedCart = getCartFromStorage();
+    if (submitData || cart) {
+      setIsMounted(true);
+    }
     setCart(storedCart);
   }, [setCart]);
+  const createOrderMutation = useMutation({
+    mutationKey: ["create-order"],
+    mutationFn: createOrderService,
+    onMutate() {
+      setIsLoading(true);
+    },
+    onSuccess(data) {
+      if (data.message === "Ok") {
+        if (typeof window !== "undefined") {
+          window.location.href = "/payment-success";
+        }
+        setIsLoading(false);
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("cart");
+        }
+        setTimeout(() => {
+          setCart([]);
+        }, 500);
+      }
+    },
+  });
+  const handleSubmit = async () => {
+    if (submitData === null) {
+      showToast("Vui lòng kiểm tra lại thông tin còn thiếu.", "error");
+      return;
+    }
+    try {
+      if (submitData) {
+        await createOrderMutation.mutateAsync(submitData);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
   const handleNoteOnChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setNote(e.target.value);
   };
-
+  if (!isMounted) {
+    <>
+      <LoadingDashboard />
+    </>;
+  }
   return (
     <div className="flex flex-col w-[30%] ">
       <div className="flex flex-col gap-y-[5px]">
@@ -365,30 +450,46 @@ function Summary() {
         <div className="flex flex-col gap-y-[20px] mt-[20px]">
           <div className="flex justify-between">
             <p className="font-light text-normal">Tạm tính</p>
-            <p className="font-bold">113,300,000₫</p>
+            <p className="font-bold">{formatPrice(subtotalCartValue)}</p>
           </div>
-          <div className="flex justify-between">
-            <p className="font-light text-normal">Chiết khấu</p>
-            <p className="font-bold">-11,330,000₫</p>
-          </div>
+          {discountByTypeValue !== 0 && (
+            <div className="flex justify-between">
+              <p className="font-light text-normal">Chiết khấu độc quyền</p>
+              <p className="font-bold">-{formatPrice(discountByTypeValue)}</p>
+            </div>
+          )}
+          {discountByDistributionValue !== 0 && (
+            <div className="flex justify-between">
+              <p className="font-light text-normal">Chiết khấu phân phối</p>
+              <p className="font-bold">
+                -{formatPrice(discountByDistributionValue)}
+              </p>
+            </div>
+          )}
+
           <div className="flex justify-between">
             <p className="font-light text-normal">Hạng Loyalty</p>
-            <p className="font-bold">Gold</p>
+            <p className="font-bold">{info?.rank.rankName}</p>
           </div>
           <div className="flex justify-between">
             <p className="font-semibold text-normal">Tổng</p>
-            <p className="font-bold text-primary">101,970,000₫</p>
+            <p className="font-bold text-primary">
+              {formatPrice(totalCartValue)}
+            </p>
           </div>
         </div>
         <div className="mt-[30px] w-full">
           <Button
+            isLoading={isLoading}
+            isDisabled={isLoading}
+            onPress={handleSubmit}
             className="w-full"
             variant="flat"
-            as={Link}
             color="secondary"
-            href="/scan-qr"
           >
-            <p className="font-bold font-open">Thanh toán 101,970,000₫</p>
+            <p className="font-bold font-open">
+              Thanh toán {formatPrice(totalCartValue)}
+            </p>
           </Button>
         </div>
       </div>
