@@ -1,7 +1,10 @@
 "use client";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import { Pagination } from "@heroui/pagination";
-import { useGetAccountsByLimitActive, useGetAllUser } from "@/app/hooks/hook";
+import {
+  useGetAllUser,
+  useGetCustomerUserByLimitByStatus,
+} from "@/app/hooks/hook";
 import { useEffect, useState } from "react";
 import {
   Button,
@@ -29,27 +32,23 @@ function AccountStaffTable() {
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const limit = 8;
-  const { data: allAccounts } = useGetAllUser();
-  const { data: accounts, isLoading } = useGetAccountsByLimitActive(page);
-  const filteredAccounts = accounts?.filter(
-    (account) => account.type === "business" || account.type === "personal"
+  const { data: allAccounts = [] } = useGetAllUser();
+  const { data: accounts, isLoading } = useGetCustomerUserByLimitByStatus(
+    page,
+    "active"
   );
   const filteredAllAccounts = allAccounts?.filter(
-    (account) => account.type === "business" || account.type === "personal"
+    (account) =>
+      (account.type === "business" || account.type === "personal") &&
+      account.status === "active"
   );
+
   useEffect(() => {
     if (filteredAllAccounts) {
       setTotalPage(Math.ceil(filteredAllAccounts.length / limit));
       console.log(totalPage);
     }
   }, [filteredAllAccounts]);
-  if (isLoading) {
-    return (
-      <>
-        <LoadingTable />
-      </>
-    );
-  }
   const accountSort = [
     {
       key: "nameASC",
@@ -60,7 +59,15 @@ function AccountStaffTable() {
       title: "Tên Z-A",
     },
   ];
-  if (filteredAccounts?.length === 0) {
+  if (isLoading) {
+    return (
+      <>
+        <LoadingTable />
+      </>
+    );
+  }
+
+  if (accounts?.length === 0) {
     return (
       <>
         <div className="flex flex-col w-full justify-center items-center h-[500px] gap-y-[20px]">
@@ -76,7 +83,7 @@ function AccountStaffTable() {
     <>
       <div className="flex items-center px-[40px] py-[20px] mt-[10px] justify-end gap-x-4">
         <div className="w-[250px]">
-          <Select placeholder="Sắp xếp" variant="underlined">
+          <Select aria-label="sort" placeholder="Sắp xếp" variant="underlined">
             {accountSort.map((item) => (
               <SelectItem key={item.key}>{item.title}</SelectItem>
             ))}
@@ -102,16 +109,13 @@ function AccountStaffTable() {
               <th className="col-span-2 text-[12px] text-normal font-light text-center">
                 Trạng thái
               </th>
-              <th className="col-span-1 text-[12px] text-normal font-light text-center">
-                Thêm
-              </th>
-              <th className="col-span-1 text-[12px] text-normal font-light text-end">
+              <th className="col-span-2 text-[12px] text-normal font-light text-end">
                 Thêm
               </th>
             </tr>
           </thead>
           <tbody>
-            {filteredAccounts?.map((user, i) => (
+            {accounts?.map((user, i) => (
               <tr
                 key={user.userId}
                 className="grid grid-cols-12 mx-[20px] px-[20px] py-4 items-center border-b border-gray-600 border-opacity-40"
@@ -143,17 +147,8 @@ function AccountStaffTable() {
                     </p>
                   </div>
                 </td>
-                {user.type === "business" && (
-                  <td className="text-[11px] font-semibold text-center">
-                    Doanh nghiệp
-                  </td>
-                )}
-                {user.type === "personal" && (
-                  <td className="text-[11px] font-semibold text-center">
-                    Cá nhân
-                  </td>
-                )}
-                <td className="col-span-1 text-[13px] font-semibold flex justify-end">
+
+                <td className="col-span-2 text-[13px] font-semibold flex justify-end">
                   <Dropdown>
                     <DropdownTrigger>
                       <Button isIconOnly size="sm" variant="light">

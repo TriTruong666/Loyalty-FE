@@ -14,7 +14,7 @@ import {
 } from "@heroui/dropdown";
 import { IoCheckmarkSharp, IoTrashBinOutline } from "react-icons/io5";
 import { showToast } from "@/app/utils/toast";
-import { useGetAccountsByLimitPending, useGetAllUser } from "@/app/hooks/hook";
+import { useGetAllUser, useGetUserByLimitByStatus } from "@/app/hooks/hook";
 import { ChangeEvent, useEffect, useState } from "react";
 import { FaPenAlt } from "react-icons/fa";
 import { Input } from "@heroui/react";
@@ -61,8 +61,11 @@ function Table() {
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const limit = 8;
-  const { data: allAccounts } = useGetAllUser();
-  const { data: accounts, isLoading } = useGetAccountsByLimitPending(page);
+  const { data: allAccounts = [] } = useGetAllUser();
+  const { data: accounts, isLoading } = useGetUserByLimitByStatus(
+    page,
+    "pending"
+  );
   const [note, setNote] = useAtom(noteContentState);
   const [isSubmit, setIsSubmit] = useState(false);
   const filteredAllAccounts = allAccounts?.filter(

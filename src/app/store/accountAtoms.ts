@@ -7,7 +7,6 @@ export const dataCreateAccountState = atom({
   userName: "",
   email: "",
   phoneNumber: "",
-  password: "",
   birthday: "",
   address: {
     provinceCode: "",

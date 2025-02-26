@@ -1,7 +1,10 @@
 "use client";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import { Pagination } from "@heroui/pagination";
-import { useGetAccountsByLimitActive, useGetAllUser } from "@/app/hooks/hook";
+import {
+  useGetAllUser,
+  useGetUserByLimitByTypeByStatus,
+} from "@/app/hooks/hook";
 import { useEffect, useState } from "react";
 import {
   Button,
@@ -30,26 +33,20 @@ function AccountStaffTable() {
   const [totalPage, setTotalPage] = useState(1);
   const limit = 8;
   const { data: allAccounts } = useGetAllUser();
-  const { data: accounts, isLoading } = useGetAccountsByLimitActive(page);
-  const filteredAccounts = accounts?.filter(
-    (account) => account.type === "staff"
+  const { data: accounts, isLoading } = useGetUserByLimitByTypeByStatus(
+    page,
+    "staff",
+    "active"
   );
-  const filteredAllAccounts = allAccounts?.filter(
-    (account) => account.type === "staff"
-  );
+  const filteredAllAccounts = allAccounts
+    ?.filter((account) => account.type === "staff")
+    .filter((account) => account.status === "active");
   useEffect(() => {
     if (filteredAllAccounts) {
       setTotalPage(Math.ceil(filteredAllAccounts.length / limit));
       console.log(totalPage);
     }
   }, [filteredAllAccounts]);
-  if (isLoading) {
-    return (
-      <>
-        <LoadingTable />
-      </>
-    );
-  }
   const accountSort = [
     {
       key: "nameASC",
@@ -60,7 +57,15 @@ function AccountStaffTable() {
       title: "Tên Z-A",
     },
   ];
-  if (filteredAccounts?.length === 0) {
+  if (isLoading) {
+    return (
+      <>
+        <LoadingTable />
+      </>
+    );
+  }
+
+  if (accounts?.length === 0) {
     return (
       <>
         <div className="flex flex-col w-full justify-center items-center h-[500px] gap-y-[20px]">
@@ -76,7 +81,7 @@ function AccountStaffTable() {
     <>
       <div className="flex items-center px-[40px] py-[20px] mt-[10px] justify-end gap-x-4">
         <div className="w-[250px]">
-          <Select placeholder="Sắp xếp" variant="underlined">
+          <Select aria-label="sort" placeholder="Sắp xếp" variant="underlined">
             {accountSort.map((item) => (
               <SelectItem key={item.key}>{item.title}</SelectItem>
             ))}
@@ -108,7 +113,7 @@ function AccountStaffTable() {
             </tr>
           </thead>
           <tbody>
-            {filteredAccounts?.map((user, i) => (
+            {accounts?.map((user, i) => (
               <tr
                 key={user.userId}
                 className="grid grid-cols-12 mx-[20px] px-[20px] py-4 items-center border-b border-gray-600 border-opacity-40"

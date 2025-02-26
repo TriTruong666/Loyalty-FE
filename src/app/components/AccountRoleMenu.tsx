@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useGetAllUser } from "../hooks/hook";
 export function AccountRoleMenu() {
   const pathname = usePathname();
-  const { data: allAccounts } = useGetAllUser();
+  const { data: allAccounts = [] } = useGetAllUser();
   const filteredAdmin = allAccounts
     ?.filter((account) => account.type === "admin")
     .filter((account) => account.status === "active");

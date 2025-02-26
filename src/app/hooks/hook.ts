@@ -57,22 +57,33 @@ export function useGetAllAssetByLimit(page: number) {
   );
 }
 
-export function useGetAccountsByLimitPending(page: number) {
+export function useGetUserByLimitByTypeByStatus(
+  page: number,
+  type: string,
+  status: string
+) {
   return useFetch<User[]>(["users", page], async () =>
-    AccountService.getUserByLimitPending(page)
+    AccountService.getUserByLimitByTypeByStatus(page, type, status)
   );
 }
-export function useGetAccountsByLimitActive(page: number) {
+export function useGetUserByLimitByType(page: number, type: string) {
   return useFetch<User[]>(["users", page], async () =>
-    AccountService.getUserByLimitActive(page)
+    AccountService.getUserByLimitByType(page, type)
   );
 }
-export function useGetAccountsByLimitInactive(page: number) {
+export function useGetUserByLimitByStatus(page: number, status: string) {
   return useFetch<User[]>(["users", page], async () =>
-    AccountService.getUserByLimitInactive(page)
+    AccountService.getUserByLimitByStatus(page, status)
   );
 }
-
+export function useGetCustomerUserByLimitByStatus(
+  page: number,
+  status: string
+) {
+  return useFetch<User[]>(["users", page], async () =>
+    AccountService.getCustomerUserByLimitByStatus(page, status)
+  );
+}
 export function useGetAllBrand() {
   return useFetch<Brand[]>(["brands"], async () => BrandService.getAllBrand());
 }

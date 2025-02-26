@@ -17,7 +17,6 @@ import { dataCreateAccountState } from "../store/accountAtoms";
 import { showToast } from "../utils/toast";
 import { DateInput } from "@heroui/react";
 import { parseDate } from "@internationalized/date";
-import { nanoid } from "nanoid";
 import {
   useGetAllProvince,
   useGetDistrictByProvince,
@@ -340,7 +339,6 @@ function LocationForm() {
         setSubmitData({
           userName: "",
           email: "",
-          password: "",
           phoneNumber: "",
           birthday: "",
           address: {
@@ -359,23 +357,13 @@ function LocationForm() {
   });
 
   const handleSubmit = async () => {
-    const newPassword = nanoid(12);
-
-    setSubmitData((prev) => ({
-      ...prev,
-      password: newPassword,
-    }));
-
     if (submitData.address.street === "") {
       showToast("Vui lòng nhập địa chỉ số nhà", "error");
       return;
     }
 
     try {
-      await createAccountMutation.mutateAsync({
-        ...submitData,
-        password: newPassword,
-      });
+      await createAccountMutation.mutateAsync(submitData);
     } catch (error) {
       console.error(error);
     }

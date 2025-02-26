@@ -17,30 +17,14 @@ export const getAllUser = async () => {
     console.error(error);
   }
 };
-export const getUserByLimitPending = async (page: number) => {
+export const getUserByLimitByTypeByStatus = async (
+  page: number,
+  type: string,
+  status: string
+) => {
   try {
     const res = await axiosClient.get(
-      `/api/user/limit?limit=8&page=${page}&status=pending`
-    );
-    return res.data;
-  } catch (error) {
-    console.error(error);
-  }
-};
-export const getUserByLimitActive = async (page: number) => {
-  try {
-    const res = await axiosClient.get(
-      `/api/user/limit?limit=8&page=${page}&status=active`
-    );
-    return res.data;
-  } catch (error) {
-    console.error(error);
-  }
-};
-export const getUserByLimitInactive = async (page: number) => {
-  try {
-    const res = await axiosClient.get(
-      `/api/user/limit?limit=8&page=${page}&status=inactive`
+      `/api/user/limit?limit=8&page=${page}&role=${type}&status=${status}`
     );
     return res.data;
   } catch (error) {
@@ -48,6 +32,40 @@ export const getUserByLimitInactive = async (page: number) => {
   }
 };
 
+export const getUserByLimitByStatus = async (page: number, status: string) => {
+  try {
+    const res = await axiosClient.get(
+      `/api/user/limit?limit=8&page=${page}&status=${status}`
+    );
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const getUserByLimitByType = async (page: number, type: string) => {
+  try {
+    const res = await axiosClient.get(
+      `/api/user/limit?limit=8&page=${page}&role=${type}`
+    );
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+export const getCustomerUserByLimitByStatus = async (
+  page: number,
+  status: string
+) => {
+  try {
+    const res = await axiosClient.get(
+      `/api/user/limitcustomer?limit=8&page=${page}&status=${status}`
+    );
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
 interface Address {
   provinceCode: string;
   districtCode: string;
@@ -58,7 +76,6 @@ interface Address {
 interface User {
   userName: string;
   email: string;
-  password: string;
   phoneNumber: string;
   birthday?: string;
   address: Address;
