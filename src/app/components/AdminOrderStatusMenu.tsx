@@ -3,15 +3,29 @@
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useGetAllOrders } from "../hooks/hook";
 export function AdminOrderStatusMenu() {
   const pathname = usePathname();
-
+  const { data: allOrders } = useGetAllOrders();
+  const pendingOrders = allOrders?.filter(
+    (order) => order.orderStatus === "pending"
+  );
+  const confirmedOrders = allOrders?.filter(
+    (order) => order.orderStatus === "confirmed"
+  );
+  // const pendingOrders = allOrders?.filter(
+  //   (order) => order.orderStatus === "pending"
+  // );
   const status = [
-    { name: "Chờ Xác Nhận", path: "/dashboard/admin-orders", count: 10 },
+    {
+      name: "Chờ Xác Nhận",
+      path: "/dashboard/admin-orders",
+      count: pendingOrders?.length,
+    },
     {
       name: "Đã Xác Nhận",
       path: "/dashboard/admin-orders/confirm",
-      count: 100,
+      count: confirmedOrders?.length,
     },
     {
       name: "Đang Giao",

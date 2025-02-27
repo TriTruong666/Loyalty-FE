@@ -38,6 +38,7 @@ function ProductTable() {
   const userInfo = useAtomValue(userInfoState);
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
+  const [isUpdating, setIsUpdating] = useState(false);
   const limit = 8;
   const { data: products, isLoading } = useGetProductByLimit(page, "hetban");
   const { data: allProduct } = useAllProduct();
@@ -62,7 +63,11 @@ function ProductTable() {
     mutationKey: ["update-status"],
     mutationFn: async ({ userId, data }: { userId: string; data: any }) =>
       updateProductService(userId, data),
+    onMutate() {
+      setIsUpdating(true);
+    },
     onSuccess() {
+      setIsUpdating(false);
       queryClient.invalidateQueries({ queryKey: ["products"] });
       showToast("Sửa đổi trạng thái thành công", "success");
     },
@@ -112,7 +117,7 @@ function ProductTable() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || isUpdating) {
     return (
       <>
         <LoadingTable />

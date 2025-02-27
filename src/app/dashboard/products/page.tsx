@@ -40,6 +40,7 @@ function ProductTable() {
   const userInfo = useAtomValue(userInfoState);
   const setUpdateModal = useSetAtom(updateProductModalState);
   const [selectedProduct, setSelectedProduct] = useAtom(dataUpdateProductState);
+  const [isUpdating, setIsUpdating] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const limit = 8;
@@ -66,7 +67,11 @@ function ProductTable() {
     mutationKey: ["update-status"],
     mutationFn: async ({ userId, data }: { userId: string; data: any }) =>
       updateProductService(userId, data),
+    onMutate() {
+      setIsUpdating(true);
+    },
     onSuccess() {
+      setIsUpdating(false);
       queryClient.invalidateQueries({ queryKey: ["products"] });
       showToast("Sửa đổi trạng thái thành công", "success");
       if (products?.length === 1) {
@@ -133,7 +138,7 @@ function ProductTable() {
       title: "Tên Z-A",
     },
   ];
-  if (isLoading) {
+  if (isLoading || isUpdating) {
     return (
       <>
         <LoadingTable />

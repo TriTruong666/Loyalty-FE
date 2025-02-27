@@ -57,6 +57,7 @@ export default function MediaPage() {
 function MediaTable() {
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
+  const [isDeleting, setIsDeleting] = useState(false);
   const limit = 10;
   const [submitSign, setSubmitSign] = useState<Signature>({
     apiSecret: process.env.NEXT_PUBLIC_SECRET_API as string,
@@ -73,8 +74,11 @@ function MediaTable() {
   const deleteMutation = useMutation({
     mutationKey: ["deleteFile"],
     mutationFn: CloudinaryService.deleteFileService,
-
+    onMutate() {
+      setIsDeleting(true);
+    },
     onSuccess(data) {
+      setIsDeleting(false);
       queryClient.invalidateQueries({ queryKey: ["assets"] });
       console.log(data);
       showToast("Xoá ảnh thành công", "success");
@@ -102,7 +106,7 @@ function MediaTable() {
       console.error("Error deleting file:", error);
     }
   };
-  if (isLoading) {
+  if (isLoading || isDeleting) {
     return (
       <>
         <LoadingTable />

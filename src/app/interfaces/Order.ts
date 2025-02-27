@@ -11,6 +11,20 @@ interface ShippingAddress {
   defaultAddress: boolean;
 }
 
+interface Transaction {
+  id: string;
+  orderId: string;
+  transactionStatus: string;
+  gateway: string;
+  transactionDate: string | null;
+  createdBy: string;
+  createdDate: string;
+  updatedBy: string | null;
+  updatedDate: string | null;
+  url: string | null;
+  note: string | null;
+}
+
 export interface Order {
   orderId: string;
   customerId: string;
@@ -40,4 +54,5 @@ export interface Order {
   note: string;
   attachment: string | null;
   shippingAddress: ShippingAddress;
+  transaction: Transaction;
 }

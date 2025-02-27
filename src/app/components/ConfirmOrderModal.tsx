@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { uploadFileService } from "../service/cloudinaryService";
 import { showToast } from "../utils/toast";
@@ -7,6 +7,8 @@ import { IoCloudUploadOutline } from "react-icons/io5";
 import { Button } from "@heroui/react";
 import { useAtomValue, useSetAtom } from "jotai";
 import { confirmOrderModalState } from "../store/modalAtoms";
+import { updateOrderService } from "../service/orderService";
+import { orderIdState } from "../dashboard/admin-orders/page";
 
 export default function ConfirmOrderModal() {
   const isToggleModal = useAtomValue(confirmOrderModalState);
@@ -14,7 +16,7 @@ export default function ConfirmOrderModal() {
     return <></>;
   }
   return (
-    <div className="fixed w-screen h-screen top-0 left-0 flex items-center justify-center z-50 bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur-[2px] bg-opacity-10 backdrop-saturate-100 backdrop-contrast-100">
+    <div className="fixed w-screen h-screen top-0 left-0 flex items-center justify-center z-50 bg-black bg-opacity-70">
       <div className="w-[700px] bg-black flex flex-col transition-all duration-300 items-center relative py-[40px] px-[40px] rounded-[15px] shadow-[2px_2px_60px_6px_rgba(19,_19,_19,_0.63)]">
         <ImageDropZone />
       </div>
@@ -22,11 +24,29 @@ export default function ConfirmOrderModal() {
   );
 }
 function ImageDropZone() {
+  const orderIdValue = useAtomValue(orderIdState);
   const setModal = useSetAtom(confirmOrderModalState);
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [isSubmitFile, setIsSubmitFile] = useState<boolean>(false);
+  const queryClient = useQueryClient();
+  const updateOrderMutation = useMutation({
+    mutationKey: ["update-order"],
+    mutationFn: updateOrderService,
+    onMutate() {
+      setIsUploading(true);
+    },
+    onSuccess(data) {
+      if (data.message === "Ok") {
+        queryClient.invalidateQueries({ queryKey: ["orders"] });
+        setIsUploading(false);
+        showToast("Duyệt đơn hàng thành công", "success");
+        setModal(false);
+        setPreviewUrl(null);
+      }
+    },
+  });
   const uploadMutation = useMutation({
     mutationKey: ["upload"],
     mutationFn: uploadFileService,
@@ -35,8 +55,11 @@ function ImageDropZone() {
     },
     onSuccess(data) {
       setPreviewUrl(data);
-      setIsUploading(false);
-      showToast("Duyệt đơn hàng thành công", "success");
+      updateOrderMutation.mutateAsync({
+        attachment: data as string,
+        orderID: orderIdValue,
+        orderStatus: "confirmed",
+      });
     },
   });
   const handleToggleModalOff = () => {
@@ -59,6 +82,7 @@ function ImageDropZone() {
       console.log(error);
     }
   };
+
   const handleDeleteImage = () => {
     setFile(null);
     setPreviewUrl(null);
