@@ -12,6 +12,23 @@ export const subtotalCartValueAtom = atom((get) => {
   );
 });
 
+export const discountCustomState = atom((get) => {
+  const info = get(userInfoState);
+  const cart = get(cartState);
+
+  if (!info || !info.rank) return 0;
+
+  const discountPercent =
+    info.type === "sales" ? info.rank.discountCustom ?? 0 : 0;
+
+  const subtotal = cart.reduce(
+    (total, item) => total + (item.product.price ?? 0) * item.quantity,
+    0
+  );
+
+  return subtotal * discountPercent;
+});
+
 export const discountUniqueState = atom((get) => {
   const cart = get(cartState);
   const info = get(userInfoState);
@@ -52,5 +69,6 @@ export const totalCartValueAtoms = atom((get) => {
   const subtotal = get(subtotalCartValueAtom);
   const discountUnique = get(discountUniqueState);
   const discountPP = get(discountPPState);
-  return subtotal - discountUnique - discountPP;
+  const discountCustom = get(discountCustomState);
+  return subtotal - discountUnique - discountPP - discountCustom;
 });

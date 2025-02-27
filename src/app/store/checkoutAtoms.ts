@@ -1,6 +1,7 @@
 import { atom } from "jotai";
-import { cartState } from "./cartAtoms";
+import { cartState, discountCustomState } from "./cartAtoms";
 import { Checkout } from "../interfaces/Checkout";
+import { userInfoState } from "./accountAtoms";
 
 export const paymentMethodState = atom("");
 
@@ -25,7 +26,8 @@ export const checkoutState = atom<Checkout | null>((get) => {
   const address = get(shippingAddressState);
   const info = get(userInfoCheckoutState);
   const note = get(noteCheckoutState);
-
+  const user = get(userInfoState);
+  const discountCustom = user?.rank.discountCustom;
   if (!paymentMethod || !address || !info) return null;
 
   return {
@@ -39,5 +41,6 @@ export const checkoutState = atom<Checkout | null>((get) => {
     shippingAddress: address,
     note,
     customer: info,
+    discountCustom,
   };
 });

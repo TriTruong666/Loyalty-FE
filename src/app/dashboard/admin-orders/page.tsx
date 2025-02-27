@@ -15,6 +15,10 @@ import { showToast } from "@/app/utils/toast";
 import { IoCheckmarkSharp } from "react-icons/io5";
 import { confirmOrderModalState } from "@/app/store/modalAtoms";
 import { useSetAtom } from "jotai";
+import { useEffect, useState } from "react";
+import { useGetAllOrders, useGetOrderByLimitByStatus } from "@/app/hooks/hook";
+import { LoadingTable } from "@/app/components/loading";
+import { formatPrice } from "@/app/utils/format";
 
 export default function OrderPage() {
   return (
@@ -53,7 +57,25 @@ export default function OrderPage() {
 
 function AllOrderTable() {
   const setModal = useSetAtom(confirmOrderModalState);
+  const [page, setPage] = useState(1);
+  const [totalPage, setTotalPage] = useState(1);
+  const [isMounted, setIsMounted] = useState(false);
+  const { data: orders, isLoading } = useGetOrderByLimitByStatus(
+    page,
+    "pending"
+  );
+  const limit = 8;
+  const { data: allOrders } = useGetAllOrders();
 
+  const filteredAllProduct = allOrders?.filter(
+    (order) => order.orderStatus === "pending"
+  );
+  useEffect(() => {
+    if (filteredAllProduct) {
+      setTotalPage(Math.ceil(filteredAllProduct.length / limit));
+    }
+    setIsMounted(true);
+  }, [filteredAllProduct]);
   const statusTheme = (status: string) => {
     switch (status) {
       case "pending":
@@ -85,26 +107,35 @@ function AllOrderTable() {
   const handleToggleModalOn = () => {
     setModal(true);
   };
-
+  if (isLoading || !isMounted) {
+    return (
+      <>
+        <LoadingTable />
+      </>
+    );
+  }
   return (
     <div className="flex mt-[20px] flex-col items-center">
       <table className="flex flex-col w-full">
         <thead>
           <tr className="grid grid-cols-12 mx-[20px] px-[20px] py-4 bg-[#111111] rounded-lg">
             <th className="col-span-1 text-[12px] text-normal font-light text-start">
-              ID
-            </th>
-            <th className="col-span-3 text-[12px] text-normal font-light text-start">
-              Tên Khách Hàng
+              Mã đơn
             </th>
             <th className="col-span-2 text-[12px] text-normal font-light text-center">
-              Hình Thức Thanh Toán
+              Tên khách hàng
             </th>
             <th className="col-span-2 text-[12px] text-normal font-light text-center">
-              Tổng Giá
+              Tạm tính
             </th>
             <th className="col-span-2 text-[12px] text-normal font-light text-center">
-              Trạng Thái
+              Tổng
+            </th>
+            <th className="col-span-1 text-[12px] text-normal font-light text-center">
+              Hạng Loyalty
+            </th>
+            <th className="col-span-1 text-[12px] text-normal font-light text-center">
+              Thanh toán
             </th>
             <th className="col-span-2 text-[12px] text-normal font-light text-end">
               Actions
@@ -112,77 +143,74 @@ function AllOrderTable() {
           </tr>
         </thead>
         <tbody>
-          <tr className="grid grid-cols-12 mx-[20px] px-[20px] py-4 items-center border-b border-gray-600 border-opacity-40">
-            <td className="col-span-1 text-[13px]">1</td>
-            <td className="col-span-3 flex items-center gap-x-2">
-              <p className="text-[13px] font-semibold">Phuc Le</p>
-            </td>
-            <td className="col-span-2 text-[13px] text-center font-semibold">
-              Tiền Mặt
-            </td>
-            <td className="col-span-2 text-[13px] text-center font-semibold">
-              50$
-            </td>
-            <td
-              className={`col-span-2 flex justify-center w-fit px-3 gap-x-1 py-[2px] border ml-[60px] xl:w-[102px] xl:text-[16px] ${statusTheme(
-                "pending"
-              )} rounded-lg`}
+          {orders?.map((order) => (
+            <tr
+              key={order.orderId}
+              className="grid grid-cols-12 mx-[20px] px-[20px] py-4 items-center border-b border-gray-600 border-opacity-40"
             >
-              <IoIosInformationCircleOutline
-                className={`${titleStatusTheme("pending")}`}
-              />
-              <p
-                className={`text-[11px] font-semibold font-open ${titleStatusTheme(
-                  "pending"
-                )}`}
-              >
-                Chờ Duyệt
-              </p>
-            </td>
-            <td className="col-span-2 text-[13px] font-semibold flex justify-end">
-              <Dropdown>
-                <DropdownTrigger>
-                  <Button isIconOnly size="sm" variant="light">
-                    <BsThreeDotsVertical className="text-normal text-[16px]" />
-                  </Button>
-                </DropdownTrigger>
-                <DropdownMenu>
-                  <DropdownItem
-                    onPress={handleToggleModalOn}
-                    className="group"
-                    color="default"
-                    startContent={
-                      <IoCheckmarkSharp className="text-[16px] group-hover:text-success" />
-                    }
-                    key="approve"
-                  >
-                    <p className="group-hover:text-success">Xác Nhận</p>
-                  </DropdownItem>
-                  <DropdownItem
-                    onPress={() => showToast("Đã từ chối đơn hàng!", "success")}
-                    className="group"
-                    color="default"
-                    startContent={
-                      <FaXmark className="text-[16px] group-hover:text-success" />
-                    }
-                    key="deny"
-                  >
-                    <p className="group-hover:text-success">Từ chối</p>
-                  </DropdownItem>
-                  <DropdownItem
-                    className="group"
-                    color="default"
-                    startContent={
-                      <FaInbox className="text-[16px] group-hover:text-success" />
-                    }
-                    key="show"
-                  >
-                    <p className="group-hover:text-success">Chi tiết</p>
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-            </td>
-          </tr>
+              <td className="col-span-1 text-[13px]">{order.orderId}</td>
+              <td className="col-span-2 text-[13px] text-center font-semibold">
+                {order.customerName}
+              </td>
+              <td className="col-span-2 text-[13px] text-center font-semibold">
+                {formatPrice(order.totalOrderValue)}
+              </td>
+              <td className="col-span-2 text-[13px] text-center font-semibold">
+                {formatPrice(order.totalPayment)}
+              </td>
+              <td className="col-span-1 text-[13px] text-center font-semibold">
+                {order.rankName}
+              </td>
+              <td className="col-span-1 text-[13px] text-center font-semibold">
+                {}
+              </td>
+              <td className="col-span-2 text-[13px] font-semibold flex justify-end">
+                <Dropdown>
+                  <DropdownTrigger>
+                    <Button isIconOnly size="sm" variant="light">
+                      <BsThreeDotsVertical className="text-normal text-[16px]" />
+                    </Button>
+                  </DropdownTrigger>
+                  <DropdownMenu>
+                    <DropdownItem
+                      onPress={handleToggleModalOn}
+                      className="group"
+                      color="default"
+                      startContent={
+                        <IoCheckmarkSharp className="text-[16px] group-hover:text-success" />
+                      }
+                      key="approve"
+                    >
+                      <p className="group-hover:text-success">Xác Nhận</p>
+                    </DropdownItem>
+                    <DropdownItem
+                      onPress={() =>
+                        showToast("Đã từ chối đơn hàng!", "success")
+                      }
+                      className="group"
+                      color="default"
+                      startContent={
+                        <FaXmark className="text-[16px] group-hover:text-success" />
+                      }
+                      key="deny"
+                    >
+                      <p className="group-hover:text-success">Từ chối</p>
+                    </DropdownItem>
+                    <DropdownItem
+                      className="group"
+                      color="default"
+                      startContent={
+                        <FaInbox className="text-[16px] group-hover:text-success" />
+                      }
+                      key="show"
+                    >
+                      <p className="group-hover:text-success">Chi tiết</p>
+                    </DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
       <div className="mt-[20px]">
@@ -190,8 +218,9 @@ function AllOrderTable() {
           loop
           showControls
           color="default"
-          initialPage={1}
-          total={10}
+          initialPage={page}
+          total={totalPage}
+          onChange={(newPage) => setPage(newPage)}
         />
       </div>
     </div>

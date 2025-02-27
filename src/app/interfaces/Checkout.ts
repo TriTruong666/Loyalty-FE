@@ -1,5 +1,3 @@
-import { Cart } from "./Cart";
-
 interface ShippingAddress {
   provinceCode: string;
   districtCode: string;
@@ -18,6 +16,7 @@ export interface Checkout {
   note?: string;
   gateway: string;
   lineItems: LineItem[];
+  discountCustom?: number;
 }
 
 interface Customer {

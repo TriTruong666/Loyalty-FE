@@ -23,6 +23,7 @@ import {
 import { CartItem as CartItemProps } from "../interfaces/Cart";
 import {
   cartState,
+  discountCustomState,
   discountPPState,
   discountUniqueState,
   subtotalCartValueAtom,
@@ -359,13 +360,12 @@ function PaymentMethod() {
 }
 
 function Summary() {
-  const router = useRouter();
   const subtotalCartValue = useAtomValue(subtotalCartValueAtom);
   const discountByTypeValue = useAtomValue(discountUniqueState);
   const discountByDistributionValue = useAtomValue(discountPPState);
   const totalCartValue = useAtomValue(totalCartValueAtoms);
   const info = useAtomValue(userInfoState);
-  const gateway = useAtomValue(paymentMethodState);
+  const discountCustomValue = useAtomValue(discountCustomState);
   const [cart, setCart] = useAtom(cartState);
   const [note, setNote] = useAtom(noteCheckoutState);
   const [submitData, setSubmitData] = useAtom(checkoutState);
@@ -466,11 +466,41 @@ function Summary() {
               </p>
             </div>
           )}
-
-          <div className="flex justify-between">
-            <p className="font-light text-normal">Hạng Loyalty</p>
-            <p className="font-bold">{info?.rank.rankName}</p>
-          </div>
+          {info?.type !== "sales" && (
+            <div className="flex justify-between">
+              <p className="font-light text-normal">Hạng Loyalty</p>
+              <p className="font-bold">{info?.rank.rankName}</p>
+            </div>
+          )}
+          {info?.type !== "sales" && (
+            <div className="flex justify-between">
+              <p className="font-light text-normal">Chiết khấu</p>
+              {info?.type === "personal" && (
+                <p className="font-bold">
+                  {(info?.rank.discountPersonal as number) * 100}%
+                </p>
+              )}
+              {info?.type === "business" && (
+                <p className="font-bold">
+                  {(info?.rank.discountBusiness as number) * 100}%
+                </p>
+              )}
+            </div>
+          )}
+          {info?.type === "sales" && (
+            <div className="flex justify-between">
+              <p className="font-light text-normal">Giá trị chiết khấu</p>
+              <p className="font-bold">{formatPrice(discountCustomValue)}</p>
+            </div>
+          )}
+          {info?.type === "sales" && (
+            <div className="flex justify-between">
+              <p className="font-light text-normal">Chiết khẩu tuỳ chỉnh</p>
+              <p className="font-bold">
+                {(info?.rank.discountCustom as number) * 100}%
+              </p>
+            </div>
+          )}
           <div className="flex justify-between">
             <p className="font-semibold text-normal">Tổng</p>
             <p className="font-bold text-primary">

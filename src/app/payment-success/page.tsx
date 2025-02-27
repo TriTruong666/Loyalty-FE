@@ -1,5 +1,4 @@
 "use client";
-import successAnimation from "@/app/static/loading/buy-success.json";
 import successAnimation2 from "@/app/static/loading/buy-success2.json";
 import { Button, Link } from "@heroui/react";
 import dynamic from "next/dynamic";

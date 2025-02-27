@@ -18,6 +18,11 @@ export function AdminOrderStatusMenu() {
       path: "/dashboard/admin-orders/delivering",
       count: 60,
     },
+    {
+      name: "Hoàn Thành",
+      path: "/dashboard/admin-orders/complete",
+      count: 5,
+    },
     { name: "Đơn Hủy", path: "/dashboard/admin-orders/cancelled", count: 10 },
   ];
 

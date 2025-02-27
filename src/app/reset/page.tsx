@@ -365,7 +365,7 @@ function ResetForm() {
       setIsLoading(true);
     },
     onSuccess(data) {
-      if (data.code === "Password reset successfully") {
+      if (data.message === "Password reset successfully") {
         if (typeof window !== "undefined") {
           window.location.href = "/";
         }

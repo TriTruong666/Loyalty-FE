@@ -6,10 +6,12 @@ import * as CloudinaryService from "@/app/service/cloudinaryService";
 import * as BrandService from "@/app/service/brandService";
 import * as AccountService from "@/app/service/accountService";
 import * as LocationService from "@/app/service/locationService";
+import * as OrderService from "@/app/service/orderService";
 import { CloudinaryAsset } from "../interfaces/Cloudinary";
 import { Brand } from "../interfaces/Brand";
 import { User } from "../interfaces/Account";
 import { District, Province, Ward } from "../interfaces/Location";
+import { Order } from "../interfaces/Order";
 function useFetch<T>(
   queryKey: any[],
   queryFn: () => Promise<T>,
@@ -112,5 +114,15 @@ export function useGetDistrictByProvince(provinceId: string) {
 export function useGetWardByDistrict(districtId: string) {
   return useFetch<Ward[]>(["wards", districtId], async () =>
     LocationService.getWardsByDistrictId(districtId)
+  );
+}
+export function useGetOrderByLimitByStatus(page: number, status: string) {
+  return useFetch<Order[]>(["orders", page], async () =>
+    OrderService.getOrderByLimitByStatus(page, status)
+  );
+}
+export function useGetAllOrders() {
+  return useFetch<Order[]>(["all-orders"], async () =>
+    OrderService.getAllOrders()
   );
 }

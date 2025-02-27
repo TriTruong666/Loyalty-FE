@@ -114,6 +114,22 @@ export const updateUserNote = async (userId: string, note: Note) => {
   }
 };
 
+interface PercentCustom {
+  discountCustom: number;
+}
+
+export const updateCustomPercent = async (
+  userId: string,
+  percent: PercentCustom
+) => {
+  try {
+    const res = await axiosClient.put(`/api/user/update/${userId}`, percent);
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 export const approveUser = async (userId: string) => {
   try {
     const res = await axiosClient.put(`/api/user/approve/${userId}`);

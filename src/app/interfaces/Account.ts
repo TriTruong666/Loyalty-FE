@@ -34,5 +34,6 @@ interface Rank {
   discountBusiness?: number;
   discountPersonal?: number;
   discountPP: number;
+  discountCustom?: number;
   note: string;
 }
