@@ -13,13 +13,12 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { showToast } from "@/app/utils/toast";
 import { IoCheckmarkSharp } from "react-icons/io5";
 import { confirmOrderModalState } from "@/app/store/modalAtoms";
-import { atom, useSetAtom } from "jotai";
+import { useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
 import { useGetAllOrders, useGetOrderByLimitByStatus } from "@/app/hooks/hook";
 import { LoadingTable } from "@/app/components/loading";
 import { formatPrice } from "@/app/utils/format";
-
-export const orderIdState = atom("");
+import { orderIdState } from "@/app/store/orderAtomts";
 
 export default function OrderPage() {
   return (

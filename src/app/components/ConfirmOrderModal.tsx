@@ -8,8 +8,7 @@ import { Button } from "@heroui/react";
 import { useAtomValue, useSetAtom } from "jotai";
 import { confirmOrderModalState } from "../store/modalAtoms";
 import { updateOrderService } from "../service/orderService";
-import { orderIdState } from "../dashboard/admin-orders/page";
-
+import { orderIdState } from "../store/orderAtomts";
 export default function ConfirmOrderModal() {
   const isToggleModal = useAtomValue(confirmOrderModalState);
   if (!isToggleModal) {

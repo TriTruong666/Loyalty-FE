@@ -21,8 +21,7 @@ import { formatPrice } from "@/app/utils/format";
 import { useMutation } from "@tanstack/react-query";
 import { updateOrderService } from "@/app/service/orderService";
 import { Input } from "@heroui/react";
-
-export const orderIdState = atom("");
+import { orderIdState } from "@/app/store/orderAtomts";
 
 export default function OrderPage() {
   return (
