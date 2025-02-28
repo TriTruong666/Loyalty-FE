@@ -21,6 +21,7 @@ import { useGetUserInfo } from "../hooks/hook";
 import { userInfoState } from "../store/accountAtoms";
 import { useRouter } from "next/navigation";
 import UpdateProductModal from "../components/UpdateProductModal";
+import OrderDetailModal from "../components/OrderDetailModal";
 
 export default function DashboardLayout({
   children,
@@ -47,6 +48,7 @@ export default function DashboardLayout({
     <div className="flex min-h-screen relative overflow-hidden">
       <Toaster position="top-center" reverseOrder={false} />
       {/* {tokenTimeoutModal && <TokenTimeout />} */}
+      <OrderDetailModal />
       <UpdateProductModal />
       <ProfileSettingDropdown />
       <CartDropdown />

@@ -13,3 +13,5 @@ export const createNotificationState = atom(false);
 export const tokenTimeoutState = atom(false);
 
 export const noteAccountModalState = atom(false);
+
+export const orderDetailModalState = atom(false);
