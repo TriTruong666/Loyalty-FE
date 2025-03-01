@@ -11,7 +11,7 @@ import CreateNotificationModal from "../components/CreateNotificationModal";
 import NotificationDropdown from "../components/NotificationDropdown";
 import CartDropdown from "../components/CartDropdown";
 import ProfileSettingDropdown from "../components/ProfileSettingDropdown";
-import { useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import {
   cartDropdownState,
   notificationDropdownState,
@@ -22,6 +22,7 @@ import { userInfoState } from "../store/accountAtoms";
 import { useRouter } from "next/navigation";
 import UpdateProductModal from "../components/UpdateProductModal";
 import OrderDetailModal from "../components/OrderDetailModal";
+import { detailOrderState } from "../store/orderAtomts";
 
 export default function DashboardLayout({
   children,
@@ -30,6 +31,7 @@ export default function DashboardLayout({
   const setInfo = useSetAtom(userInfoState);
   const setCartDropdown = useSetAtom(cartDropdownState);
   const setProfileDropdown = useSetAtom(profileSettingDropdownState);
+  const orderId = useAtomValue(detailOrderState);
   const handleToggleOffDropdown = () => {
     setProfileDropdown(false);
     setNotiDropdown(false);
@@ -47,8 +49,7 @@ export default function DashboardLayout({
   return (
     <div className="flex min-h-screen relative overflow-hidden">
       <Toaster position="top-center" reverseOrder={false} />
-      {/* {tokenTimeoutModal && <TokenTimeout />} */}
-      <OrderDetailModal />
+      {orderId && <OrderDetailModal />}
       <UpdateProductModal />
       <ProfileSettingDropdown />
       <CartDropdown />

@@ -24,7 +24,11 @@ import { formatPrice } from "@/app/utils/format";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateOrderService } from "@/app/service/orderService";
 import { Input } from "@heroui/react";
-import { orderIdState } from "@/app/store/orderAtomts";
+import {
+  confirmOrderState,
+  detailOrderState,
+  noteOrderState,
+} from "@/app/store/orderAtomts";
 
 export default function OrderPage() {
   return (
@@ -36,7 +40,9 @@ export default function OrderPage() {
 
 function AllOrderTable() {
   const setOrderDetailModal = useSetAtom(orderDetailModalState);
-  const [orderId, setOrderId] = useAtom(orderIdState);
+  const [orderId, setOrderId] = useAtom(noteOrderState);
+  const setDetailModalId = useSetAtom(detailOrderState);
+  const setConfirmModalId = useSetAtom(confirmOrderState);
   const setModal = useSetAtom(confirmOrderModalState);
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
@@ -97,8 +103,8 @@ function AllOrderTable() {
   const handleOnChangeNote = (e: ChangeEvent<HTMLInputElement>) => {
     setNoteData(e.target.value);
   };
-  const handleToggleModalOn = (orderId: string) => {
-    setOrderId(orderId);
+  const handleToggleModalConfirmOn = (orderId: string) => {
+    setConfirmModalId(orderId);
     setModal(true);
   };
   const handleToggleNoteModalOff = () => {
@@ -109,7 +115,7 @@ function AllOrderTable() {
     setOrderId(orderId);
   };
   const handleToggleOrderDetailModalOn = (orderId: string) => {
-    setOrderId(orderId);
+    setDetailModalId(orderId);
     setOrderDetailModal(true);
   };
   const handleFinanceStatus = (status: string) => {
@@ -220,7 +226,7 @@ function AllOrderTable() {
                     )}
                   </p>
                 </td>
-                <td className="col-span-3 text-[13px] text-start font-semibold">
+                <td className="col-span-3 text-[13px] text-start">
                   {order.note}
                 </td>
                 <td className="col-span-1 text-[13px] font-semibold flex justify-end">
@@ -232,7 +238,9 @@ function AllOrderTable() {
                     </DropdownTrigger>
                     <DropdownMenu>
                       <DropdownItem
-                        onPress={() => handleToggleModalOn(order.orderId)}
+                        onPress={() =>
+                          handleToggleModalConfirmOn(order.orderId)
+                        }
                         className="group"
                         color="default"
                         startContent={

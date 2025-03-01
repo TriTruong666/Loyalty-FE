@@ -24,7 +24,29 @@ interface Transaction {
   url: string | null;
   note: string | null;
 }
-
+export interface LineItem {
+  productId: string;
+  productName: string;
+  unit: string;
+  price: number;
+  brandId: string;
+  handle: string;
+  imageUrl: string;
+  description: string;
+  createdBy: string;
+  createdDate: string;
+  updateBy: string;
+  updateDate: string;
+  status: string;
+  amount: number;
+  brand: Brand;
+}
+interface Brand {
+  brandId: string;
+  brandName: string;
+  handle: string;
+  type: string;
+}
 export interface Order {
   orderId: string;
   customerId: string;
@@ -55,4 +77,5 @@ export interface Order {
   attachment: string | null;
   shippingAddress: ShippingAddress;
   transaction: Transaction;
+  lineItems: LineItem[];
 }

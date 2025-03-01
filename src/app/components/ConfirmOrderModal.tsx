@@ -8,7 +8,7 @@ import { Button } from "@heroui/react";
 import { useAtomValue, useSetAtom } from "jotai";
 import { confirmOrderModalState } from "../store/modalAtoms";
 import { updateOrderService } from "../service/orderService";
-import { orderIdState } from "../store/orderAtomts";
+import { confirmOrderState } from "../store/orderAtomts";
 export default function ConfirmOrderModal() {
   const isToggleModal = useAtomValue(confirmOrderModalState);
   if (!isToggleModal) {
@@ -23,7 +23,7 @@ export default function ConfirmOrderModal() {
   );
 }
 function ImageDropZone() {
-  const orderIdValue = useAtomValue(orderIdState);
+  const orderIdValue = useAtomValue(confirmOrderState);
   const setModal = useSetAtom(confirmOrderModalState);
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);

@@ -86,9 +86,6 @@ export function useGetCustomerUserByLimitByStatus(
     AccountService.getCustomerUserByLimitByStatus(page, status)
   );
 }
-export function useGetAllBrand() {
-  return useFetch<Brand[]>(["brands"], async () => BrandService.getAllBrand());
-}
 
 export function useGetUserInfo() {
   return useFetch<User>(["user-info"], async () =>
@@ -98,6 +95,10 @@ export function useGetUserInfo() {
 
 export function useGetAllUser() {
   return useFetch<User[]>(["users"], async () => AccountService.getAllUser());
+}
+
+export function useGetAllBrand() {
+  return useFetch<Brand[]>(["brands"], async () => BrandService.getAllBrand());
 }
 
 export function useGetAllProvince() {
@@ -124,5 +125,11 @@ export function useGetOrderByLimitByStatus(page: number, status: string) {
 export function useGetAllOrders() {
   return useFetch<Order[]>(["all-orders"], async () =>
     OrderService.getAllOrders()
+  );
+}
+
+export function useGetDetailOrder(orderId: string) {
+  return useFetch<Order>(["order-detail", orderId], async () =>
+    OrderService.getDetailOrderService(orderId)
   );
 }

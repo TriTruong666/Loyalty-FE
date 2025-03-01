@@ -18,7 +18,7 @@ import { useEffect, useState } from "react";
 import { useGetAllOrders, useGetOrderByLimitByStatus } from "@/app/hooks/hook";
 import { LoadingTable } from "@/app/components/loading";
 import { formatPrice } from "@/app/utils/format";
-import { orderIdState } from "@/app/store/orderAtomts";
+import { confirmOrderState } from "@/app/store/orderAtomts";
 
 export default function OrderPage() {
   return (
@@ -29,7 +29,7 @@ export default function OrderPage() {
 }
 
 function AllOrderTable() {
-  const setOrderId = useSetAtom(orderIdState);
+  const setOrderId = useSetAtom(confirmOrderState);
   const setModal = useSetAtom(confirmOrderModalState);
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);

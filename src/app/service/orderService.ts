@@ -35,3 +35,12 @@ export const updateOrderService = async (data: UpdateOrderData) => {
     console.error(error);
   }
 };
+
+export const getDetailOrderService = async (orderId: string) => {
+  try {
+    const res = await axiosClient.get(`/api/order/id/${orderId}`);
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
