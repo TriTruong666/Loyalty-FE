@@ -23,6 +23,7 @@ import { useRouter } from "next/navigation";
 import UpdateProductModal from "../components/UpdateProductModal";
 import OrderDetailModal from "../components/OrderDetailModal";
 import { detailOrderState } from "../store/orderAtomts";
+import CancelOrderModal from "../components/CancelOrderModal";
 
 export default function DashboardLayout({
   children,
@@ -49,6 +50,7 @@ export default function DashboardLayout({
   return (
     <div className="flex min-h-screen relative overflow-hidden">
       <Toaster position="top-center" reverseOrder={false} />
+      <CancelOrderModal />
       {orderId && <OrderDetailModal />}
       <UpdateProductModal />
       <ProfileSettingDropdown />

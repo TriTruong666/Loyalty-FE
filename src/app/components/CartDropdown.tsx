@@ -1,13 +1,18 @@
 "use client";
 import { AnimatePresence, motion } from "framer-motion";
-import { useAtomValue } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { cartDropdownState } from "../store/dropdownAtoms";
 import Image from "next/image";
 import { formatPrice } from "../utils/format";
 import { Button, Link } from "@heroui/react";
+import { cartState, subtotalCartValueAtom } from "../store/cartAtoms";
+import { CartItem as CartItemProps } from "../interfaces/Cart";
+import { BsCartX } from "react-icons/bs";
 
 export default function CartDropdown() {
   const isToggleDropdown = useAtomValue(cartDropdownState);
+  const [cart, setCart] = useAtom(cartState);
+  const subtotalCartValue = useAtomValue(subtotalCartValueAtom);
 
   return (
     <AnimatePresence>
@@ -22,45 +27,55 @@ export default function CartDropdown() {
           <p className="font-open font-light w-full px-[20px] py-[20px] sticky top-0 left-0 z-[60]">
             Giỏ hàng của bạn
           </p>
+          {cart.length === 0 ? (
+            <>
+              <div className="h-[500px] w-full flex flex-col justify-center items-center gap-y-[20px]">
+                <BsCartX className="text-normal text-[30px]" />
+                <p className="text-normal text-sm font-light">
+                  Vui lòng thêm sản phẩm vào giỏ hàng
+                </p>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex-1 overflow-auto border-t border-gray-400-40">
+                {cart.map((item) => (
+                  <CartItem key={item.id} {...item} />
+                ))}
+              </div>
 
-          <div className="flex-1 overflow-auto border-t border-gray-400-40">
-            <CartItem />
-            <CartItem />
-            <CartItem />
-            <CartItem />
-            <CartItem />
-            <CartItem />
-          </div>
-
-          <div className="sticky bottom-0 left-0 w-full bg-background border-t border-gray-400-40 px-[20px] py-[10px]">
-            <div className="flex justify-between mb-[10px]">
-              <p className="text-sm text-normal">Tạm tính</p>
-              <p className="text-sm text-primary font-semibold">
-                {formatPrice(26000000)}
-              </p>
-            </div>
-            <Button
-              as={Link}
-              href="/dashboard/cart"
-              className="w-full"
-              variant="flat"
-              color="secondary"
-            >
-              <p>Đi tới giỏ hàng</p>
-            </Button>
-          </div>
+              <div className="sticky bottom-0 left-0 w-full bg-background border-t border-gray-400-40 px-[20px] py-[10px]">
+                <div className="flex justify-between mb-[10px]">
+                  <p className="text-sm text-normal">Tạm tính</p>
+                  <p className="text-sm text-primary font-semibold">
+                    {formatPrice(subtotalCartValue)}
+                  </p>
+                </div>
+                <Button
+                  as={Link}
+                  href="/dashboard/cart"
+                  className="w-full"
+                  variant="flat"
+                  color="secondary"
+                >
+                  <p>Đi tới giỏ hàng</p>
+                </Button>
+              </div>
+            </>
+          )}
         </motion.div>
       )}
     </AnimatePresence>
   );
 }
 
-function CartItem() {
+function CartItem(props: CartItemProps) {
   return (
     <div className="flex gap-x-[10px] border-b border-gray-400-40 px-[20px] py-[20px] duration-200 transition-all hover:bg-gray-500 hover:bg-opacity-10 cursor-pointer">
       <Image
+        loading="lazy"
         alt=""
-        src="/product.webp"
+        src={props.product.imageUrl as string}
         width={60}
         height={60}
         className="object-cover rounded-[7px]"
@@ -68,12 +83,15 @@ function CartItem() {
       <div className="flex flex-col justify-between">
         <div className="flex justify-between gap-x-[10px]">
           <p className="text-[11px] line-clamp-2">
-            Dưỡng chất dưỡng da giúp mờ thâm nám dưỡng sáng da La Roche Posay
-            Mela B3 Serum 30ml
+            {props.product.productName}
           </p>
-          <p className="text-[11px] text-normal font-light">x3</p>
+          <p className="text-[11px] text-normal font-light">
+            x{props.quantity}
+          </p>
         </div>
-        <p className="font-semibold text-[13px]">{formatPrice(1300000)}</p>
+        <p className="font-semibold text-[13px]">
+          {formatPrice(props.product.price as number)}
+        </p>
       </div>
     </div>
   );

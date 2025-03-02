@@ -1,6 +1,6 @@
 "use client";
 import { Pagination } from "@heroui/pagination";
-import { FaInbox } from "react-icons/fa";
+import { FaInbox, FaPenAlt } from "react-icons/fa";
 import { FaXmark } from "react-icons/fa6";
 import {
   Dropdown,
@@ -9,16 +9,27 @@ import {
   DropdownTrigger,
 } from "@heroui/dropdown";
 import { Button } from "@heroui/button";
-import { BsThreeDotsVertical } from "react-icons/bs";
+import { BsThreeDotsVertical, BsTruck } from "react-icons/bs";
 import { showToast } from "@/app/utils/toast";
-import { IoCheckmarkSharp } from "react-icons/io5";
-import { confirmOrderModalState } from "@/app/store/modalAtoms";
-import { useSetAtom } from "jotai";
-import { useEffect, useState } from "react";
+import {
+  cancelOrderModalState,
+  confirmOrderModalState,
+  orderDetailModalState,
+} from "@/app/store/modalAtoms";
+import { useAtom, useSetAtom } from "jotai";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useGetAllOrders, useGetOrderByLimitByStatus } from "@/app/hooks/hook";
 import { LoadingTable } from "@/app/components/loading";
 import { formatPrice } from "@/app/utils/format";
-import { confirmOrderState } from "@/app/store/orderAtomts";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updateOrderService } from "@/app/service/orderService";
+import { Input } from "@heroui/react";
+import {
+  cancelOrderState,
+  confirmOrderState,
+  detailOrderState,
+  noteOrderState,
+} from "@/app/store/orderAtomts";
 
 export default function OrderPage() {
   return (
@@ -29,11 +40,19 @@ export default function OrderPage() {
 }
 
 function AllOrderTable() {
-  const setOrderId = useSetAtom(confirmOrderState);
-  const setModal = useSetAtom(confirmOrderModalState);
+  const setOrderDetailModal = useSetAtom(orderDetailModalState);
+  const [orderId, setOrderId] = useAtom(noteOrderState);
+  const setDetailModalId = useSetAtom(detailOrderState);
+  const setConfirmModalId = useSetAtom(confirmOrderState);
+  const setCancelModalId = useSetAtom(cancelOrderState);
+  const setConfirmModal = useSetAtom(confirmOrderModalState);
+  const setCancelModal = useSetAtom(cancelOrderModalState);
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
+  const [noteData, setNoteData] = useState("");
   const [isMounted, setIsMounted] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+
   const { data: orders, isLoading } = useGetOrderByLimitByStatus(
     page,
     "confirmed"
@@ -50,10 +69,85 @@ function AllOrderTable() {
     }
     setIsMounted(true);
   }, [filteredAllProduct]);
+  const queryClient = useQueryClient();
+  const updateNoteMutation = useMutation({
+    mutationKey: ["update-note"],
+    mutationFn: updateOrderService,
+    onMutate() {
+      setIsUpdating(true);
+    },
+    onSuccess(data) {
+      if (data.message === "Ok") {
+        setIsUpdating(false);
+        showToast("Ghi chú thành công", "success");
+        queryClient.invalidateQueries({ queryKey: ["orders"] });
+        setOrderId("");
+        setNoteData("");
+      }
+      setIsUpdating(false);
+    },
+  });
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && orderId) {
+      handleSubmitNote();
+    }
+  };
 
-  const handleToggleModalOn = (orderId: string) => {
+  const handleSubmitNote = async () => {
+    try {
+      await updateNoteMutation.mutateAsync({
+        note: noteData,
+        orderID: orderId,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const handleOnChangeNote = (e: ChangeEvent<HTMLInputElement>) => {
+    setNoteData(e.target.value);
+  };
+  const handleToggleModalConfirmOn = (orderId: string) => {
+    setConfirmModalId(orderId);
+    setConfirmModal(true);
+  };
+  const handleToggleNoteModalOff = () => {
+    setOrderId("");
+    setNoteData("");
+  };
+  const handleToggleNoteModalOn = (orderId: string) => {
     setOrderId(orderId);
-    setModal(true);
+  };
+  const handleToggleOrderDetailModalOn = (orderId: string) => {
+    setDetailModalId(orderId);
+    setOrderDetailModal(true);
+  };
+  const handleToggleCancelOrderModalOn = (orderId: string) => {
+    setCancelModalId(orderId);
+    setCancelModal(true);
+  };
+  const handleFinanceStatus = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "bg-gray-700";
+      case "cancelled":
+        return "bg-danger-50 text-red-600";
+      case "confirmed":
+        return "bg-success-200";
+      default:
+        return "";
+    }
+  };
+  const handleFinanceStatusName = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "Chưa thanh toán";
+      case "cancelled":
+        return "Đã huỷ đơn";
+      case "confirmed":
+        return "Đã thanh toán";
+      default:
+        return "";
+    }
   };
   if (isLoading || !isMounted) {
     return (
@@ -63,7 +157,7 @@ function AllOrderTable() {
     );
   }
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col" onClick={handleToggleNoteModalOff}>
       <div className="flex items-center px-[40px] py-[20px] mt-[10px] justify-end gap-x-4">
         <div className="w-[250px]">
           {/* <ThemeProvider value={selectTheme}>
@@ -95,29 +189,23 @@ function AllOrderTable() {
         <table className="flex flex-col w-full">
           <thead>
             <tr className="grid grid-cols-12 mx-[20px] px-[20px] py-4 bg-[#111111] rounded-lg">
-              <th className="col-span-1 text-[12px] text-normal font-light text-start">
-                Mã đơn
+              <th className="col-span-2 text-[12px] text-normal font-light text-start">
+                Mã đơn hàng
               </th>
-              <th className="col-span-2 text-[12px] text-normal font-light text-center">
+              <th className="col-span-2 text-[12px] text-normal font-light text-start">
                 Tên khách hàng
               </th>
-              <th className="col-span-2 text-[12px] text-normal font-light text-center">
-                Tạm tính
-              </th>
-              <th className="col-span-2 text-[12px] text-normal font-light text-center">
+              <th className="col-span-2 text-[12px] text-start text-normal font-light">
                 Tổng
               </th>
-              <th className="col-span-1 text-[12px] text-normal font-light text-center">
-                Hạng Loyalty
+              <th className="col-span-2 text-[12px] text-normal font-light text-start">
+                Trạng thái thanh toán
               </th>
-              <th className="col-span-1 text-[12px] text-normal font-light text-center">
-                Thanh toán
-              </th>
-              <th className="col-span-2 text-[12px] text-normal font-light text-center">
+              <th className="col-span-3 text-[12px] text-normal font-light text-start">
                 Ghi chú
               </th>
               <th className="col-span-1 text-[12px] text-normal font-light text-end">
-                Actions
+                Thêm
               </th>
             </tr>
           </thead>
@@ -125,25 +213,27 @@ function AllOrderTable() {
             {orders?.map((order) => (
               <tr
                 key={order.orderId}
-                className="grid grid-cols-12 mx-[20px] px-[20px] py-4 items-center border-b border-gray-600 border-opacity-40"
+                className="grid grid-cols-12 mx-[20px] px-[20px] py-4 items-center border-b border-gray-600 border-opacity-40 relative"
               >
-                <td className="col-span-1 text-[13px]">{order.orderId}</td>
-                <td className="col-span-2 text-[13px] text-center font-semibold">
+                <td className="col-span-2 text-[13px]">{order.orderId}</td>
+                <td className="col-span-2 text-[13px] text-start font-semibold">
                   {order.customerName}
                 </td>
-                <td className="col-span-2 text-[13px] text-center font-semibold">
-                  {formatPrice(order.totalOrderValue)}
-                </td>
-                <td className="col-span-2 text-[13px] text-center font-semibold">
+                <td className="col-span-2 text-[13px] text-start font-semibold">
                   {formatPrice(order.totalPayment)}
                 </td>
-                <td className="col-span-1 text-[13px] text-center font-semibold">
-                  {order.rankName}
+                <td className="col-span-2 flex justify-start">
+                  <p
+                    className={`text-[10px] font-semibold text-center px-[20px] py-[4px] rounded-lg ${handleFinanceStatus(
+                      order.transaction.transactionStatus
+                    )}`}
+                  >
+                    {handleFinanceStatusName(
+                      order.transaction.transactionStatus
+                    )}
+                  </p>
                 </td>
-                <td className="col-span-1 text-[13px] text-center font-semibold">
-                  {/* {order.transaction.gateway} */}
-                </td>
-                <td className="col-span-2 text-[13px] text-center font-semibold">
+                <td className="col-span-3 text-[13px] text-start">
                   {order.note}
                 </td>
                 <td className="col-span-1 text-[13px] font-semibold flex justify-end">
@@ -155,19 +245,21 @@ function AllOrderTable() {
                     </DropdownTrigger>
                     <DropdownMenu>
                       <DropdownItem
-                        onPress={() => handleToggleModalOn(order.orderId)}
+                        onPress={() =>
+                          handleToggleModalConfirmOn(order.orderId)
+                        }
                         className="group"
                         color="default"
                         startContent={
-                          <IoCheckmarkSharp className="text-[16px] group-hover:text-success" />
+                          <BsTruck className="text-[16px] group-hover:text-success" />
                         }
-                        key="approve"
+                        key="delivery"
                       >
-                        <p className="group-hover:text-success">Xác Nhận</p>
+                        <p className="group-hover:text-success">Giao hàng</p>
                       </DropdownItem>
                       <DropdownItem
                         onPress={() =>
-                          showToast("Đã từ chối đơn hàng!", "success")
+                          handleToggleCancelOrderModalOn(order.orderId)
                         }
                         className="group"
                         color="default"
@@ -179,6 +271,20 @@ function AllOrderTable() {
                         <p className="group-hover:text-success">Từ chối</p>
                       </DropdownItem>
                       <DropdownItem
+                        onPress={() => handleToggleNoteModalOn(order.orderId)}
+                        className="group"
+                        color="default"
+                        startContent={
+                          <FaPenAlt className="text-[16px] group-hover:text-foreground" />
+                        }
+                        key="note"
+                      >
+                        <p className="group-hover:text-foreground">Ghi chú</p>
+                      </DropdownItem>
+                      <DropdownItem
+                        onPress={() =>
+                          handleToggleOrderDetailModalOn(order.orderId)
+                        }
                         className="group"
                         color="default"
                         startContent={
@@ -191,6 +297,24 @@ function AllOrderTable() {
                     </DropdownMenu>
                   </Dropdown>
                 </td>
+                {/* this is note modal */}
+                {orderId === order.orderId && (
+                  <td
+                    className="absolute 3xl:left-[80%] 2xl:left-[75%] top-[7px] w-[300px] p-[10px] bg-default-50 rounded-[15px] z-10 modal-content"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="">
+                      <Input
+                        defaultValue={noteData as string}
+                        onChange={handleOnChangeNote}
+                        onKeyDown={handleKeyDown}
+                        placeholder="Viết ghi chú..."
+                        size="sm"
+                        variant="underlined"
+                      />
+                    </div>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>

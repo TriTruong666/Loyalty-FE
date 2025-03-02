@@ -13,6 +13,7 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { showToast } from "@/app/utils/toast";
 import { IoCheckmarkSharp } from "react-icons/io5";
 import {
+  cancelOrderModalState,
   confirmOrderModalState,
   orderDetailModalState,
 } from "@/app/store/modalAtoms";
@@ -25,6 +26,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateOrderService } from "@/app/service/orderService";
 import { Input } from "@heroui/react";
 import {
+  cancelOrderState,
   confirmOrderState,
   detailOrderState,
   noteOrderState,
@@ -43,12 +45,13 @@ function AllOrderTable() {
   const [orderId, setOrderId] = useAtom(noteOrderState);
   const setDetailModalId = useSetAtom(detailOrderState);
   const setConfirmModalId = useSetAtom(confirmOrderState);
-  const setModal = useSetAtom(confirmOrderModalState);
+  const setCancelModalId = useSetAtom(cancelOrderState);
+  const setConfirmModal = useSetAtom(confirmOrderModalState);
+  const setCancelModal = useSetAtom(cancelOrderModalState);
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const [noteData, setNoteData] = useState("");
   const [isMounted, setIsMounted] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
 
   const { data: orders, isLoading } = useGetOrderByLimitByStatus(
     page,
@@ -70,18 +73,14 @@ function AllOrderTable() {
   const updateNoteMutation = useMutation({
     mutationKey: ["update-note"],
     mutationFn: updateOrderService,
-    onMutate() {
-      setIsUpdating(true);
-    },
+    onMutate() {},
     onSuccess(data) {
       if (data.message === "Ok") {
-        setIsUpdating(false);
         showToast("Ghi chú thành công", "success");
         queryClient.invalidateQueries({ queryKey: ["orders"] });
         setOrderId("");
         setNoteData("");
       }
-      setIsUpdating(false);
     },
   });
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -105,7 +104,7 @@ function AllOrderTable() {
   };
   const handleToggleModalConfirmOn = (orderId: string) => {
     setConfirmModalId(orderId);
-    setModal(true);
+    setConfirmModal(true);
   };
   const handleToggleNoteModalOff = () => {
     setOrderId("");
@@ -117,6 +116,10 @@ function AllOrderTable() {
   const handleToggleOrderDetailModalOn = (orderId: string) => {
     setDetailModalId(orderId);
     setOrderDetailModal(true);
+  };
+  const handleToggleCancelOrderModalOn = (orderId: string) => {
+    setCancelModalId(orderId);
+    setCancelModal(true);
   };
   const handleFinanceStatus = (status: string) => {
     switch (status) {
@@ -252,7 +255,7 @@ function AllOrderTable() {
                       </DropdownItem>
                       <DropdownItem
                         onPress={() =>
-                          showToast("Đã từ chối đơn hàng!", "success")
+                          handleToggleCancelOrderModalOn(order.orderId)
                         }
                         className="group"
                         color="default"

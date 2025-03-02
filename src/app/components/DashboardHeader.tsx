@@ -11,6 +11,8 @@ import {
   notificationDropdownState,
   profileSettingDropdownState,
 } from "../store/dropdownAtoms";
+import { cartState } from "../store/cartAtoms";
+import { getCartFromStorage } from "../service/cartService";
 
 export default function DashboardHeader() {
   return (
@@ -74,6 +76,15 @@ function MainBar() {
   const [profileDropdown, setProfileDropdown] = useAtom(
     profileSettingDropdownState
   );
+  const [cart, setCart] = useAtom(cartState);
+  useEffect(() => {
+    const storedCart = getCartFromStorage();
+    setCart(storedCart);
+  }, [setCart]);
+  const totalQuantity = cart.reduce(
+    (sum, item) => sum + (item.quantity || 0),
+    0
+  );
   const handleToggleNotiDropdown = () => {
     setNotiDropdown(!notiDropdown);
     setCartDropdown(false);
@@ -112,7 +123,7 @@ function MainBar() {
       >
         <FaShoppingCart className="text-[20px]" />
         <span className="absolute -top-1 left-[30px] bg-red-500 text-white text-[8px] px-[6px] py-[1px] rounded-full font-bold">
-          5
+          {totalQuantity}
         </span>
       </div>
       <div

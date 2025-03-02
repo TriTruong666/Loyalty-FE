@@ -10,14 +10,35 @@ import { useAtom, useAtomValue } from "jotai";
 import { orderDetailModalState } from "../store/modalAtoms";
 import { detailOrderState } from "../store/orderAtomts";
 import { useGetDetailOrder } from "../hooks/hook";
-import { LineItem } from "../interfaces/Order";
-
+import { LoadingTable } from "./loading";
+import { LineItem as LineItemProps } from "../interfaces/Order";
 export default function OrderDetailModal() {
   const [detailModal, setDetailModal] = useAtom(orderDetailModalState);
   const orderId = useAtomValue(detailOrderState);
-  const { data: detail } = useGetDetailOrder(orderId);
+  const { data: detail, isLoading } = useGetDetailOrder(orderId);
   const handleModalOff = () => {
     setDetailModal(false);
+  };
+
+  const handleOrderStatus = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "text-warning-600 border border-warning-600";
+      case "confirmed":
+        return "text-blue-500 !border-blue-500";
+      default:
+        return "";
+    }
+  };
+  const handleOrderStatusName = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "Chờ xác nhận";
+      case "confirmed":
+        return "Đã xác nhận";
+      default:
+        return "";
+    }
   };
   const handleFinanceStatus = (status: string) => {
     switch (status) {
@@ -27,22 +48,6 @@ export default function OrderDetailModal() {
         return "bg-danger-50 text-red-600";
       case "confirmed":
         return "bg-success-200";
-      default:
-        return "";
-    }
-  };
-  const handleOrderStatus = (status: string) => {
-    switch (status) {
-      case "pending":
-        return "text-warning-600 border border-warning-600";
-      default:
-        return "";
-    }
-  };
-  const handleOrderStatusName = (status: string) => {
-    switch (status) {
-      case "pending":
-        return "Chờ xác nhận";
       default:
         return "";
     }
@@ -59,6 +64,7 @@ export default function OrderDetailModal() {
         return "";
     }
   };
+
   return (
     <AnimatePresence>
       {detailModal && (
@@ -75,149 +81,163 @@ export default function OrderDetailModal() {
             transition={{ type: "tween", duration: 0.4 }}
             className="w-[500px] h-full max-h-full overflow-auto bg-[#111111] shadow-md absolute right-0 flex flex-col"
           >
-            {/* header */}
-            <div className="flex justify-between bg-[#090909] w-full px-[15px] py-[20px] sticky top-0 left-0 z-10">
-              <div className="flex flex-col gap-y-[5px]">
-                <p className="text-[18px]">#{detail?.orderId}</p>
-                <p className="text-[12px] text-normal">Chi tiết hoá đơn</p>
-              </div>
-              <Button
-                isIconOnly
-                size="sm"
-                variant="light"
-                onPress={handleModalOff}
-              >
-                <IoCloseSharp className="text-[20px] text-normal" />
-              </Button>
-            </div>
+            {isLoading ? (
+              <>
+                <LoadingTable className="!h-screen w-full flex justify-center items-center" />
+              </>
+            ) : (
+              <>
+                <div className="flex justify-between bg-[#090909] w-full px-[15px] py-[20px] sticky top-0 left-0 z-10">
+                  <div className="flex flex-col gap-y-[5px]">
+                    <p className="text-[18px]">#{detail?.orderId}</p>
+                    <p className="text-[12px] text-normal">Chi tiết hoá đơn</p>
+                  </div>
+                  <Button
+                    isIconOnly
+                    size="sm"
+                    variant="light"
+                    onPress={handleModalOff}
+                  >
+                    <IoCloseSharp className="text-[20px] text-normal" />
+                  </Button>
+                </div>
 
-            {/* Order Details Section */}
-            <div className="flex px-[15px] py-[25px] gap-x-[25px] border-b border-gray-400-40">
-              <div className="flex flex-col gap-y-[10px]">
-                <p className="text-[11px] text-normal">Ngày tạo</p>
-                <p className="text-[13px]">
-                  {formatDate(detail?.createdAt as string)} lúc{" "}
-                  {formatTime(detail?.createdAt as string)}
-                </p>
-              </div>
-              <div className="flex flex-col gap-y-[10px]">
-                <p className="text-[11px] text-normal">Trạng thái thanh toán</p>
-                <p
-                  className={`text-[10px] py-[2px] px-[10px] rounded-lg ${handleFinanceStatus(
-                    detail?.transaction.transactionStatus as string
-                  )} w-fit`}
-                >
-                  {handleFinanceStatusName(
-                    detail?.transaction.transactionStatus as string
+                {/* Order Details Section */}
+                <div className="flex px-[15px] py-[25px] gap-x-[25px] border-b border-gray-400-40">
+                  <div className="flex flex-col gap-y-[10px]">
+                    <p className="text-[11px] text-normal">Ngày tạo</p>
+                    <p className="text-[13px]">
+                      {formatDate(detail?.createdAt as string)} lúc{" "}
+                      {formatTime(detail?.createdAt as string)}
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-y-[10px]">
+                    <p className="text-[11px] text-normal">
+                      Trạng thái thanh toán
+                    </p>
+                    <p
+                      className={`text-[10px] py-[2px] px-[10px] rounded-lg ${handleFinanceStatus(
+                        detail?.transaction.transactionStatus as string
+                      )} w-fit`}
+                    >
+                      {handleFinanceStatusName(
+                        detail?.transaction.transactionStatus as string
+                      )}
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-y-[10px]">
+                    <p className="text-[11px] text-normal">Trạng thái</p>
+                    <p
+                      className={`text-[10px] py-[2px] px-[10px] border w-fit rounded-lg ${handleOrderStatus(
+                        detail?.orderStatus as string
+                      )}`}
+                    >
+                      {handleOrderStatusName(detail?.orderStatus as string)}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Customer Info */}
+                <div className="flex flex-col px-[15px] py-[25px] border-b border-gray-400-40">
+                  <div className="flex justify-between">
+                    <p className="text-[11px] text-normal">
+                      Thông tin khách hàng
+                    </p>
+                    <Button variant="light" size="sm" isIconOnly>
+                      <LuPen className="text-normal" />
+                    </Button>
+                  </div>
+                  <div className="flex flex-col gap-y-[8px]">
+                    <p className="text-[13px]">{detail?.customerName}</p>
+                    <p className="text-[13px] text-[#467AB9]">
+                      {detail?.customerEmail}
+                    </p>
+                    <p className="text-[13px]">{detail?.customerPhone}</p>
+                  </div>
+                </div>
+
+                {/* Order Items */}
+                <div className="flex flex-col px-[15px] py-[25px] border-b border-gray-400-40">
+                  <p className="text-[11px] text-normal mb-[15px]">Sản phẩm</p>
+                  <div className="flex flex-col gap-y-[15px] mb-[15px]">
+                    {detail?.lineItems.slice(0, 3).map((item) => (
+                      <LineItem key={item.productId} {...item} />
+                    ))}
+                  </div>
+                  {(detail?.lineItems ?? []).length > 3 && (
+                    <p className="text-[11px] text-normal">
+                      +{(detail?.lineItems ?? []).length - 3} sản phẩm khác
+                    </p>
                   )}
-                </p>
-              </div>
-              <div className="flex flex-col gap-y-[10px]">
-                <p className="text-[11px] text-normal">Trạng thái</p>
-                <p
-                  className={`text-[10px] py-[2px] px-[10px] w-fit rounded-lg ${handleOrderStatus(
-                    detail?.orderStatus as string
-                  )}`}
-                >
-                  {handleOrderStatusName(detail?.orderStatus as string)}
-                </p>
-              </div>
-            </div>
+                </div>
 
-            {/* Customer Info */}
-            <div className="flex flex-col px-[15px] py-[25px] border-b border-gray-400-40">
-              <div className="flex justify-between">
-                <p className="text-[11px] text-normal">Thông tin khách hàng</p>
-                <Button variant="light" size="sm" isIconOnly>
-                  <LuPen className="text-normal" />
-                </Button>
-              </div>
-              <div className="flex flex-col gap-y-[8px]">
-                <p className="text-[13px]">{detail?.customerName}</p>
-                <p className="text-[13px] text-[#467AB9]">
-                  tritruonghoang3@gmail.com
-                </p>
-                <p className="text-[13px]">{detail?.customerPhone}</p>
-              </div>
-            </div>
+                {/* Invoice Summary */}
+                <div className="flex flex-col px-[15px] py-[25px]">
+                  <p className="text-[11px] text-normal mb-[15px]">Hoá đơn</p>
+                  <div className="flex flex-col gap-y-[10px]">
+                    <div className="flex justify-between">
+                      <p className="text-[13px] font-light text-normal">
+                        Tạm tính
+                      </p>
+                      <p className="text-[13px]">{formatPrice(10000000)}</p>
+                    </div>
+                    <div className="flex justify-between">
+                      <p className="text-[13px] font-light text-normal">
+                        Chiết khấu độc quyền
+                      </p>
+                      <p className="text-[13px]">{formatPrice(10000000)}</p>
+                    </div>
+                    <div className="flex justify-between">
+                      <p className="text-[13px] font-light text-normal">
+                        Chiết khấu độc quyền
+                      </p>
+                      <p className="text-[13px]">{formatPrice(10000000)}</p>
+                    </div>
+                    <div className="flex justify-between">
+                      <p className="text-[13px] font-light text-normal">
+                        Chiết khấu độc quyền
+                      </p>
+                      <p className="text-[13px]">{formatPrice(10000000)}</p>
+                    </div>
+                    <div className="flex justify-between">
+                      <p className="text-[13px] font-light text-normal">
+                        Chiết khấu độc quyền
+                      </p>
+                      <p className="text-[13px]">{formatPrice(10000000)}</p>
+                    </div>
+                    <div className="flex justify-between mt-[10px]">
+                      <p className="text-[13px] font-semibold">Tổng</p>
+                      <p className="text-[13px] font-semibold">
+                        {formatPrice(5000000000)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
 
-            {/* Order Items */}
-            <div className="flex flex-col px-[15px] py-[25px] border-b border-gray-400-40">
-              <p className="text-[11px] text-normal mb-[15px]">Sản phẩm</p>
-              <div className="flex flex-col gap-y-[15px] mb-[15px]">
-                {detail?.lineItems.slice(0, 3).map((item) => (
-                  <LineItem key={item.productId} {...item} />
-                ))}
-              </div>
-              {(detail?.lineItems ?? []).length > 3 && (
-                <p className="text-[11px] text-normal">
-                  +{(detail?.lineItems ?? []).length - 3} sản phẩm khác
-                </p>
-              )}
-            </div>
-
-            {/* Invoice Summary */}
-            <div className="flex flex-col px-[15px] py-[25px]">
-              <p className="text-[11px] text-normal mb-[15px]">Hoá đơn</p>
-              <div className="flex flex-col gap-y-[10px]">
-                <div className="flex justify-between">
-                  <p className="text-[13px] font-light text-normal">Tạm tính</p>
-                  <p className="text-[13px]">{formatPrice(10000000)}</p>
+                {/* Footer Buttons */}
+                <div className="sticky left-0 bottom-0 flex justify-between px-[15px] gap-x-[15px] py-[25px] bg-[#111111] border-t border-gray-400-40">
+                  <Button
+                    size="sm"
+                    variant="flat"
+                    className="flex w-full"
+                    color="danger"
+                  >
+                    <RiFileCloseLine />
+                    <p>Huỷ đơn hàng</p>
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="flat"
+                    color="success"
+                    className="flex w-full"
+                  >
+                    <MdCheck />
+                    <p>Xác nhận đơn</p>
+                  </Button>
                 </div>
-                <div className="flex justify-between">
-                  <p className="text-[13px] font-light text-normal">
-                    Chiết khấu độc quyền
-                  </p>
-                  <p className="text-[13px]">{formatPrice(10000000)}</p>
-                </div>
-                <div className="flex justify-between">
-                  <p className="text-[13px] font-light text-normal">
-                    Chiết khấu độc quyền
-                  </p>
-                  <p className="text-[13px]">{formatPrice(10000000)}</p>
-                </div>
-                <div className="flex justify-between">
-                  <p className="text-[13px] font-light text-normal">
-                    Chiết khấu độc quyền
-                  </p>
-                  <p className="text-[13px]">{formatPrice(10000000)}</p>
-                </div>
-                <div className="flex justify-between">
-                  <p className="text-[13px] font-light text-normal">
-                    Chiết khấu độc quyền
-                  </p>
-                  <p className="text-[13px]">{formatPrice(10000000)}</p>
-                </div>
-                <div className="flex justify-between mt-[10px]">
-                  <p className="text-[13px] font-semibold">Tổng</p>
-                  <p className="text-[13px] font-semibold">
-                    {formatPrice(5000000000)}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Footer Buttons */}
-            <div className="sticky left-0 bottom-0 flex justify-between px-[15px] gap-x-[15px] py-[25px] bg-[#111111] border-t border-gray-400-40">
-              <Button
-                size="sm"
-                variant="flat"
-                className="flex w-full"
-                color="danger"
-              >
-                <RiFileCloseLine />
-                <p>Huỷ đơn hàng</p>
-              </Button>
-              <Button
-                size="sm"
-                variant="flat"
-                color="success"
-                className="flex w-full"
-              >
-                <MdCheck />
-                <p>Xác nhận đơn</p>
-              </Button>
-            </div>
+              </>
+            )}
+            {/* header */}
           </motion.div>
         </motion.div>
       )}
@@ -225,7 +245,7 @@ export default function OrderDetailModal() {
   );
 }
 
-const LineItem = (props: LineItem) => {
+const LineItem = (props: LineItemProps) => {
   const unitProduct = (unit: string) => {
     switch (unit) {
       case "1":

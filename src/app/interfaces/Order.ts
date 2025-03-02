@@ -64,6 +64,7 @@ export interface Order {
   discountPersonal: number;
   discountCustom: number;
   customerName: string;
+  customerEmail: string;
   customerPhone: string;
   totalOrderValue: number;
   totalPayment: number;

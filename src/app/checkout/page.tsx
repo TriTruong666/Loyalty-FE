@@ -68,7 +68,7 @@ export default function CheckoutPage() {
   }, [info]);
 
   return (
-    <div className="flex flex-col p-[30px] w-screen overflow-hidden bg-background font-open">
+    <div className="flex flex-col min-h-screen p-[30px] w-screen overflow-hidden bg-background font-open">
       <Link
         color="foreground"
         href="/dashboard/cart"
@@ -334,7 +334,7 @@ function PaymentMethod() {
           value="cod"
           onChange={setSelected}
           selected={selected}
-          title="Tiền mặt"
+          title="COD"
         />
         <RadioButton
           icon={<MdOutlineCreditCard className="text-[18px]" />}
