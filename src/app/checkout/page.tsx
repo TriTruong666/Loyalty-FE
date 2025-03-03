@@ -13,7 +13,7 @@ import {
   MdOutlineLocalPhone,
   MdOutlineMailOutline,
 } from "react-icons/md";
-import { TbCoins, TbTruck } from "react-icons/tb";
+import { TbTruck } from "react-icons/tb";
 import {
   useGetAllProvince,
   useGetDistrictByProvince,
@@ -57,7 +57,7 @@ export default function CheckoutPage() {
     }
   }, [cart]);
   useEffect(() => {
-    if (isCartLoaded && cart.length === 0) {
+    if (isCartLoaded && cart.cartItems.length === 0) {
       router.push("/dashboard/cart");
     }
   }, [cart, isCartLoaded, router]);
@@ -98,7 +98,7 @@ function LocationForm() {
   const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
   const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
   const [selectedWard, setSelectedWard] = useState<string | null>(null);
-  const { data: provinces, isLoading } = useGetAllProvince();
+  const { data: provinces } = useGetAllProvince();
   const { data: districts } = useGetDistrictByProvince(
     selectedProvince as string
   );
@@ -345,15 +345,6 @@ function PaymentMethod() {
           selected={selected}
           title="Chuyển khoản"
         />
-        <RadioButton
-          icon={<TbCoins className="text-[18px]" />}
-          name="method"
-          description="Bạn sẽ được công nợ trong vòng 7 ngày."
-          value="debt"
-          onChange={setSelected}
-          selected={selected}
-          title="Công nợ"
-        />
       </div>
     </div>
   );
@@ -368,7 +359,7 @@ function Summary() {
   const discountCustomValue = useAtomValue(discountCustomState);
   const [cart, setCart] = useAtom(cartState);
   const [note, setNote] = useAtom(noteCheckoutState);
-  const [submitData, setSubmitData] = useAtom(checkoutState);
+  const submitData = useAtomValue(checkoutState);
   const [isMounted, setIsMounted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
@@ -394,7 +385,10 @@ function Summary() {
           localStorage.removeItem("cart");
         }
         setTimeout(() => {
-          setCart([]);
+          setCart({
+            cartItems: [],
+            gifts: [],
+          });
         }, 500);
       }
     },
@@ -426,12 +420,17 @@ function Summary() {
         <p className="text-[22px] font-light select-none">Chi tiết đơn hàng</p>
       </div>
       <div className="flex flex-col mt-[30px] gap-y-[10px]">
-        {cart.slice(0, 3).map((item) => (
+        {cart.cartItems.slice(0, 3).map((item) => (
           <CheckoutCartItem key={item.id} {...item} />
         ))}
-        {cart.length > 3 && (
+        {cart.cartItems.length > 3 && (
           <p className="text-normal text-[13px]">
-            +{cart.length - 3} sản phẩm khác...
+            +{cart.cartItems.length - 3} sản phẩm khác...
+          </p>
+        )}
+        {cart.gifts.length !== 0 && (
+          <p className="text-normal text-[13px]">
+            Bạn đã chọn {cart.gifts.length} món quà.
           </p>
         )}
       </div>
@@ -590,7 +589,7 @@ const RadioButton: FC<RadioButtonProps> = ({
   return (
     <label
       onClick={() => onChange(value)}
-      className={`flex flex-col justify-center items-center cursor-pointer w-full h-[150px] border transition-all duration-300 rounded-[15px] ${
+      className={`flex flex-col justify-center items-center cursor-pointer w-full h-[200px] border transition-all duration-300 rounded-[15px] ${
         selected === value
           ? "border-gray-400 bg-gray-600 bg-opacity-10"
           : "border-gray-400-40"

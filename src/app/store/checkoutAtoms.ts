@@ -37,6 +37,12 @@ export const checkoutState = atom<Checkout | null>((get) => {
         amount: item.quantity,
       }))
       .filter((item) => item.productID !== ""),
+    gifts: cart.gifts
+      .map((item) => ({
+        productID: item.product.productId ?? "",
+        amount: item.quantity,
+      }))
+      .filter((item) => item.productID !== ""),
     gateway: paymentMethod,
     shippingAddress: address,
     note,

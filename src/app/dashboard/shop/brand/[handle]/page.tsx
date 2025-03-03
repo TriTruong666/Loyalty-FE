@@ -169,6 +169,10 @@ const ProductItem: FC<{ product: ProductProps }> = ({ product }) => {
   const layout = useAtomValue(layoutState);
   const setCart = useSetAtom(cartState);
 
+  const handleAddProductToCart = () => {
+    addToCart(product, 1, setCart);
+    showToast("Đã thêm vào giỏ hàng.", "success");
+  };
   return (
     <div className="flex flex-col gap-y-[10px]">
       <Image
@@ -205,12 +209,7 @@ const ProductItem: FC<{ product: ProductProps }> = ({ product }) => {
           variant="flat"
           color="secondary"
           size="md"
-          onPress={() => {
-            if (product) {
-              addToCart(product, 1, setCart);
-              showToast("Đã thêm vào giỏ hàng.", "success");
-            }
-          }}
+          onPress={handleAddProductToCart}
         >
           Thêm vào giỏ
         </Button>

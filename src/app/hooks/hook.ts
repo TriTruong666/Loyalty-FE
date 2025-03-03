@@ -46,7 +46,11 @@ export function useGetProductByLimit(page: number, mode: string) {
     ProductService.getProductServiceByLimit(page, mode)
   );
 }
-
+export function useSearchProductByKeyword(keyword: string) {
+  return useFetch<Product[]>(["search", keyword], async () =>
+    ProductService.searchProductByKeyword(keyword)
+  );
+}
 export function useGetAllAssets() {
   return useFetch<CloudinaryAsset[]>(["assets"], async () =>
     CloudinaryService.getAllAssets()

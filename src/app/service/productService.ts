@@ -88,3 +88,14 @@ export const getProductDetailByHandle = async (handle: string) => {
     console.error(error);
   }
 };
+
+export const searchProductByKeyword = async (keyword: string) => {
+  try {
+    const res = await axiosClient.get(
+      `/api/product/keyword?keyword=${keyword}`
+    );
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};

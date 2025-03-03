@@ -1,7 +1,10 @@
 "use client";
 import GiftDropdown from "@/app/components/GiftDropdown";
 import { LoadingDashboard } from "@/app/components/loading";
-import { CartItem as CartItemProps } from "@/app/interfaces/Cart";
+import {
+  CartItem as CartItemProps,
+  GiftItem as GiftItemProps,
+} from "@/app/interfaces/Cart";
 import { updateCustomPercent } from "@/app/service/accountService";
 import {
   getCartFromStorage,
@@ -17,6 +20,7 @@ import {
   subtotalCartValueAtom,
   totalCartValueAtoms,
 } from "@/app/store/cartAtoms";
+import { giftDropdownState } from "@/app/store/dropdownAtoms";
 import { formatPrice } from "@/app/utils/format";
 import { showToast } from "@/app/utils/toast";
 import { Link, Button, Input } from "@heroui/react";
@@ -27,6 +31,7 @@ import { BsCartX } from "react-icons/bs";
 import { FaTrash } from "react-icons/fa";
 export default function CartPage() {
   const [percentModal, setPercentModal] = useState(false);
+  const setGiftDropdown = useSetAtom(giftDropdownState);
   const info = useAtomValue(userInfoState);
   const [submitData, setSubmitData] = useState<number>(0);
   const [cart, setCart] = useAtom(cartState);
@@ -102,11 +107,15 @@ export default function CartPage() {
       console.error(error);
     }
   };
+  const toggleOpenDropdown = () => {
+    setGiftDropdown(true);
+  };
   const toggleOpenModal = () => {
     setPercentModal(true);
   };
   const toggleCloseModal = () => {
     setPercentModal(false);
+    setGiftDropdown(false);
   };
   if (cart.cartItems.length === 0) {
     return (
@@ -166,7 +175,7 @@ export default function CartPage() {
         </div>
         {info?.type === "sales" && (
           <div className="flex items-center">
-            <Button variant="light">
+            <Button variant="light" onPress={toggleOpenDropdown}>
               <p className="text-primary">Thêm quà tặng</p>
             </Button>
             <Button onPress={toggleOpenModal} variant="light" className="">
@@ -195,6 +204,18 @@ export default function CartPage() {
               <div className="flex flex-col gap-y-[40px]">
                 {filterCartDistribution.map((item) => (
                   <CartItem key={item.id} {...item} />
+                ))}
+              </div>
+            </div>
+          )}
+          {cart.gifts.length !== 0 && (
+            <div className="flex flex-col">
+              <p className="text-sm font-semibold mb-[20px] text-primary">
+                Quà tặng
+              </p>
+              <div className="flex flex-col gap-y-[40px]">
+                {cart.gifts.map((item) => (
+                  <GiftItem key={item.id} {...item} />
                 ))}
               </div>
             </div>
@@ -353,6 +374,96 @@ const CartItem = (props: CartItemProps) => {
       <div className="flex flex-col justify-between w-[30%] items-end">
         <p className="text-[15px] text-primary font-bold w-fit">
           {formatPrice(props.product.price as number)}
+        </p>
+
+        <div className="flex">
+          <Button
+            isIconOnly
+            variant="light"
+            size="md"
+            color="danger"
+            onPress={handleRemove}
+          >
+            <FaTrash className="text-[16px]" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const GiftItem = (props: GiftItemProps) => {
+  const [quantity, setQuantity] = useState(props.quantity);
+  const setCart = useSetAtom(cartState);
+
+  const handleRemove = () => {
+    removeFromCart(props.id, setCart);
+    showToast("Đã xoá khỏi giỏ hàng.", "success");
+  };
+  const handleQuantityChange = (newQuantity: number) => {
+    if (newQuantity < 1) {
+      return;
+    }
+    setQuantity(newQuantity);
+    updateCartItemQuantity(props.id, newQuantity, setCart);
+  };
+  const unitProduct = (unit: string) => {
+    switch (unit) {
+      case "1":
+        return "Tuýp";
+      case "2":
+        return "Hộp";
+      case "3":
+        return "Chai";
+      case "4":
+        return "Ống";
+      case "5":
+        return "Gói";
+      case "6":
+        return "Thỏi";
+      case "7":
+        return "Hũ";
+      case "8":
+        return "Miếng";
+    }
+  };
+  return (
+    <div className="flex pl-[20px] border-l-[2px]">
+      <div className="flex flex-col justify-between w-[70%] gap-y-[10px]">
+        <p className="text-sm max-w-[95%] line-clamp-2">
+          {props.product.productName}
+        </p>
+        <div className="flex items-center gap-x-[20px]">
+          <div className="flex items-center gap-x-[10px]">
+            <Button
+              isIconOnly
+              variant="flat"
+              size="sm"
+              onPress={() => handleQuantityChange(quantity + 1)}
+            >
+              <p className="text-[20px]">+</p>
+            </Button>
+            <p>{quantity}</p>
+            <Button
+              isIconOnly
+              variant="flat"
+              size="sm"
+              onPress={() => handleQuantityChange(quantity - 1)}
+            >
+              <p className="text-[20px]">-</p>
+            </Button>
+          </div>
+          <p className="text-normal text-sm">
+            Đơn vị tính:{" "}
+            <span className="font-bold text-foreground">
+              {unitProduct(props.product.unit)}
+            </span>
+          </p>
+        </div>
+      </div>
+      <div className="flex flex-col justify-between w-[30%] items-end">
+        <p className="text-[15px] text-primary font-bold w-fit">
+          {formatPrice(0)}
         </p>
 
         <div className="flex">

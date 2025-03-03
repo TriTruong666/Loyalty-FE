@@ -1,4 +1,4 @@
-import { Cart, GiftItem } from "../interfaces/Cart";
+import { Cart } from "../interfaces/Cart";
 import { Product } from "../interfaces/Product";
 
 export const getCartFromStorage = (): Cart => {
@@ -48,6 +48,40 @@ export const addToCart = (
   });
 };
 
+export const addGiftsToCart = (
+  gift: Product,
+  quantity: number,
+  setCart: (update: (prevCart: Cart) => Cart) => void
+) => {
+  setCart((prevCart) => {
+    const existingGiftIndex = prevCart.gifts.findIndex(
+      (item) => item.product.productId === gift.productId
+    );
+
+    let updatedCart: Cart;
+    if (existingGiftIndex !== -1) {
+      const updatedGifts = [...prevCart.gifts];
+      updatedGifts[existingGiftIndex].quantity += quantity;
+      updatedCart = { ...prevCart, gifts: updatedGifts };
+    } else {
+      updatedCart = {
+        ...prevCart,
+        gifts: [
+          ...prevCart.gifts,
+          {
+            id: crypto.randomUUID(),
+            product: gift,
+            quantity,
+          },
+        ],
+      };
+    }
+
+    saveCartToStorage(updatedCart);
+    return updatedCart;
+  });
+};
+
 export const removeFromCart = (
   productId: string,
   setCart: (update: (prevCart: Cart) => Cart) => void
@@ -56,6 +90,7 @@ export const removeFromCart = (
     const updatedCart = {
       ...prevCart,
       cartItems: prevCart.cartItems.filter((item) => item.id !== productId),
+      gifts: prevCart.gifts.filter((item) => item.id !== productId), // Ensure gifts are removed too
     };
 
     saveCartToStorage(updatedCart);
@@ -73,39 +108,15 @@ export const updateCartItemQuantity = (
       item.id === itemId ? { ...item, quantity: Math.max(quantity, 1) } : item
     );
 
-    const updatedCart = { ...prevCart, cartItems: updatedCartItems };
-    saveCartToStorage(updatedCart);
-    return updatedCart;
-  });
-};
+    const updatedGifts = prevCart.gifts.map((item) =>
+      item.id === itemId ? { ...item, quantity: Math.max(quantity, 1) } : item
+    );
 
-export const addGiftToCartItem = (
-  itemId: string,
-  gift: Product | null,
-  setCart: (update: (prevCart: Cart) => Cart) => void
-) => {
-  setCart((prevCart) => {
-    let updatedGifts: GiftItem[] = [...(prevCart.gifts || [])];
-
-    if (gift) {
-      const existingGiftIndex = updatedGifts.findIndex(
-        (giftItem) => giftItem.id === itemId
-      );
-
-      if (existingGiftIndex !== -1) {
-        updatedGifts[existingGiftIndex] = {
-          id: itemId,
-          gifts: gift,
-          quantity: 1,
-        };
-      } else {
-        updatedGifts.push({ id: itemId, gifts: gift, quantity: 1 });
-      }
-    } else {
-      updatedGifts = updatedGifts.filter((giftItem) => giftItem.id !== itemId);
-    }
-
-    const updatedCart = { ...prevCart, gifts: updatedGifts };
+    const updatedCart = {
+      ...prevCart,
+      cartItems: updatedCartItems,
+      gifts: updatedGifts,
+    };
     saveCartToStorage(updatedCart);
     return updatedCart;
   });

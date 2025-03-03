@@ -2,7 +2,7 @@ import { Product } from "./Product";
 
 export interface Cart {
   cartItems: CartItem[];
-  gifts?: GiftItem[];
+  gifts: GiftItem[];
 }
 
 export interface CartItem {
@@ -13,6 +13,6 @@ export interface CartItem {
 
 export interface GiftItem {
   id: string;
-  gifts?: Product;
+  product: Product;
   quantity: number;
 }
