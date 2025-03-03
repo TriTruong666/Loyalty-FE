@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import { cartState, discountCustomState } from "./cartAtoms";
+import { cartState } from "./cartAtoms";
 import { Checkout } from "../interfaces/Checkout";
 import { userInfoState } from "./accountAtoms";
 
@@ -31,7 +31,7 @@ export const checkoutState = atom<Checkout | null>((get) => {
   if (!paymentMethod || !address || !info) return null;
 
   return {
-    lineItems: cart
+    lineItems: cart.cartItems
       .map((item) => ({
         productID: item.product.productId ?? "",
         amount: item.quantity,

@@ -1,9 +1,18 @@
 import { Product } from "./Product";
 
-export type Cart = CartItem[];
+export interface Cart {
+  cartItems: CartItem[];
+  gifts?: GiftItem[];
+}
 
 export interface CartItem {
   id: string;
   product: Product;
+  quantity: number;
+}
+
+export interface GiftItem {
+  id: string;
+  gifts?: Product;
   quantity: number;
 }

@@ -27,7 +27,7 @@ export default function CartDropdown() {
           <p className="font-open font-light w-full px-[20px] py-[20px] sticky top-0 left-0 z-[60]">
             Giỏ hàng của bạn
           </p>
-          {cart.length === 0 ? (
+          {cart.cartItems.length === 0 ? (
             <>
               <div className="h-[500px] w-full flex flex-col justify-center items-center gap-y-[20px]">
                 <BsCartX className="text-normal text-[30px]" />
@@ -39,7 +39,7 @@ export default function CartDropdown() {
           ) : (
             <>
               <div className="flex-1 overflow-auto border-t border-gray-400-40">
-                {cart.map((item) => (
+                {cart.cartItems.map((item) => (
                   <CartItem key={item.id} {...item} />
                 ))}
               </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { AdminOrderStatusMenu } from "@/app/components/AdminOrderStatusMenu";
+import { AdminOrderStatusMenu } from "@/app/components/OrderStatusMenu";
 import { Suspense } from "react";
 import AdminOrderLoadingTableLayout from "./loading";
 

@@ -2,11 +2,14 @@ import { atom } from "jotai";
 import { Cart } from "../interfaces/Cart";
 import { userInfoState } from "./accountAtoms";
 
-export const cartState = atom<Cart>([]);
+export const cartState = atom<Cart>({
+  cartItems: [],
+  gifts: [],
+});
 
 export const subtotalCartValueAtom = atom((get) => {
   const cart = get(cartState);
-  return cart.reduce(
+  return cart.cartItems.reduce(
     (total, item) => total + (item.product.price ?? 0) * item.quantity,
     0
   );
@@ -21,7 +24,7 @@ export const discountCustomState = atom((get) => {
   const discountPercent =
     info.type === "sales" ? info.rank.discountCustom ?? 0 : 0;
 
-  const subtotal = cart.reduce(
+  const subtotal = cart.cartItems.reduce(
     (total, item) => total + (item.product.price ?? 0) * item.quantity,
     0
   );
@@ -39,7 +42,7 @@ export const discountUniqueState = atom((get) => {
     info.type === "business"
       ? info.rank.discountBusiness ?? 0
       : info.rank.discountPersonal ?? 0;
-  const subtotal = cart.reduce(
+  const subtotal = cart.cartItems.reduce(
     (total, item) => total + (item.product.price ?? 0) * item.quantity,
     0
   );
@@ -55,7 +58,9 @@ export const discountPPState = atom((get) => {
 
   const discountPP = info.rank.discountPP ?? 0;
 
-  const ppCart = cart.filter((item) => item.product.brand?.type === "phanphoi");
+  const ppCart = cart.cartItems.filter(
+    (item) => item.product.brand?.type === "phanphoi"
+  );
 
   const ppSubtotal = ppCart.reduce(
     (total, item) => total + (item.product.price ?? 0) * item.quantity,

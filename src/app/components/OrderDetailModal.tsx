@@ -25,7 +25,9 @@ export default function OrderDetailModal() {
       case "pending":
         return "text-warning-600 border border-warning-600";
       case "confirmed":
-        return "text-blue-500 !border-blue-500";
+        return "text-blue-500 border-blue-500";
+      case "exported":
+        return "text-secondary border-secondary";
       default:
         return "";
     }
@@ -36,6 +38,8 @@ export default function OrderDetailModal() {
         return "Chờ xác nhận";
       case "confirmed":
         return "Đã xác nhận";
+      case "exported":
+        return "Đang giao hàng";
       default:
         return "";
     }

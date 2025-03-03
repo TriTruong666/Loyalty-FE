@@ -1,4 +1,5 @@
 "use client";
+import GiftDropdown from "@/app/components/GiftDropdown";
 import { LoadingDashboard } from "@/app/components/loading";
 import { CartItem as CartItemProps } from "@/app/interfaces/Cart";
 import { updateCustomPercent } from "@/app/service/accountService";
@@ -66,10 +67,10 @@ export default function CartPage() {
     },
   });
 
-  const filterCartUnique = cart.filter(
+  const filterCartUnique = cart.cartItems.filter(
     (item) => item.product.brand?.type === "docquyen"
   );
-  const filterCartDistribution = cart.filter(
+  const filterCartDistribution = cart.cartItems.filter(
     (item) => item.product.brand?.type === "phanphoi"
   );
   const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -107,7 +108,7 @@ export default function CartPage() {
   const toggleCloseModal = () => {
     setPercentModal(false);
   };
-  if (cart.length === 0) {
+  if (cart.cartItems.length === 0) {
     return (
       <div className="w-full h-[600px] flex flex-col justify-center items-center gap-y-[20px] font-open">
         <BsCartX className="text-[60px] text-normal" />
@@ -130,6 +131,8 @@ export default function CartPage() {
       onClick={toggleCloseModal}
     >
       <div className="flex justify-between w-full items-center px-[40px] relative">
+        {/* gift dropdown */}
+        <GiftDropdown />
         {/* modal */}
         {percentModal && (
           <div
@@ -162,9 +165,14 @@ export default function CartPage() {
           </p>
         </div>
         {info?.type === "sales" && (
-          <Button onPress={toggleOpenModal} variant="light" className="">
-            <p className="text-primary">Nhập chiết khấu</p>
-          </Button>
+          <div className="flex items-center">
+            <Button variant="light">
+              <p className="text-primary">Thêm quà tặng</p>
+            </Button>
+            <Button onPress={toggleOpenModal} variant="light" className="">
+              <p className="text-primary">Nhập chiết khấu</p>
+            </Button>
+          </div>
         )}
       </div>
       <div className="flex px-[40px] mt-[40px] justify-between">

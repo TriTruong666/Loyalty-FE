@@ -14,7 +14,7 @@ import { useGetProductByBrand } from "@/app/hooks/hook";
 import { useParams } from "next/navigation";
 import { ItemSkeleton } from "@/app/components/skeleton";
 import { useInView } from "react-intersection-observer";
-import { FaRegSadCry } from "react-icons/fa";
+
 import { cartState } from "@/app/store/cartAtoms";
 import { addToCart } from "@/app/service/cartService";
 import { showToast } from "@/app/utils/toast";
@@ -69,21 +69,22 @@ export default function BrandProductShopPage() {
 function ProductSection() {
   const params = useParams();
   const handle = params.handle;
-  const { data: allProducts, isLoading } = useGetProductByBrand(
-    handle as string
+  const { data: products, isLoading } = useGetProductByBrand(
+    handle as string,
+    "dangban"
   );
   const [displayedProducts, setDisplayedProducts] = useState<ProductProps[]>(
     []
   );
-  const [loadCount, setLoadCount] = useState(1); // Missing loadCount fix
+  const [loadCount, setLoadCount] = useState(1);
   const [layout, setLayout] = useAtom(layoutState);
   const { ref, inView } = useInView({ threshold: 1.0, triggerOnce: false });
 
   useEffect(() => {
-    if (allProducts) {
-      setDisplayedProducts(allProducts.slice(0, ITEMS_PER_LOAD));
+    if (products) {
+      setDisplayedProducts(products.slice(0, ITEMS_PER_LOAD));
     }
-  }, [allProducts]);
+  }, [products]);
 
   useEffect(() => {
     if (inView) {
@@ -92,10 +93,10 @@ function ProductSection() {
   }, [inView]);
 
   const loadMoreProducts = () => {
-    if (!allProducts) return; //
+    if (!products) return; //
 
     const nextLoadCount = loadCount + 1;
-    const newProducts = allProducts.slice(0, nextLoadCount * ITEMS_PER_LOAD);
+    const newProducts = products.slice(0, nextLoadCount * ITEMS_PER_LOAD);
 
     setDisplayedProducts(newProducts || []);
     setLoadCount(nextLoadCount);
@@ -104,7 +105,7 @@ function ProductSection() {
   const handleChangeLayout = (layout: string) => {
     setLayout(layout);
   };
-  if (allProducts?.length === 0) {
+  if (products?.length === 0) {
     return (
       <div className="w-full h-[550px] flex flex-col justify-center items-center gap-y-[20px]">
         <BsBox2 className="text-[70px] text-normal" />

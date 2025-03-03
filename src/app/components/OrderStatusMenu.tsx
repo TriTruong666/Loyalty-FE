@@ -9,42 +9,52 @@ export function AdminOrderStatusMenu() {
   const { data: allOrders } = useGetAllOrders();
   const pendingOrders = allOrders?.filter(
     (order) => order.orderStatus === "pending"
-  );
+  ).length;
   const confirmedOrders = allOrders?.filter(
     (order) => order.orderStatus === "confirmed"
-  );
-  // const pendingOrders = allOrders?.filter(
-  //   (order) => order.orderStatus === "pending"
-  // );
+  ).length;
+  const deliveryOrders = allOrders?.filter(
+    (order) => order.orderStatus === "exported"
+  ).length;
+  const completeOrders = allOrders?.filter(
+    (order) => order.orderStatus === "complete"
+  ).length;
+  const cancelOrders = allOrders?.filter(
+    (order) => order.orderStatus === "cancelled"
+  ).length;
   const status = [
     {
       name: "Chờ Xác Nhận",
-      path: "/dashboard/admin-orders",
-      count: pendingOrders?.length,
+      path: "/dashboard/orders",
+      count: pendingOrders,
     },
     {
       name: "Đã Xác Nhận",
-      path: "/dashboard/admin-orders/confirm",
-      count: confirmedOrders?.length,
+      path: "/dashboard/orders/confirm",
+      count: confirmedOrders,
     },
     {
       name: "Đang Giao",
-      path: "/dashboard/admin-orders/delivering",
-      count: 60,
+      path: "/dashboard/orders/delivering",
+      count: deliveryOrders,
     },
     {
       name: "Hoàn Thành",
-      path: "/dashboard/admin-orders/complete",
-      count: 5,
+      path: "/dashboard/orders/complete",
+      count: completeOrders,
     },
-    { name: "Đơn Hủy", path: "/dashboard/admin-orders/cancelled", count: 10 },
+    {
+      name: "Đơn Hủy",
+      path: "/dashboard/orders/cancelled",
+      count: cancelOrders,
+    },
   ];
 
   return (
     <div className="flex items-center font-open pb-[2px] border-b border-gray-400-40 mt-[30px]">
       {status.map((status) => {
         const isActive =
-          status.path === "/dashboard/admin-orders"
+          status.path === "/dashboard/orders"
             ? pathname === status.path
             : pathname.startsWith(status.path);
         return (

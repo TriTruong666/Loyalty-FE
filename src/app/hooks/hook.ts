@@ -31,9 +31,9 @@ export function useAllProduct() {
     ProductService.getAllProductService()
   );
 }
-export function useGetProductByBrand(handle: string) {
+export function useGetProductByBrand(handle: string, status: string) {
   return useFetch<Product[]>(["shop", handle], async () =>
-    ProductService.getProductByBrand(handle)
+    ProductService.getProductByBrand(handle, status)
   );
 }
 export function useGetProductDetailByHandle(handle: string) {
@@ -123,9 +123,7 @@ export function useGetOrderByLimitByStatus(page: number, status: string) {
   );
 }
 export function useGetAllOrders() {
-  return useFetch<Order[]>(["all-orders"], async () =>
-    OrderService.getAllOrders()
-  );
+  return useFetch<Order[]>(["orders"], async () => OrderService.getAllOrders());
 }
 
 export function useGetDetailOrder(orderId: string) {

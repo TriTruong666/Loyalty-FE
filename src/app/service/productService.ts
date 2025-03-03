@@ -69,9 +69,11 @@ export const deleteProductService = async (productId: string) => {
   }
 };
 
-export const getProductByBrand = async (handle: string) => {
+export const getProductByBrand = async (handle: string, status: string) => {
   try {
-    const res = await axiosClient.get(`/api/product/by-brand-handle/${handle}`);
+    const res = await axiosClient.get(
+      `/api/product/by-brand-handle/${handle}?status=${status}`
+    );
     return res.data;
   } catch (error) {
     console.error(error);

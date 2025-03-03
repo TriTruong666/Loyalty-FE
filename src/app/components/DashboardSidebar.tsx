@@ -72,7 +72,7 @@ function StaffMenu() {
     {
       name: "Đơn hàng",
       icon: LuFileText,
-      path: "/dashboard/admin-orders",
+      path: "/dashboard/orders",
       typography: 10,
     },
     {
@@ -120,7 +120,7 @@ function AdminMenu() {
     {
       name: "Đơn hàng",
       icon: LuFileText,
-      path: "/dashboard/admin-orders",
+      path: "/dashboard/orders",
       typography: 10,
     },
     {
@@ -300,7 +300,7 @@ function UserMenu() {
     const storedCart = getCartFromStorage();
     setCart(storedCart);
   }, [setCart]);
-  const totalQuantity = cart.reduce(
+  const totalQuantity = cart.cartItems.reduce(
     (sum, item) => sum + (item.quantity || 0),
     0
   );
@@ -325,7 +325,7 @@ function UserMenu() {
     {
       name: "Đơn hàng",
       icon: LuFileText,
-      path: "/dashboard/user-orders",
+      path: "/dashboard/orders",
       typography: 10,
     },
     {

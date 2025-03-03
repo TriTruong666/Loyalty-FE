@@ -81,7 +81,7 @@ function MainBar() {
     const storedCart = getCartFromStorage();
     setCart(storedCart);
   }, [setCart]);
-  const totalQuantity = cart.reduce(
+  const totalQuantity = cart.cartItems.reduce(
     (sum, item) => sum + (item.quantity || 0),
     0
   );

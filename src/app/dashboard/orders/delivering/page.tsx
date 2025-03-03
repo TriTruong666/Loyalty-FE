@@ -9,8 +9,9 @@ import {
   DropdownTrigger,
 } from "@heroui/dropdown";
 import { Button } from "@heroui/button";
-import { BsThreeDotsVertical, BsTruck } from "react-icons/bs";
+import { BsThreeDotsVertical } from "react-icons/bs";
 import { showToast } from "@/app/utils/toast";
+import { IoCheckmarkSharp } from "react-icons/io5";
 import {
   cancelOrderModalState,
   confirmOrderModalState,
@@ -51,17 +52,16 @@ function AllOrderTable() {
   const [totalPage, setTotalPage] = useState(1);
   const [noteData, setNoteData] = useState("");
   const [isMounted, setIsMounted] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
 
   const { data: orders, isLoading } = useGetOrderByLimitByStatus(
     page,
-    "confirmed"
+    "exported"
   );
   const limit = 8;
   const { data: allOrders } = useGetAllOrders();
 
   const filteredAllProduct = allOrders?.filter(
-    (order) => order.orderStatus === "confirmed"
+    (order) => order.orderStatus === "exported"
   );
   useEffect(() => {
     if (filteredAllProduct) {
@@ -73,18 +73,14 @@ function AllOrderTable() {
   const updateNoteMutation = useMutation({
     mutationKey: ["update-note"],
     mutationFn: updateOrderService,
-    onMutate() {
-      setIsUpdating(true);
-    },
+    onMutate() {},
     onSuccess(data) {
       if (data.message === "Ok") {
-        setIsUpdating(false);
         showToast("Ghi chú thành công", "success");
         queryClient.invalidateQueries({ queryKey: ["orders"] });
         setOrderId("");
         setNoteData("");
       }
-      setIsUpdating(false);
     },
   });
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -251,11 +247,11 @@ function AllOrderTable() {
                         className="group"
                         color="default"
                         startContent={
-                          <BsTruck className="text-[16px] group-hover:text-success" />
+                          <IoCheckmarkSharp className="text-[16px] group-hover:text-success" />
                         }
-                        key="delivery"
+                        key="approve"
                       >
-                        <p className="group-hover:text-success">Giao hàng</p>
+                        <p className="group-hover:text-success">Xác Nhận</p>
                       </DropdownItem>
                       <DropdownItem
                         onPress={() =>
