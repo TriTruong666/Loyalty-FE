@@ -44,6 +44,7 @@ import { createOrderService } from "../service/checkoutService";
 import { showToast } from "../utils/toast";
 import { LoadingDashboard } from "../components/loading";
 import { useRouter } from "next/navigation";
+import { GrMoney } from "react-icons/gr";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -297,6 +298,7 @@ function InfomationForm() {
             icon={<FaRegUser className="text-[20px]" />}
           />
           <NormalInput
+            max={10}
             onChange={handleOnChange}
             name="customerPhone"
             label="Số điện thoại"
@@ -344,6 +346,15 @@ function PaymentMethod() {
           onChange={setSelected}
           selected={selected}
           title="Chuyển khoản"
+        />
+        <RadioButton
+          icon={<GrMoney className="text-[18px]" />}
+          name="method"
+          description="Công nợ trong vòng 21 ngày."
+          value="debt"
+          onChange={setSelected}
+          selected={selected}
+          title="Công nợ"
         />
       </div>
     </div>
@@ -589,7 +600,7 @@ const RadioButton: FC<RadioButtonProps> = ({
   return (
     <label
       onClick={() => onChange(value)}
-      className={`flex flex-col justify-center items-center cursor-pointer w-full h-[200px] border transition-all duration-300 rounded-[15px] ${
+      className={`flex flex-col justify-center items-center cursor-pointer w-full h-[150px] border transition-all duration-300 rounded-[15px] ${
         selected === value
           ? "border-gray-400 bg-gray-600 bg-opacity-10"
           : "border-gray-400-40"

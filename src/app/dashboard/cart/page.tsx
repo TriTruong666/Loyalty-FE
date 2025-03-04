@@ -49,6 +49,15 @@ export default function CartPage() {
     }
     setIsMounted(true);
   }, [setCart]);
+  useEffect(() => {
+    if (cart.cartItems.length > 0) return; // Tránh gọi setCart liên tục
+
+    setCart((prev) => {
+      if (prev.cartItems.length === 0 && prev.gifts.length === 0) return prev; // Không cập nhật nếu không cần thiết
+      return { cartItems: [], gifts: [] };
+    });
+  }, [cart.cartItems, setCart]);
+
   const queryClient = useQueryClient();
   const updatePercentMutation = useMutation({
     mutationKey: ["update-percent"],

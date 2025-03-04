@@ -85,7 +85,7 @@ function GiftItem(props: ProductProps) {
   return (
     <div className="flex justify-between items-center px-[10px] py-[10px]">
       <div className="flex flex-col">
-        <p className="text-[12px] line-clamp-2">{props.productName}</p>
+        <p className="text-[12px] line-clamp-3">{props.productName}</p>
         <p className="text-[12px] text-primary">
           {formatPrice(props.price as number)}
         </p>

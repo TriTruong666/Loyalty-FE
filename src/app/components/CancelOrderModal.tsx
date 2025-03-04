@@ -4,7 +4,10 @@ import { BsFillInfoCircleFill } from "react-icons/bs";
 import { Button } from "@heroui/react";
 import { useAtomValue, useSetAtom } from "jotai";
 import { cancelOrderState } from "../store/orderAtomts";
-import { cancelOrderModalState } from "../store/modalAtoms";
+import {
+  cancelOrderModalState,
+  orderDetailModalState,
+} from "../store/modalAtoms";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateOrderService } from "../service/orderService";
 import { useState } from "react";
@@ -25,6 +28,7 @@ export default function CancelOrderModal() {
 }
 
 function ConfirmCancel() {
+  const setDetailModal = useSetAtom(orderDetailModalState);
   const orderId = useAtomValue(cancelOrderState);
   const setModal = useSetAtom(cancelOrderModalState);
   const [isLoading, setIsLoading] = useState(false);
@@ -40,6 +44,8 @@ function ConfirmCancel() {
         queryClient.invalidateQueries({ queryKey: ["orders"] });
         showToast("Huỷ đơn hàng thành công", "success");
         setModal(false);
+        setDetailModal(false);
+
         setIsLoading(false);
       }
       setIsLoading(false);

@@ -25,6 +25,8 @@ import OrderDetailModal from "../components/OrderDetailModal";
 import { detailOrderState } from "../store/orderAtomts";
 import CancelOrderModal from "../components/CancelOrderModal";
 import DeliveryOrderConfirmModal from "../components/DeliveryOrderConfirmModal";
+import CheckTransactionModal from "../components/CheckTransactionModal";
+import AddSalesAccountModal from "../components/AddSalesAccountModal";
 
 export default function DashboardLayout({
   children,
@@ -51,6 +53,8 @@ export default function DashboardLayout({
   return (
     <div className="flex min-h-screen relative overflow-hidden">
       <Toaster position="top-center" reverseOrder={false} />
+      <AddSalesAccountModal />
+      <CheckTransactionModal />
       <DeliveryOrderConfirmModal />
       <CancelOrderModal />
       {orderId && <OrderDetailModal />}

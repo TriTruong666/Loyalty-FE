@@ -131,7 +131,7 @@ export function useGetAllOrders() {
 }
 
 export function useGetDetailOrder(orderId: string) {
-  return useFetch<Order>(["order-detail", orderId], async () =>
+  return useFetch<Order>(["orders", orderId], async () =>
     OrderService.getDetailOrderService(orderId)
   );
 }

@@ -45,8 +45,9 @@ function AllOrderTable() {
   const [orderId, setOrderId] = useAtom(noteOrderState);
   const setDetailModalId = useSetAtom(detailOrderState);
   const setConfirmModalId = useSetAtom(confirmOrderState);
-  const setCancelModalId = useSetAtom(cancelOrderState);
   const setConfirmModal = useSetAtom(confirmOrderModalState);
+  const setCancelModalId = useSetAtom(cancelOrderState);
+
   const setCancelModal = useSetAtom(cancelOrderModalState);
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
@@ -198,7 +199,7 @@ function AllOrderTable() {
                 Trạng thái thanh toán
               </th>
               <th className="col-span-3 text-[12px] text-normal font-light text-start">
-                Ghi chú
+                Ghi chú của khách
               </th>
               <th className="col-span-1 text-[12px] text-normal font-light text-end">
                 Thêm

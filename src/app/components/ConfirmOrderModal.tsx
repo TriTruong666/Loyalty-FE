@@ -6,7 +6,10 @@ import Image from "next/image";
 import { IoCloudUploadOutline } from "react-icons/io5";
 import { Button } from "@heroui/react";
 import { useAtomValue, useSetAtom } from "jotai";
-import { confirmOrderModalState } from "../store/modalAtoms";
+import {
+  confirmOrderModalState,
+  orderDetailModalState,
+} from "../store/modalAtoms";
 import { updateOrderService } from "../service/orderService";
 import { confirmOrderState } from "../store/orderAtomts";
 export default function ConfirmOrderModal() {
@@ -23,6 +26,8 @@ export default function ConfirmOrderModal() {
   );
 }
 function ImageDropZone() {
+  const setDetailModal = useSetAtom(orderDetailModalState);
+
   const orderIdValue = useAtomValue(confirmOrderState);
   const setModal = useSetAtom(confirmOrderModalState);
   const [file, setFile] = useState<File | null>(null);
@@ -41,6 +46,7 @@ function ImageDropZone() {
         queryClient.invalidateQueries({ queryKey: ["orders"] });
         setIsUploading(false);
         showToast("Duyệt đơn hàng thành công", "success");
+        setDetailModal(false);
         setModal(false);
         setPreviewUrl(null);
       }

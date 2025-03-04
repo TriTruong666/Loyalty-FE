@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { RiLineChartLine } from "react-icons/ri";
 import { usePathname } from "next/navigation";
-import { HiOutlineUser } from "react-icons/hi2";
+import { HiOutlineUser, HiOutlineUserGroup } from "react-icons/hi2";
 import { LuPackage2 } from "react-icons/lu";
 import { LuFileText } from "react-icons/lu";
 import { PiNotification } from "react-icons/pi";
@@ -46,11 +46,11 @@ export default function DashboardSidebar() {
           {userInfo?.type === "ceo" && <AdminMenu />}
           {userInfo?.type === "staff" && <StaffMenu />}
         </div>
-        {userInfo?.type === "ceo" && (
+        {/* {userInfo?.type === "ceo" && (
           <div className="border-t border-gray-400-40 pb-2">
             <MenuOnlyForCEO />
           </div>
-        )}
+        )} */}
         <div className="border-t border-gray-400-40">
           <UtilityItem />
         </div>
@@ -111,6 +111,11 @@ function AdminMenu() {
       name: "Tài khoản",
       icon: HiOutlineUser,
       path: "/dashboard/accounts",
+    },
+    {
+      name: "Khách Sales",
+      icon: HiOutlineUserGroup,
+      path: "/dashboard/sales-accounts",
     },
     {
       name: "Sản phẩm",

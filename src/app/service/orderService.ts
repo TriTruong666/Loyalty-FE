@@ -36,6 +36,20 @@ export const updateOrderService = async (data: UpdateOrderData) => {
   }
 };
 
+interface UpdateTransactionData {
+  id: string;
+  transactionStatus?: string;
+}
+
+export const updateTransactionService = async (data: UpdateTransactionData) => {
+  try {
+    const res = await axiosClient.put(`/api/transaction`, data);
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 export const getDetailOrderService = async (orderId: string) => {
   try {
     const res = await axiosClient.get(`/api/order/id/${orderId}`);

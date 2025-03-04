@@ -19,3 +19,5 @@ export const orderDetailModalState = atom(false);
 export const cancelOrderModalState = atom(false);
 
 export const deliveryOrderModalState = atom(false);
+
+export const checkTransactionModalState = atom(false);

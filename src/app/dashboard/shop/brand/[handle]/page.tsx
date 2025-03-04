@@ -190,7 +190,7 @@ const ProductItem: FC<{ product: ProductProps }> = ({ product }) => {
 
       <Link
         href={`/dashboard/shop/brand/detail/${product.handle}`}
-        className={`font-semibold text-foreground duration-300 transition-all hover:text-primary line-clamp-2 ${
+        className={`font-semibold text-foreground duration-300 transition-all hover:text-primary line-clamp-3 ${
           layout === "layout2" && "text-sm"
         }`}
       >

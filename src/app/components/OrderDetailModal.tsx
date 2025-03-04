@@ -6,13 +6,35 @@ import { LuPen } from "react-icons/lu";
 import { formatDate, formatPrice, formatTime } from "../utils/format";
 import { RiFileCloseLine } from "react-icons/ri";
 import { MdCheck } from "react-icons/md";
-import { useAtom, useAtomValue } from "jotai";
-import { orderDetailModalState } from "../store/modalAtoms";
-import { detailOrderState } from "../store/orderAtomts";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import {
+  cancelOrderModalState,
+  checkTransactionModalState,
+  confirmOrderModalState,
+  deliveryOrderModalState,
+  orderDetailModalState,
+} from "../store/modalAtoms";
+import {
+  cancelOrderState,
+  checkTransactionOrderState,
+  confirmOrderState,
+  deliveryOrderState,
+  detailOrderState,
+} from "../store/orderAtomts";
 import { useGetDetailOrder } from "../hooks/hook";
 import { LoadingTable } from "./loading";
 import { LineItem as LineItemProps } from "../interfaces/Order";
+import { IoIosInformationCircleOutline } from "react-icons/io";
+import { FiTruck } from "react-icons/fi";
 export default function OrderDetailModal() {
+  const setCancelModalId = useSetAtom(cancelOrderState);
+  const setCancelModal = useSetAtom(cancelOrderModalState);
+  const setConfirmModalId = useSetAtom(confirmOrderState);
+  const setConfirmModal = useSetAtom(confirmOrderModalState);
+  const setDeliveryModal = useSetAtom(deliveryOrderModalState);
+  const setDeliveryModalId = useSetAtom(deliveryOrderState);
+  const setCheckTransactionModal = useSetAtom(checkTransactionModalState);
+  const setCheckTransactionModalId = useSetAtom(checkTransactionOrderState);
   const [detailModal, setDetailModal] = useAtom(orderDetailModalState);
   const orderId = useAtomValue(detailOrderState);
   const { data: detail, isLoading } = useGetDetailOrder(orderId);
@@ -28,6 +50,8 @@ export default function OrderDetailModal() {
         return "text-blue-500 border-blue-500";
       case "exported":
         return "text-secondary border-secondary";
+      case "cancelled":
+        return "text-danger border-danger";
       default:
         return "";
     }
@@ -40,6 +64,8 @@ export default function OrderDetailModal() {
         return "Đã xác nhận";
       case "exported":
         return "Đang giao hàng";
+      case "cancelled":
+        return "Đã huỷ";
       default:
         return "";
     }
@@ -68,16 +94,44 @@ export default function OrderDetailModal() {
         return "";
     }
   };
-
+  const handlePaymentMethod = (method: string) => {
+    switch (method) {
+      case "cod":
+        return "COD";
+      case "bank_transfer":
+        return "Chuyển khoản";
+      case "debt":
+        return "Công nợ";
+      default:
+        return "";
+    }
+  };
+  const handleToggleCancelOrderModalOn = (orderId: string) => {
+    setCancelModalId(orderId);
+    setCancelModal(true);
+  };
+  const handleToggleModalConfirmOn = (orderId: string) => {
+    setConfirmModalId(orderId);
+    setConfirmModal(true);
+  };
+  const handleToggleDeliveryConfirmOn = (orderId: string) => {
+    setDeliveryModalId(orderId);
+    setDeliveryModal(true);
+  };
+  const handleToggleCheckTransactionOn = (transactionId: string) => {
+    setCheckTransactionModalId(transactionId);
+    setCheckTransactionModal(true);
+  };
   return (
     <AnimatePresence>
       {detailModal && (
         <motion.div
-          className="fixed w-screen h-screen flex justify-end bg-black bg-opacity-70 z-[1000] font-open"
+          className="fixed w-screen h-screen flex justify-end bg-black bg-opacity-70 z-[40] font-open"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
+          {/* DETAIL */}
           <motion.div
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
@@ -105,7 +159,38 @@ export default function OrderDetailModal() {
                     <IoCloseSharp className="text-[20px] text-normal" />
                   </Button>
                 </div>
-
+                {detail?.transaction.transactionStatus === "pending" && (
+                  <div className="flex items-center px-[15px] py-[20px] gap-x-[10px] bg-gray-700 bg-opacity-30">
+                    <IoIosInformationCircleOutline className="text-[20px]" />
+                    <p className="text-[12px]">
+                      Đơn hàng này hiện chưa được thanh toán.{" "}
+                      <span
+                        className="text-primary font-semibold cursor-pointer hover:underline"
+                        onClick={() =>
+                          handleToggleCheckTransactionOn(detail.transaction.id)
+                        }
+                      >
+                        Nhấp vào đây để xác nhận
+                      </span>
+                    </p>
+                  </div>
+                )}
+                {detail?.transaction.transactionStatus === "confirmed" && (
+                  <div className="flex items-center px-[15px] py-[20px] gap-x-[10px] bg-success-300 bg-opacity-30">
+                    <IoIosInformationCircleOutline className="text-[20px]" />
+                    <p className="text-[12px]">
+                      Đơn hàng này đã được xác nhận thanh toán
+                    </p>
+                  </div>
+                )}
+                {detail?.transaction.transactionStatus === "cancelled" && (
+                  <div className="flex items-center px-[15px] py-[20px] gap-x-[10px] bg-danger-300 bg-opacity-30">
+                    <IoIosInformationCircleOutline className="text-[20px]" />
+                    <p className="text-[12px]">
+                      Thanh toán thất bại do đơn hàng đã bị huỷ
+                    </p>
+                  </div>
+                )}
                 {/* Order Details Section */}
                 <div className="flex px-[15px] py-[25px] gap-x-[25px] border-b border-gray-400-40">
                   <div className="flex flex-col gap-y-[10px]">
@@ -159,7 +244,23 @@ export default function OrderDetailModal() {
                     <p className="text-[13px]">{detail?.customerPhone}</p>
                   </div>
                 </div>
-
+                {/* Shipping Address */}
+                <div className="flex flex-col px-[15px] py-[25px] border-b border-gray-400-40">
+                  <div className="flex justify-between">
+                    <p className="text-[11px] text-normal">Địa chỉ giao hàng</p>
+                    <Button variant="light" size="sm" isIconOnly>
+                      <LuPen className="text-normal" />
+                    </Button>
+                  </div>
+                  <div className="flex flex-col gap-y-[8px]">
+                    <p className="text-[13px]">
+                      {detail?.shippingAddress.street},{" "}
+                      {detail?.shippingAddress.wardName},{" "}
+                      {detail?.shippingAddress.districtName},{" "}
+                      {detail?.shippingAddress.provinceName}
+                    </p>
+                  </div>
+                </div>
                 {/* Order Items */}
                 <div className="flex flex-col px-[15px] py-[25px] border-b border-gray-400-40">
                   <p className="text-[11px] text-normal mb-[15px]">Sản phẩm</p>
@@ -174,53 +275,68 @@ export default function OrderDetailModal() {
                     </p>
                   )}
                 </div>
-
                 {/* Invoice Summary */}
-                <div className="flex flex-col px-[15px] py-[25px]">
+                <div className="flex flex-col px-[15px] py-[25px] border-b border-gray-400-40">
                   <p className="text-[11px] text-normal mb-[15px]">Hoá đơn</p>
                   <div className="flex flex-col gap-y-[10px]">
                     <div className="flex justify-between">
                       <p className="text-[13px] font-light text-normal">
-                        Tạm tính
+                        Mã thanh toán
                       </p>
-                      <p className="text-[13px]">{formatPrice(10000000)}</p>
+                      <p className="text-[13px]">#{detail?.transaction.id}</p>
                     </div>
                     <div className="flex justify-between">
                       <p className="text-[13px] font-light text-normal">
-                        Chiết khấu độc quyền
+                        Phương thức thanh toán
                       </p>
-                      <p className="text-[13px]">{formatPrice(10000000)}</p>
+                      <p className="text-[13px]">
+                        {handlePaymentMethod(
+                          detail?.transaction.gateway as string
+                        )}
+                      </p>
                     </div>
                     <div className="flex justify-between">
                       <p className="text-[13px] font-light text-normal">
-                        Chiết khấu độc quyền
+                        Tạm tính hoá đơn
                       </p>
-                      <p className="text-[13px]">{formatPrice(10000000)}</p>
+                      <p className="text-[13px]">
+                        {formatPrice(detail?.totalOrderValue as number)}
+                      </p>
                     </div>
                     <div className="flex justify-between">
                       <p className="text-[13px] font-light text-normal">
-                        Chiết khấu độc quyền
+                        Giá trị chiết khấu
                       </p>
-                      <p className="text-[13px]">{formatPrice(10000000)}</p>
-                    </div>
-                    <div className="flex justify-between">
-                      <p className="text-[13px] font-light text-normal">
-                        Chiết khấu độc quyền
+                      <p className="text-[13px]">
+                        {formatPrice(
+                          (detail?.totalOrderValue ?? 0) -
+                            (detail?.totalPayment ?? 0)
+                        )}
                       </p>
-                      <p className="text-[13px]">{formatPrice(10000000)}</p>
                     </div>
                     <div className="flex justify-between mt-[10px]">
                       <p className="text-[13px] font-semibold">Tổng</p>
                       <p className="text-[13px] font-semibold">
-                        {formatPrice(5000000000)}
+                        {formatPrice(detail?.totalPayment as number)}
                       </p>
                     </div>
                   </div>
                 </div>
+                {detail?.note && (
+                  <div className="flex flex-col px-[15px] py-[25px]">
+                    <p className="text-[11px] text-normal mb-[15px]">
+                      Ghi chú của khách hàng
+                    </p>
+                    <p className="text-sm">{detail?.note}</p>
+                  </div>
+                )}
 
                 {/* Footer Buttons */}
                 <div className="sticky left-0 bottom-0 flex justify-between px-[15px] gap-x-[15px] py-[25px] bg-[#111111] border-t border-gray-400-40">
                   <Button
+                    onPress={() =>
+                      handleToggleCancelOrderModalOn(detail?.orderId as string)
+                    }
                     size="sm"
                     variant="flat"
                     className="flex w-full"
@@ -229,15 +345,34 @@ export default function OrderDetailModal() {
                     <RiFileCloseLine />
                     <p>Huỷ đơn hàng</p>
                   </Button>
-                  <Button
-                    size="sm"
-                    variant="flat"
-                    color="success"
-                    className="flex w-full"
-                  >
-                    <MdCheck />
-                    <p>Xác nhận đơn</p>
-                  </Button>
+                  {detail?.orderStatus === "pending" && (
+                    <Button
+                      onPress={() =>
+                        handleToggleModalConfirmOn(detail?.orderId as string)
+                      }
+                      size="sm"
+                      variant="flat"
+                      color="success"
+                      className="flex w-full"
+                    >
+                      <MdCheck />
+                      <p>Xác nhận đơn</p>
+                    </Button>
+                  )}
+                  {detail?.orderStatus === "confirmed" && (
+                    <Button
+                      onPress={() =>
+                        handleToggleDeliveryConfirmOn(detail?.orderId as string)
+                      }
+                      size="sm"
+                      variant="flat"
+                      color="success"
+                      className="flex w-full"
+                    >
+                      <FiTruck />
+                      <p>Giao đơn hàng</p>
+                    </Button>
+                  )}
                 </div>
               </>
             )}
