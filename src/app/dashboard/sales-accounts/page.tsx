@@ -1,7 +1,15 @@
+"use client";
+import { useGetAllSalesCustomer } from "@/app/hooks/hook";
+import { addSalesAccountState } from "@/app/store/modalAtoms";
+import { useSetAtom } from "jotai";
 import { HiPlusSmall } from "react-icons/hi2";
 import { PiExport } from "react-icons/pi";
 
 export default function SalesAccountPage() {
+  const setIsToggleModal = useSetAtom(addSalesAccountState);
+  const handleToggleModalOn = () => {
+    setIsToggleModal(true);
+  };
   return (
     <div className="flex flex-col font-open py-[20px]">
       <div className="flex items-center justify-between px-[40px]">
@@ -19,7 +27,10 @@ export default function SalesAccountPage() {
             <PiExport className="text-[16px] text-foreground" />
             <p className="text-[12px] text-foreground">Xuất CSV</p>
           </div>
-          <div className="flex items-center bg-foreground border border-foreground px-4 py-[6px] rounded-md cursor-pointer gap-x-2 transition-all duration-200 hover:bg-foreground hover:border-transparent group">
+          <div
+            onClick={handleToggleModalOn}
+            className="flex items-center bg-foreground border border-foreground px-4 py-[6px] rounded-md cursor-pointer gap-x-2 transition-all duration-200 hover:bg-foreground hover:border-transparent group"
+          >
             <HiPlusSmall className="text-[16px] text-background" />
             <p className="text-[12px] text-background">Tạo tài khoản</p>
           </div>
@@ -27,4 +38,8 @@ export default function SalesAccountPage() {
       </div>
     </div>
   );
+}
+function SalesAccountTable() {
+  const { data: accounts } = useGetAllSalesCustomer();
+  return <div className=""></div>;
 }

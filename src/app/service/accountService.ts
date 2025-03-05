@@ -138,3 +138,12 @@ export const approveUser = async (userId: string) => {
     console.error(error);
   }
 };
+
+export const getAllSalesCustomer = async () => {
+  try {
+    const res = await axiosClient.get(`/api/salescustomer`);
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};

@@ -1,8 +1,19 @@
 import { FaUserTie } from "react-icons/fa";
 import NormalInput from "./NormalInput";
 import { MdLocalPhone } from "react-icons/md";
+import { useAtom } from "jotai";
+import { addSalesAccountState } from "../store/modalAtoms";
+import { Button } from "@heroui/react";
 
 export default function AddSalesAccountModal() {
+  const [isToggleModal, setIsToggleModal] = useAtom(addSalesAccountState);
+  if (!isToggleModal) {
+    return <></>;
+  }
+
+  const handleToggleModalOff = () => {
+    setIsToggleModal(false);
+  };
   return (
     <div className="fixed w-screen h-screen top-0 left-0 flex items-center justify-center z-50 bg-black bg-opacity-70">
       <div className="w-[700px] bg-black flex flex-col transition-all duration-300 items-center relative py-[40px] px-[40px] rounded-[15px] shadow-[2px_2px_60px_6px_rgba(19,_19,_19,_0.63)]">
@@ -27,6 +38,25 @@ export default function AddSalesAccountModal() {
               icon={<MdLocalPhone size={20} />}
               max={10}
             />
+          </div>
+          <div className="flex items-center w-full mt-[20px] gap-x-4">
+            <Button
+              className="w-full"
+              variant="flat"
+              color="default"
+              size="lg"
+              onPress={handleToggleModalOff}
+            >
+              <p className="font-bold">Thoát</p>
+            </Button>
+            <Button
+              className="w-full"
+              variant="flat"
+              color="secondary"
+              size="lg"
+            >
+              <p className="text-secondary font-bold">Tạo tài khoản</p>
+            </Button>
           </div>
         </div>
       </div>

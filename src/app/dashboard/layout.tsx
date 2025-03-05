@@ -53,7 +53,7 @@ export default function DashboardLayout({
   return (
     <div className="flex min-h-screen relative overflow-hidden">
       <Toaster position="top-center" reverseOrder={false} />
-      {/* <AddSalesAccountModal /> */}
+      <AddSalesAccountModal />
       <CheckTransactionModal />
       <DeliveryOrderConfirmModal />
       <CancelOrderModal />

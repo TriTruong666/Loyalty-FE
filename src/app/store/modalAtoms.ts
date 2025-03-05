@@ -21,3 +21,5 @@ export const cancelOrderModalState = atom(false);
 export const deliveryOrderModalState = atom(false);
 
 export const checkTransactionModalState = atom(false);
+
+export const addSalesAccountState = atom(false);

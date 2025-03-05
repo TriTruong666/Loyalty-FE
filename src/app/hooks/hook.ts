@@ -12,6 +12,7 @@ import { Brand } from "../interfaces/Brand";
 import { User } from "../interfaces/Account";
 import { District, Province, Ward } from "../interfaces/Location";
 import { Order } from "../interfaces/Order";
+import { SalesCustomer } from "../interfaces/SalesCustomer";
 function useFetch<T>(
   queryKey: any[],
   queryFn: () => Promise<T>,
@@ -133,5 +134,11 @@ export function useGetAllOrders() {
 export function useGetDetailOrder(orderId: string) {
   return useFetch<Order>(["orders", orderId], async () =>
     OrderService.getDetailOrderService(orderId)
+  );
+}
+
+export function useGetAllSalesCustomer() {
+  return useFetch<SalesCustomer[]>(["sales-customers"], async () =>
+    AccountService.getAllSalesCustomer()
   );
 }
