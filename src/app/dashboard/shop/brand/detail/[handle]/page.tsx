@@ -6,15 +6,25 @@ import Image from "next/image";
 import { useGetProductDetailByHandle } from "@/app/hooks/hook";
 import { useParams } from "next/navigation";
 import { ProductDetailSkeleton } from "@/app/components/skeleton";
+import { addToCart } from "@/app/service/cartService";
+import { showToast } from "@/app/utils/toast";
+import { useSetAtom } from "jotai";
+import { cartState } from "@/app/store/cartAtoms";
 
 export default function ProductDetailPage() {
   const params = useParams();
   const handle = params.handle;
+  const setCart = useSetAtom(cartState);
 
   const { data: detail, isLoading } = useGetProductDetailByHandle(
     handle as string
   );
-
+  const handleAddProductToCart = () => {
+    if (detail) {
+      addToCart(detail, 1, setCart);
+    }
+    showToast("Đã thêm vào giỏ hàng.", "success");
+  };
   const safeHTML = DOMPurify.sanitize(detail?.description || "");
   const brandTitle = (brandId: string) => {
     switch (brandId) {
@@ -88,7 +98,13 @@ export default function ProductDetailPage() {
               Đơn vị: {unitProduct(detail?.unit as string)}
             </p>
           </div>
-          <Button size="lg" className="w-full" variant="flat" color="secondary">
+          <Button
+            size="lg"
+            className="w-full"
+            onPress={handleAddProductToCart}
+            variant="flat"
+            color="secondary"
+          >
             <p className="font-bold font-open">Thêm vào giỏ hàng</p>
           </Button>
         </div>

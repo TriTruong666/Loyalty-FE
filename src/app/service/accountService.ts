@@ -147,3 +147,29 @@ export const getAllSalesCustomer = async () => {
     console.error(error);
   }
 };
+
+export const getSalesCustomerByLimit = async (page: number, limit: number) => {
+  try {
+    const res = await axiosClient.get(
+      `/api/SalesCustomer/limit?limit=${limit}&page=${page}`
+    );
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+interface SalesCustomer {
+  userName: string;
+  phoneNumber: string;
+  salePersonID: string;
+}
+
+export const createSalesCustomer = async (data: SalesCustomer) => {
+  try {
+    const res = await axiosClient.post(`/api/salescustomer`, data);
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};

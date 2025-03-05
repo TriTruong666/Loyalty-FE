@@ -45,6 +45,7 @@ import { showToast } from "../utils/toast";
 import { LoadingDashboard } from "../components/loading";
 import { useRouter } from "next/navigation";
 import { GrMoney } from "react-icons/gr";
+import { Toaster } from "react-hot-toast";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -427,6 +428,7 @@ function Summary() {
   }
   return (
     <div className="flex flex-col w-[30%] ">
+      <Toaster position="top-center" reverseOrder={false} />
       <div className="flex flex-col gap-y-[5px]">
         <p className="text-[22px] font-light select-none">Chi tiết đơn hàng</p>
       </div>

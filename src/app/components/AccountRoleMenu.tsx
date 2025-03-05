@@ -8,46 +8,46 @@ export function AccountRoleMenu() {
   const { data: allAccounts = [] } = useGetAllUser();
   const filteredAdmin = allAccounts
     ?.filter((account) => account.type === "admin")
-    .filter((account) => account.status === "active");
+    .filter((account) => account.status === "active").length;
   const filteredSales = allAccounts
     ?.filter((account) => account.type === "sales")
-    .filter((account) => account.status === "active");
+    .filter((account) => account.status === "active").length;
   const filteredStaff = allAccounts
     ?.filter((account) => account.type === "staff")
-    .filter((account) => account.status === "active");
+    .filter((account) => account.status === "active").length;
   const filteredInactive = allAccounts?.filter(
     (account) => account.status === "inactive"
-  );
+  ).length;
   const filteredBusiness = allAccounts
     ?.filter(
       (account) => account.type === "business" || account.type === "personal"
     )
-    .filter((account) => account.status === "active");
+    .filter((account) => account.status === "active").length;
   const roles = [
     {
       name: "Admin",
       path: "/dashboard/accounts",
-      count: filteredAdmin?.length,
+      count: filteredAdmin,
     },
     {
       name: "Doanh nghiệp",
       path: "/dashboard/accounts/company",
-      count: filteredBusiness?.length,
+      count: filteredBusiness,
     },
     {
       name: "Sales",
       path: "/dashboard/accounts/sales",
-      count: filteredSales?.length,
+      count: filteredSales,
     },
     {
       name: "Nhân viên",
       path: "/dashboard/accounts/staff",
-      count: filteredStaff?.length,
+      count: filteredStaff,
     },
     {
       name: "Bị khoá",
       path: "/dashboard/accounts/inactive",
-      count: filteredInactive?.length,
+      count: filteredInactive,
     },
   ];
 

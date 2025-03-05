@@ -13,10 +13,12 @@ import { User } from "../interfaces/Account";
 import { District, Province, Ward } from "../interfaces/Location";
 import { Order } from "../interfaces/Order";
 import { SalesCustomer } from "../interfaces/SalesCustomer";
+import { userInfoState } from "../store/accountAtoms";
+import { useAtomValue } from "jotai";
 function useFetch<T>(
   queryKey: any[],
   queryFn: () => Promise<T>,
-  options?: UseQueryOptions<T>
+  options?: Omit<UseQueryOptions<T, Error>, "queryKey" | "queryFn">
 ) {
   const { data, isLoading, isError, error, refetch, isFetching } = useQuery<T>({
     queryKey,
@@ -99,7 +101,12 @@ export function useGetUserInfo() {
 }
 
 export function useGetAllUser() {
-  return useFetch<User[]>(["users"], async () => AccountService.getAllUser());
+  const userInfo = useAtomValue(userInfoState);
+  const allowedRoles = ["admin", "ceo"]; // Allowed roles
+
+  return useFetch<User[]>(["users"], async () => AccountService.getAllUser(), {
+    enabled: !!userInfo && allowedRoles.includes(userInfo.type), // Enable only if user has access
+  });
 }
 
 export function useGetAllBrand() {
@@ -140,5 +147,11 @@ export function useGetDetailOrder(orderId: string) {
 export function useGetAllSalesCustomer() {
   return useFetch<SalesCustomer[]>(["sales-customers"], async () =>
     AccountService.getAllSalesCustomer()
+  );
+}
+
+export function useGetSalesCustomerByLimit(page: number, limit: number) {
+  return useFetch<SalesCustomer[]>(["sales-customers", page], async () =>
+    AccountService.getSalesCustomerByLimit(page, limit)
   );
 }

@@ -46,11 +46,6 @@ export default function DashboardSidebar() {
           {userInfo?.type === "ceo" && <AdminMenu />}
           {userInfo?.type === "staff" && <StaffMenu />}
         </div>
-        {/* {userInfo?.type === "ceo" && (
-          <div className="border-t border-gray-400-40 pb-2">
-            <MenuOnlyForCEO />
-          </div>
-        )} */}
         <div className="border-t border-gray-400-40">
           <UtilityItem />
         </div>
@@ -265,39 +260,39 @@ function MenuItem({
   );
 }
 
-function MenuOnlyForCEO() {
-  const { data: allAccounts } = useGetAllUser();
-  const filteredAllAccounts =
-    allAccounts?.filter((user) => user.status === "pending") ?? [];
+// function MenuOnlyForCEO() {
+//   const { data: allAccounts } = useGetAllUser();
+//   const filteredAllAccounts =
+//     allAccounts?.filter((user) => user.status === "pending") ?? [];
 
-  const ceoMenu = [
-    {
-      name: "Xét duyệt",
-      icon: IoLockOpenOutline,
-      path: "/dashboard/permission",
-      typography:
-        filteredAllAccounts?.length > 0
-          ? filteredAllAccounts?.length
-          : undefined,
-    },
-  ];
-  return (
-    <div className="flex flex-col pt-4 ">
-      <p className="text-normal text-[12px] px-6 py-2">Dành cho CEO</p>
-      <div className="flex flex-col gap-y-3 mt-2">
-        {ceoMenu.map((item, i) => (
-          <MenuItem
-            key={i}
-            icon={item.icon}
-            name={item.name}
-            path={item.path}
-            typography={item.typography}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
+//   const ceoMenu = [
+//     {
+//       name: "Xét duyệt",
+//       icon: IoLockOpenOutline,
+//       path: "/dashboard/permission",
+//       typography:
+//         filteredAllAccounts?.length > 0
+//           ? filteredAllAccounts?.length
+//           : undefined,
+//     },
+//   ];
+//   return (
+//     <div className="flex flex-col pt-4 ">
+//       <p className="text-normal text-[12px] px-6 py-2">Dành cho CEO</p>
+//       <div className="flex flex-col gap-y-3 mt-2">
+//         {ceoMenu.map((item, i) => (
+//           <MenuItem
+//             key={i}
+//             icon={item.icon}
+//             name={item.name}
+//             path={item.path}
+//             typography={item.typography}
+//           />
+//         ))}
+//       </div>
+//     </div>
+//   );
+// }
 
 function UserMenu() {
   const [cart, setCart] = useAtom(cartState);

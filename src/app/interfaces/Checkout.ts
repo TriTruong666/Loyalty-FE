@@ -21,6 +21,7 @@ export interface Checkout {
   lineItems: LineItem[];
   gifts: Gift[];
   discountCustom?: number;
+  customerIDOfSales?: string;
 }
 
 interface Customer {

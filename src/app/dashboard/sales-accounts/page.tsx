@@ -1,7 +1,13 @@
 "use client";
-import { useGetAllSalesCustomer } from "@/app/hooks/hook";
+import { LoadingTable } from "@/app/components/loading";
+import {
+  useGetAllSalesCustomer,
+  useGetSalesCustomerByLimit,
+} from "@/app/hooks/hook";
 import { addSalesAccountState } from "@/app/store/modalAtoms";
+import { Pagination } from "@heroui/react";
 import { useSetAtom } from "jotai";
+import { useEffect, useState } from "react";
 import { HiPlusSmall } from "react-icons/hi2";
 import { PiExport } from "react-icons/pi";
 
@@ -36,10 +42,95 @@ export default function SalesAccountPage() {
           </div>
         </div>
       </div>
+      <SalesAccountTable />
     </div>
   );
 }
 function SalesAccountTable() {
-  const { data: accounts } = useGetAllSalesCustomer();
-  return <div className=""></div>;
+  const [page, setPage] = useState(1);
+  const [totalPage, setTotalPage] = useState(1);
+  const limit = 8;
+  const [isMounted, setIsMounted] = useState(false);
+
+  const { data: allAccounts } = useGetAllSalesCustomer();
+  const { data: accounts, isLoading } = useGetSalesCustomerByLimit(page, limit);
+  useEffect(() => {
+    if (allAccounts) {
+      setTotalPage(Math.ceil(allAccounts.length / limit));
+    }
+    setIsMounted(true);
+  }, [allAccounts]);
+  if (isLoading || !isMounted) {
+    return (
+      <>
+        <LoadingTable />
+      </>
+    );
+  }
+  return (
+    <>
+      <div className="flex items-center px-[40px] py-[20px] mt-[10px] justify-end gap-x-4">
+        <div className="w-[250px]">
+          {/* <Select aria-label="sort" placeholder="Sắp xếp" variant="underlined">
+            {accountSort.map((item) => (
+              <SelectItem key={item.key}>{item.title}</SelectItem>
+            ))}
+          </Select> */}
+        </div>
+      </div>
+      <div className="flex mt-[20px] flex-col items-center">
+        <table className="flex flex-col w-full">
+          <thead>
+            <tr className="grid grid-cols-12 mx-[20px] px-[20px] py-4 bg-[#111111] rounded-lg">
+              <th className="col-span-3 text-[12px] text-normal font-light text-start">
+                ID
+              </th>
+              <th className="col-span-3 text-[12px] text-normal font-light text-start">
+                Tên khách hàng
+              </th>
+              <th className="col-span-3 text-[12px] text-normal font-light text-start">
+                Số điện thoại
+              </th>
+              <th className="col-span-3 text-[12px] text-normal font-light text-start">
+                Khách của
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {accounts?.map((user) => (
+              <tr
+                key={user.customerIDOfSales}
+                className="grid grid-cols-12 mx-[20px] px-[20px] py-4 items-center border-b border-gray-600 border-opacity-40"
+              >
+                <td className="col-span-3 text-[13px]">
+                  {user.customerIDOfSales}
+                </td>
+                <td className="col-span-3 flex items-center gap-x-2">
+                  <div className="flex flex-col">
+                    <p className="text-[13px] font-semibold">{user.userName}</p>
+                  </div>
+                </td>
+                <td className="col-span-3 text-[13px] text-start font-semibold">
+                  {user.phoneNumber}
+                </td>
+                <td className="col-span-3 text-[13px] text-start font-semibold">
+                  {user.salePersonName}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div className="mt-[20px]">
+          <Pagination
+            loop
+            showControls
+            color="default"
+            initialPage={page}
+            total={totalPage}
+            onChange={(newPage) => setPage(newPage)}
+          />
+        </div>
+      </div>
+    </>
+  );
 }

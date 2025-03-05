@@ -5,6 +5,8 @@ import { userInfoState } from "./accountAtoms";
 
 export const paymentMethodState = atom("");
 
+export const salesCustomerState = atom("");
+
 export const userInfoCheckoutState = atom({
   customerName: "",
   customerPhone: "",
@@ -28,7 +30,17 @@ export const checkoutState = atom<Checkout | null>((get) => {
   const note = get(noteCheckoutState);
   const user = get(userInfoState);
   const discountCustom = user?.rank.discountCustom;
-  if (!paymentMethod || !address || !info) return null;
+  const salesCustomer = get(salesCustomerState);
+  if (
+    paymentMethod === "" ||
+    address.districtCode === "" ||
+    address.provinceCode === "" ||
+    address.street === "" ||
+    address.wardCode === "" ||
+    info.customerName === "" ||
+    info.customerPhone === ""
+  )
+    return null;
 
   return {
     lineItems: cart.cartItems
@@ -45,6 +57,7 @@ export const checkoutState = atom<Checkout | null>((get) => {
       .filter((item) => item.productID !== ""),
     gateway: paymentMethod,
     shippingAddress: address,
+    customerIDOfSales: salesCustomer,
     note,
     customer: info,
     discountCustom,

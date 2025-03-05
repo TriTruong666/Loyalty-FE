@@ -147,7 +147,8 @@ function RegistrationForm() {
     });
   };
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
+  const vietnamPhoneRegex =
+    /^(?:\+84|0)(3[2-9]|5[2689]|7[0-9]|8[1-9]|9[0-9])\d{7}$/;
   const handleGoNext = () => {
     setSubmitData({
       ...submitData,
@@ -165,7 +166,7 @@ function RegistrationForm() {
       showToast("Email không hợp lệ. Vui lòng nhập đúng định dạng.", "error");
       return;
     }
-    if (submitData.phoneNumber.length !== 10) {
+    if (!vietnamPhoneRegex.test(submitData.phoneNumber)) {
       showToast("Vui lòng nhập số điện thoại hợp lệ.", "error");
       return;
     }

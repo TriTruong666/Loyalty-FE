@@ -1,6 +1,7 @@
 "use client";
 import GiftDropdown from "@/app/components/GiftDropdown";
 import { LoadingDashboard } from "@/app/components/loading";
+import { useGetSalesCustomerByLimit } from "@/app/hooks/hook";
 import {
   CartItem as CartItemProps,
   GiftItem as GiftItemProps,
@@ -20,12 +21,14 @@ import {
   subtotalCartValueAtom,
   totalCartValueAtoms,
 } from "@/app/store/cartAtoms";
+import { salesCustomerState } from "@/app/store/checkoutAtoms";
 import { giftDropdownState } from "@/app/store/dropdownAtoms";
 import { formatPrice } from "@/app/utils/format";
 import { showToast } from "@/app/utils/toast";
-import { Link, Button, Input } from "@heroui/react";
+import { Link, Button, Input, Select, SelectItem } from "@heroui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
 import { BsCartX } from "react-icons/bs";
 import { FaTrash } from "react-icons/fa";
@@ -40,8 +43,11 @@ export default function CartPage() {
   const discountByDistributionValue = useAtomValue(discountPPState);
   const discountCustomValue = useAtomValue(discountCustomState);
   const totalCartValue = useAtomValue(totalCartValueAtoms);
+  const [salesCustomerId, setSalesCustomerId] = useAtom(salesCustomerState);
   const [isMounted, setIsMounted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { data: accounts } = useGetSalesCustomerByLimit(1, 100);
+  const router = useRouter();
   useEffect(() => {
     if (typeof window !== "undefined") {
       const storedCart = getCartFromStorage();
@@ -50,10 +56,10 @@ export default function CartPage() {
     setIsMounted(true);
   }, [setCart]);
   useEffect(() => {
-    if (cart.cartItems.length > 0) return; // Tránh gọi setCart liên tục
+    if (cart.cartItems.length > 0) return;
 
     setCart((prev) => {
-      if (prev.cartItems.length === 0 && prev.gifts.length === 0) return prev; // Không cập nhật nếu không cần thiết
+      if (prev.cartItems.length === 0 && prev.gifts.length === 0) return prev;
       return { cartItems: [], gifts: [] };
     });
   }, [cart.cartItems, setCart]);
@@ -116,6 +122,9 @@ export default function CartPage() {
       console.error(error);
     }
   };
+  const handleChooseSalesCustomer = (customerId: string) => {
+    setSalesCustomerId(customerId);
+  };
   const toggleOpenDropdown = () => {
     setGiftDropdown(true);
   };
@@ -125,6 +134,13 @@ export default function CartPage() {
   const toggleCloseModal = () => {
     setPercentModal(false);
     setGiftDropdown(false);
+  };
+  const handleGoToCheckoutSales = () => {
+    if (salesCustomerId === "") {
+      showToast("Vui lòng chọn khách hàng trước khi thanh toán", "error");
+      return;
+    }
+    router.push(`/checkout`);
   };
   if (cart.cartItems.length === 0) {
     return (
@@ -183,7 +199,27 @@ export default function CartPage() {
           </p>
         </div>
         {info?.type === "sales" && (
-          <div className="flex items-center">
+          <div className="flex items-center gap-x-[15px]">
+            <div className="w-[200px]">
+              <Select
+                onSelectionChange={(keys) => {
+                  const selectedKey = Array.from(keys)[0] as string;
+                  handleChooseSalesCustomer(selectedKey);
+                }}
+                label="Chọn khách hàng"
+                variant="underlined"
+                size="sm"
+              >
+                {(accounts ?? []).map((user) => (
+                  <SelectItem
+                    value={user.customerIDOfSales}
+                    key={user.customerIDOfSales}
+                  >
+                    {user.userName}
+                  </SelectItem>
+                ))}
+              </Select>
+            </div>
             <Button variant="light" onPress={toggleOpenDropdown}>
               <p className="text-primary">Thêm quà tặng</p>
             </Button>
@@ -295,15 +331,26 @@ export default function CartPage() {
             </div>
           </div>
           <div className="mt-[30px] w-full">
-            <Button
-              className="w-full"
-              variant="flat"
-              as={Link}
-              color="secondary"
-              href="/checkout"
-            >
-              <p className="font-bold font-open">Thanh toán</p>
-            </Button>
+            {info?.type === "sales" ? (
+              <Button
+                className="w-full"
+                variant="flat"
+                onPress={handleGoToCheckoutSales}
+                color="secondary"
+              >
+                <p className="font-bold font-open">Thanh toán</p>
+              </Button>
+            ) : (
+              <Button
+                className="w-full"
+                variant="flat"
+                as={Link}
+                color="secondary"
+                href="/checkout"
+              >
+                <p className="font-bold font-open">Thanh toán</p>
+              </Button>
+            )}
           </div>
         </div>
       </div>

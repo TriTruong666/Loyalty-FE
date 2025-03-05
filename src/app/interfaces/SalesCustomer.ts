@@ -4,5 +4,6 @@ export interface SalesCustomer {
   phoneNumber: string;
   status: boolean;
   salePersonID: string;
+  salePersonName: string;
   note?: string;
 }
