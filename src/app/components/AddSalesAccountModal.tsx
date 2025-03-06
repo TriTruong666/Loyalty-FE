@@ -2,7 +2,7 @@ import { FaUserTie } from "react-icons/fa";
 import NormalInput from "./NormalInput";
 import { MdLocalPhone } from "react-icons/md";
 import { useAtom } from "jotai";
-import { addSalesAccountState } from "../store/modalAtoms";
+import { addSalesAccountModalState } from "../store/modalAtoms";
 import { Button, Select, SelectItem } from "@heroui/react";
 import { useGetAllUser } from "../hooks/hook";
 import { dataCreateSalesAccountState } from "../store/accountAtoms";
@@ -17,7 +17,7 @@ export default function AddSalesAccountModal() {
   const { data: allSales } = useGetAllUser();
   const filteredAccounts =
     allSales?.filter((user) => user.type === "sales") ?? [];
-  const [isToggleModal, setIsToggleModal] = useAtom(addSalesAccountState);
+  const [isToggleModal, setIsToggleModal] = useAtom(addSalesAccountModalState);
   const queryClient = useQueryClient();
   const createMutation = useMutation({
     mutationKey: ["create-sales-customer"],

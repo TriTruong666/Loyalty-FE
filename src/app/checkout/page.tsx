@@ -35,6 +35,7 @@ import {
   checkoutState,
   noteCheckoutState,
   paymentMethodState,
+  salesCustomerState,
   shippingAddressState,
   userInfoCheckoutState,
 } from "../store/checkoutAtoms";
@@ -52,6 +53,7 @@ export default function CheckoutPage() {
   const cart = useAtomValue(cartState);
   const setInfo = useSetAtom(userInfoState);
   const [isCartLoaded, setIsCartLoaded] = useState(false);
+  const salesCustomerId = useAtomValue(salesCustomerState);
   const { data: info } = useGetUserInfo();
   useEffect(() => {
     if (cart !== undefined) {
@@ -62,7 +64,10 @@ export default function CheckoutPage() {
     if (isCartLoaded && cart.cartItems.length === 0) {
       router.push("/dashboard/cart");
     }
-  }, [cart, isCartLoaded, router]);
+    if (salesCustomerId === "") {
+      router.push("/dashboard/cart");
+    }
+  }, [cart, isCartLoaded, router, salesCustomerId]);
   useEffect(() => {
     if (info) {
       setInfo(info);

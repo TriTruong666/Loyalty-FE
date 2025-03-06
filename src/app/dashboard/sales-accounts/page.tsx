@@ -4,7 +4,7 @@ import {
   useGetAllSalesCustomer,
   useGetSalesCustomerByLimit,
 } from "@/app/hooks/hook";
-import { addSalesAccountState } from "@/app/store/modalAtoms";
+import { addSalesAccountModalState } from "@/app/store/modalAtoms";
 import { Pagination } from "@heroui/react";
 import { useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
@@ -12,7 +12,7 @@ import { HiPlusSmall } from "react-icons/hi2";
 import { PiExport } from "react-icons/pi";
 
 export default function SalesAccountPage() {
-  const setIsToggleModal = useSetAtom(addSalesAccountState);
+  const setIsToggleModal = useSetAtom(addSalesAccountModalState);
   const handleToggleModalOn = () => {
     setIsToggleModal(true);
   };

@@ -9,12 +9,13 @@ import {
   DropdownTrigger,
 } from "@heroui/dropdown";
 import { Button } from "@heroui/button";
-import { BsThreeDotsVertical, BsTruck } from "react-icons/bs";
+import { BsThreeDotsVertical } from "react-icons/bs";
 import { showToast } from "@/app/utils/toast";
+import { IoCheckmarkSharp } from "react-icons/io5";
 import {
   cancelOrderModalState,
   checkTransactionModalState,
-  deliveryOrderModalState,
+  confirmCompleteModalState,
   orderDetailModalState,
 } from "@/app/store/modalAtoms";
 import { useAtom, useSetAtom } from "jotai";
@@ -28,7 +29,7 @@ import { Input } from "@heroui/react";
 import {
   cancelOrderState,
   checkTransactionOrderState,
-  deliveryOrderState,
+  confirmCompleteOrderState,
   detailOrderState,
   noteOrderState,
 } from "@/app/store/orderAtomts";
@@ -45,8 +46,8 @@ function AllOrderTable() {
   const setOrderDetailModal = useSetAtom(orderDetailModalState);
   const [orderId, setOrderId] = useAtom(noteOrderState);
   const setDetailModalId = useSetAtom(detailOrderState);
-  const setDeliveryModal = useSetAtom(deliveryOrderModalState);
-  const setDeliveryModalId = useSetAtom(deliveryOrderState);
+  const setConfirmCompleteModalId = useSetAtom(confirmCompleteOrderState);
+  const setConfirmCompleteModal = useSetAtom(confirmCompleteModalState);
   const setCancelModalId = useSetAtom(cancelOrderState);
   const setCancelModal = useSetAtom(cancelOrderModalState);
   const setCheckTransactionModalId = useSetAtom(checkTransactionOrderState);
@@ -55,17 +56,16 @@ function AllOrderTable() {
   const [totalPage, setTotalPage] = useState(1);
   const [noteData, setNoteData] = useState("");
   const [isMounted, setIsMounted] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
 
   const { data: orders, isLoading } = useGetOrderByLimitByStatus(
     page,
-    "confirmed"
+    "complete"
   );
   const limit = 8;
   const { data: allOrders } = useGetAllOrders();
 
   const filteredAllProduct = allOrders?.filter(
-    (order) => order.orderStatus === "confirmed"
+    (order) => order.orderStatus === "complete"
   );
   useEffect(() => {
     if (filteredAllProduct) {
@@ -77,18 +77,14 @@ function AllOrderTable() {
   const updateNoteMutation = useMutation({
     mutationKey: ["update-note"],
     mutationFn: updateOrderService,
-    onMutate() {
-      setIsUpdating(true);
-    },
+    onMutate() {},
     onSuccess(data) {
       if (data.message === "Ok") {
-        setIsUpdating(false);
         showToast("Ghi chú thành công", "success");
         queryClient.invalidateQueries({ queryKey: ["orders"] });
         setOrderId("");
         setNoteData("");
       }
-      setIsUpdating(false);
     },
   });
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -110,9 +106,9 @@ function AllOrderTable() {
   const handleOnChangeNote = (e: ChangeEvent<HTMLInputElement>) => {
     setNoteData(e.target.value);
   };
-  const handleToggleDeliveryConfirmOn = (orderId: string) => {
-    setDeliveryModalId(orderId);
-    setDeliveryModal(true);
+  const handleToggleModalConfirmCompleteOn = (orderId: string) => {
+    setConfirmCompleteModalId(orderId);
+    setConfirmCompleteModal(true);
   };
   const handleToggleNoteModalOff = () => {
     setOrderId("");
@@ -271,16 +267,16 @@ function AllOrderTable() {
                       ) : null}
                       <DropdownItem
                         onPress={() =>
-                          handleToggleDeliveryConfirmOn(order.orderId)
+                          handleToggleModalConfirmCompleteOn(order.orderId)
                         }
                         className="group"
                         color="default"
                         startContent={
-                          <BsTruck className="text-[16px] group-hover:text-success" />
+                          <IoCheckmarkSharp className="text-[16px] group-hover:text-success" />
                         }
-                        key="delivery"
+                        key="complete"
                       >
-                        <p className="group-hover:text-success">Giao hàng</p>
+                        <p className="group-hover:text-success">Thành công</p>
                       </DropdownItem>
                       <DropdownItem
                         onPress={() =>

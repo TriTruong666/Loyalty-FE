@@ -47,6 +47,16 @@ interface Brand {
   handle: string;
   type: string;
 }
+
+interface SalesCustomer {
+  customerIDOfSales: string;
+  userName: string;
+  phoneNumber: string;
+  status: boolean;
+  salePersonID: string;
+  note: string;
+}
+
 export interface Order {
   orderId: string;
   customerId: string;
@@ -79,4 +89,5 @@ export interface Order {
   shippingAddress: ShippingAddress;
   transaction: Transaction;
   lineItems: LineItem[];
+  salesCustomer: SalesCustomer;
 }

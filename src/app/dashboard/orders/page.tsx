@@ -1,6 +1,6 @@
 "use client";
 import { Pagination } from "@heroui/pagination";
-import { FaInbox, FaPenAlt } from "react-icons/fa";
+import { FaInbox, FaMoneyCheckAlt, FaPenAlt } from "react-icons/fa";
 import { FaXmark } from "react-icons/fa6";
 import {
   Dropdown,
@@ -14,6 +14,7 @@ import { showToast } from "@/app/utils/toast";
 import { IoCheckmarkSharp } from "react-icons/io5";
 import {
   cancelOrderModalState,
+  checkTransactionModalState,
   confirmOrderModalState,
   orderDetailModalState,
 } from "@/app/store/modalAtoms";
@@ -27,6 +28,7 @@ import { updateOrderService } from "@/app/service/orderService";
 import { Input } from "@heroui/react";
 import {
   cancelOrderState,
+  checkTransactionOrderState,
   confirmOrderState,
   detailOrderState,
   noteOrderState,
@@ -47,7 +49,8 @@ function AllOrderTable() {
   const setConfirmModalId = useSetAtom(confirmOrderState);
   const setConfirmModal = useSetAtom(confirmOrderModalState);
   const setCancelModalId = useSetAtom(cancelOrderState);
-
+  const setCheckTransactionModalId = useSetAtom(checkTransactionOrderState);
+  const setCheckTransactionModal = useSetAtom(checkTransactionModalState);
   const setCancelModal = useSetAtom(cancelOrderModalState);
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
@@ -121,6 +124,10 @@ function AllOrderTable() {
   const handleToggleCancelOrderModalOn = (orderId: string) => {
     setCancelModalId(orderId);
     setCancelModal(true);
+  };
+  const handleCheckTransactionModalOn = (transactionId: string) => {
+    setCheckTransactionModalId(transactionId);
+    setCheckTransactionModal(true);
   };
   const handleFinanceStatus = (status: string) => {
     switch (status) {
@@ -241,6 +248,24 @@ function AllOrderTable() {
                       </Button>
                     </DropdownTrigger>
                     <DropdownMenu>
+                      {order.transaction.transactionStatus === "pending" ? (
+                        <DropdownItem
+                          onPress={() =>
+                            handleCheckTransactionModalOn(order.transaction.id)
+                          }
+                          className="group"
+                          color="default"
+                          startContent={
+                            <FaMoneyCheckAlt className="text-[16px] group-hover:text-success" />
+                          }
+                          key="check"
+                        >
+                          <p className="group-hover:text-success">
+                            Check thanh toán
+                          </p>
+                        </DropdownItem>
+                      ) : null}
+
                       <DropdownItem
                         onPress={() =>
                           handleToggleModalConfirmOn(order.orderId)
@@ -252,7 +277,7 @@ function AllOrderTable() {
                         }
                         key="approve"
                       >
-                        <p className="group-hover:text-success">Xác Nhận</p>
+                        <p className="group-hover:text-success">Xác nhận đơn</p>
                       </DropdownItem>
                       <DropdownItem
                         onPress={() =>
@@ -265,7 +290,7 @@ function AllOrderTable() {
                         }
                         key="deny"
                       >
-                        <p className="group-hover:text-success">Từ chối</p>
+                        <p className="group-hover:text-success">Từ chối đơn</p>
                       </DropdownItem>
                       <DropdownItem
                         onPress={() => handleToggleNoteModalOn(order.orderId)}
@@ -289,7 +314,7 @@ function AllOrderTable() {
                         }
                         key="show"
                       >
-                        <p className="group-hover:text-success">Chi tiết</p>
+                        <p className="group-hover:text-success">Chi tiết đơn</p>
                       </DropdownItem>
                     </DropdownMenu>
                   </Dropdown>

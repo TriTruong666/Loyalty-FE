@@ -8,7 +8,6 @@ import {
 } from "@/app/interfaces/Cart";
 import { updateCustomPercent } from "@/app/service/accountService";
 import {
-  getCartFromStorage,
   removeFromCart,
   updateCartItemQuantity,
 } from "@/app/service/cartService";
@@ -44,17 +43,9 @@ export default function CartPage() {
   const discountCustomValue = useAtomValue(discountCustomState);
   const totalCartValue = useAtomValue(totalCartValueAtoms);
   const [salesCustomerId, setSalesCustomerId] = useAtom(salesCustomerState);
-  const [isMounted, setIsMounted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { data: accounts } = useGetSalesCustomerByLimit(1, 100);
   const router = useRouter();
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedCart = getCartFromStorage();
-      setCart(storedCart);
-    }
-    setIsMounted(true);
-  }, [setCart]);
   useEffect(() => {
     if (cart.cartItems.length > 0) return;
 
@@ -152,7 +143,7 @@ export default function CartPage() {
       </div>
     );
   }
-  if (!isMounted || isLoading) {
+  if (isLoading) {
     return (
       <>
         <LoadingDashboard />

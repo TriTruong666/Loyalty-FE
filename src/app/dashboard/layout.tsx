@@ -27,6 +27,7 @@ import CancelOrderModal from "../components/CancelOrderModal";
 import DeliveryOrderConfirmModal from "../components/DeliveryOrderConfirmModal";
 import CheckTransactionModal from "../components/CheckTransactionModal";
 import AddSalesAccountModal from "../components/AddSalesAccountModal";
+import ConfirmCompleteModal from "../components/ConfirmCompleteModal";
 
 export default function DashboardLayout({
   children,
@@ -55,6 +56,7 @@ export default function DashboardLayout({
       <Toaster position="top-center" reverseOrder={false} />
       <AddSalesAccountModal />
       <CheckTransactionModal />
+      <ConfirmCompleteModal />
       <DeliveryOrderConfirmModal />
       <CancelOrderModal />
       {orderId && <OrderDetailModal />}

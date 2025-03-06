@@ -20,11 +20,15 @@ export default function ProductDetailPage() {
     handle as string
   );
   const handleAddProductToCart = () => {
-    if (detail) {
-      addToCart(detail, 1, setCart);
+    if (!detail) {
+      showToast("Sản phẩm không tồn tại.", "error");
+      return;
     }
+
+    addToCart(detail, 1, setCart);
     showToast("Đã thêm vào giỏ hàng.", "success");
   };
+
   const safeHTML = DOMPurify.sanitize(detail?.description || "");
   const brandTitle = (brandId: string) => {
     switch (brandId) {

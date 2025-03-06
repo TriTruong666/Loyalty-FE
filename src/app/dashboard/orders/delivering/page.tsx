@@ -1,6 +1,6 @@
 "use client";
 import { Pagination } from "@heroui/pagination";
-import { FaInbox, FaPenAlt } from "react-icons/fa";
+import { FaInbox, FaMoneyCheckAlt, FaPenAlt } from "react-icons/fa";
 import { FaXmark } from "react-icons/fa6";
 import {
   Dropdown,
@@ -14,7 +14,8 @@ import { showToast } from "@/app/utils/toast";
 import { IoCheckmarkSharp } from "react-icons/io5";
 import {
   cancelOrderModalState,
-  confirmOrderModalState,
+  checkTransactionModalState,
+  confirmCompleteModalState,
   orderDetailModalState,
 } from "@/app/store/modalAtoms";
 import { useAtom, useSetAtom } from "jotai";
@@ -27,7 +28,8 @@ import { updateOrderService } from "@/app/service/orderService";
 import { Input } from "@heroui/react";
 import {
   cancelOrderState,
-  confirmOrderState,
+  checkTransactionOrderState,
+  confirmCompleteOrderState,
   detailOrderState,
   noteOrderState,
 } from "@/app/store/orderAtomts";
@@ -44,10 +46,12 @@ function AllOrderTable() {
   const setOrderDetailModal = useSetAtom(orderDetailModalState);
   const [orderId, setOrderId] = useAtom(noteOrderState);
   const setDetailModalId = useSetAtom(detailOrderState);
-  const setConfirmModalId = useSetAtom(confirmOrderState);
+  const setConfirmCompleteModalId = useSetAtom(confirmCompleteOrderState);
+  const setConfirmCompleteModal = useSetAtom(confirmCompleteModalState);
   const setCancelModalId = useSetAtom(cancelOrderState);
-  const setConfirmModal = useSetAtom(confirmOrderModalState);
   const setCancelModal = useSetAtom(cancelOrderModalState);
+  const setCheckTransactionModalId = useSetAtom(checkTransactionOrderState);
+  const setCheckTransactionModal = useSetAtom(checkTransactionModalState);
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const [noteData, setNoteData] = useState("");
@@ -102,9 +106,9 @@ function AllOrderTable() {
   const handleOnChangeNote = (e: ChangeEvent<HTMLInputElement>) => {
     setNoteData(e.target.value);
   };
-  const handleToggleModalConfirmOn = (orderId: string) => {
-    setConfirmModalId(orderId);
-    setConfirmModal(true);
+  const handleToggleModalConfirmCompleteOn = (orderId: string) => {
+    setConfirmCompleteModalId(orderId);
+    setConfirmCompleteModal(true);
   };
   const handleToggleNoteModalOff = () => {
     setOrderId("");
@@ -120,6 +124,10 @@ function AllOrderTable() {
   const handleToggleCancelOrderModalOn = (orderId: string) => {
     setCancelModalId(orderId);
     setCancelModal(true);
+  };
+  const handleCheckTransactionModalOn = (transactionId: string) => {
+    setCheckTransactionModalId(transactionId);
+    setCheckTransactionModal(true);
   };
   const handleFinanceStatus = (status: string) => {
     switch (status) {
@@ -240,18 +248,35 @@ function AllOrderTable() {
                       </Button>
                     </DropdownTrigger>
                     <DropdownMenu>
+                      {order.transaction.transactionStatus === "pending" ? (
+                        <DropdownItem
+                          onPress={() =>
+                            handleCheckTransactionModalOn(order.transaction.id)
+                          }
+                          className="group"
+                          color="default"
+                          startContent={
+                            <FaMoneyCheckAlt className="text-[16px] group-hover:text-success" />
+                          }
+                          key="check"
+                        >
+                          <p className="group-hover:text-success">
+                            Check thanh toán
+                          </p>
+                        </DropdownItem>
+                      ) : null}
                       <DropdownItem
                         onPress={() =>
-                          handleToggleModalConfirmOn(order.orderId)
+                          handleToggleModalConfirmCompleteOn(order.orderId)
                         }
                         className="group"
                         color="default"
                         startContent={
                           <IoCheckmarkSharp className="text-[16px] group-hover:text-success" />
                         }
-                        key="approve"
+                        key="complete"
                       >
-                        <p className="group-hover:text-success">Xác Nhận</p>
+                        <p className="group-hover:text-success">Thành công</p>
                       </DropdownItem>
                       <DropdownItem
                         onPress={() =>
