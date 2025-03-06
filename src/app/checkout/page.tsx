@@ -32,6 +32,7 @@ import {
 import { formatPrice } from "../utils/format";
 import { getCartFromStorage } from "../service/cartService";
 import {
+  checkoutResponseState,
   checkoutState,
   noteCheckoutState,
   paymentMethodState,
@@ -368,7 +369,10 @@ function PaymentMethod() {
 }
 
 function Summary() {
+  const router = useRouter();
+  const gateway = useAtomValue(paymentMethodState);
   const subtotalCartValue = useAtomValue(subtotalCartValueAtom);
+  const setResponse = useSetAtom(checkoutResponseState);
   const discountByTypeValue = useAtomValue(discountUniqueState);
   const discountByDistributionValue = useAtomValue(discountPPState);
   const totalCartValue = useAtomValue(totalCartValueAtoms);
@@ -393,20 +397,27 @@ function Summary() {
       setIsLoading(true);
     },
     onSuccess(data) {
-      if (data.message === "Ok") {
-        if (typeof window !== "undefined") {
-          window.location.href = "/payment-success";
+      if (data.message) {
+        if (gateway === "bank_transfer") {
+          router.push("/scan-qr");
+          setIsLoading(false);
+          setResponse(data.message);
         }
-        setIsLoading(false);
-        if (typeof window !== "undefined") {
-          localStorage.removeItem("cart");
+        if (gateway !== "bank_transfer") {
+          if (typeof window !== "undefined") {
+            window.location.href = "/payment-success";
+          }
+          if (typeof window !== "undefined") {
+            localStorage.removeItem("cart");
+          }
+          setIsLoading(false);
+          setTimeout(() => {
+            setCart({
+              cartItems: [],
+              gifts: [],
+            });
+          }, 500);
         }
-        setTimeout(() => {
-          setCart({
-            cartItems: [],
-            gifts: [],
-          });
-        }, 500);
       }
     },
   });

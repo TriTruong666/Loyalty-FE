@@ -92,7 +92,7 @@ function AccountStaffTable() {
         <table className="flex flex-col w-full">
           <thead>
             <tr className="grid grid-cols-12 mx-[20px] px-[20px] py-4 bg-[#111111] rounded-lg">
-              <th className="col-span-1 text-[12px] text-normal font-light text-start">
+              <th className="col-span-2 text-[12px] text-normal font-light text-start">
                 ID
               </th>
               <th className="col-span-2 text-[12px] text-normal font-light text-start">
@@ -107,18 +107,18 @@ function AccountStaffTable() {
               <th className="col-span-2 text-[12px] text-normal font-light text-center">
                 Trạng thái
               </th>
-              <th className="col-span-2 text-[12px] text-normal font-light text-end">
+              <th className="col-span-1 text-[12px] text-normal font-light text-end">
                 Thêm
               </th>
             </tr>
           </thead>
           <tbody>
-            {accounts?.map((user, i) => (
+            {accounts?.map((user) => (
               <tr
                 key={user.userId}
                 className="grid grid-cols-12 mx-[20px] px-[20px] py-4 items-center border-b border-gray-600 border-opacity-40"
               >
-                <td className="col-span-1 text-[13px]">{i + 1}</td>
+                <td className="col-span-1 text-[13px]">{user.userId}</td>
                 <td className="col-span-2 flex items-center gap-x-2">
                   <div className="flex flex-col">
                     <p className="text-[13px] font-semibold">{user.userName}</p>
@@ -146,7 +146,7 @@ function AccountStaffTable() {
                   </div>
                 </td>
 
-                <td className="col-span-2 text-[13px] font-semibold flex justify-end">
+                <td className="col-span-1 text-[13px] font-semibold flex justify-end">
                   <Dropdown>
                     <DropdownTrigger>
                       <Button isIconOnly size="sm" variant="light">

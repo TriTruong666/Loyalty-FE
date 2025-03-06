@@ -12,16 +12,16 @@ import { RiSettingsLine } from "react-icons/ri";
 import { IoIosLogOut } from "react-icons/io";
 import { RiShoppingBagLine } from "react-icons/ri";
 import { BsCart } from "react-icons/bs";
-import { IoLockOpenOutline } from "react-icons/io5";
 import { MdOutlinePermMedia } from "react-icons/md";
 import { logoutService } from "../service/authenticateService";
 import { useMutation } from "@tanstack/react-query";
 import { useAtom, useAtomValue } from "jotai";
 import { userInfoState } from "../store/accountAtoms";
-import { useGetAllUser } from "../hooks/hook";
 import { cartState } from "../store/cartAtoms";
 import { getCartFromStorage } from "../service/cartService";
 import { useEffect } from "react";
+import { useGetAllUser } from "../hooks/hook";
+import { IoLockOpenOutline } from "react-icons/io5";
 
 export default function DashboardSidebar() {
   const userInfo = useAtomValue(userInfoState);
@@ -46,9 +46,14 @@ export default function DashboardSidebar() {
           {userInfo?.type === "ceo" && <AdminMenu />}
           {userInfo?.type === "staff" && <StaffMenu />}
         </div>
-        <div className="border-t border-gray-400-40">
+        {userInfo?.type === "ceo" && (
+          <div className="border-t border-gray-400-40">
+            <MenuOnlyForCEO />
+          </div>
+        )}
+        {/* <div className="border-t border-gray-400-40">
           <UtilityItem />
-        </div>
+        </div> */}
       </div>
       <p className="text-center text-primary font-light text-[11px] pb-4">
         Powered by Loyalty™
@@ -260,39 +265,39 @@ function MenuItem({
   );
 }
 
-// function MenuOnlyForCEO() {
-//   const { data: allAccounts } = useGetAllUser();
-//   const filteredAllAccounts =
-//     allAccounts?.filter((user) => user.status === "pending") ?? [];
+function MenuOnlyForCEO() {
+  const { data: allAccounts } = useGetAllUser();
+  const filteredAllAccounts =
+    allAccounts?.filter((user) => user.status === "pending") ?? [];
 
-//   const ceoMenu = [
-//     {
-//       name: "Xét duyệt",
-//       icon: IoLockOpenOutline,
-//       path: "/dashboard/permission",
-//       typography:
-//         filteredAllAccounts?.length > 0
-//           ? filteredAllAccounts?.length
-//           : undefined,
-//     },
-//   ];
-//   return (
-//     <div className="flex flex-col pt-4 ">
-//       <p className="text-normal text-[12px] px-6 py-2">Dành cho CEO</p>
-//       <div className="flex flex-col gap-y-3 mt-2">
-//         {ceoMenu.map((item, i) => (
-//           <MenuItem
-//             key={i}
-//             icon={item.icon}
-//             name={item.name}
-//             path={item.path}
-//             typography={item.typography}
-//           />
-//         ))}
-//       </div>
-//     </div>
-//   );
-// }
+  const ceoMenu = [
+    {
+      name: "Xét duyệt",
+      icon: IoLockOpenOutline,
+      path: "/dashboard/permission",
+      typography:
+        filteredAllAccounts?.length > 0
+          ? filteredAllAccounts?.length
+          : undefined,
+    },
+  ];
+  return (
+    <div className="flex flex-col pt-4 ">
+      <p className="text-normal text-[12px] px-6 py-2">Dành cho CEO</p>
+      <div className="flex flex-col gap-y-3 mt-2">
+        {ceoMenu.map((item, i) => (
+          <MenuItem
+            key={i}
+            icon={item.icon}
+            name={item.name}
+            path={item.path}
+            typography={item.typography}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 function UserMenu() {
   const [cart, setCart] = useAtom(cartState);

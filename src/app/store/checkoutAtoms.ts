@@ -3,6 +3,8 @@ import { cartState } from "./cartAtoms";
 import { Checkout } from "../interfaces/Checkout";
 import { userInfoState } from "./accountAtoms";
 
+export const checkoutResponseState = atom("");
+
 export const paymentMethodState = atom("");
 
 export const salesCustomerState = atom("");
