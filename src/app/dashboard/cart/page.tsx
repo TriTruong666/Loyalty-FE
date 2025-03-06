@@ -162,7 +162,7 @@ export default function CartPage() {
         {percentModal && (
           <div
             onClick={(e) => e.stopPropagation()}
-            className=" absolute 3xl:left-[80%] 2xl:left-[62%] top-[7px] w-[300px] p-[10px] bg-default-50 rounded-[15px] z-10 modal-content"
+            className=" absolute 3xl:left-[80%] z-[1000] 2xl:left-[62%] top-[7px] w-[300px] p-[10px] bg-default-50 rounded-[15px]  modal-content"
           >
             <Input
               type="number"
