@@ -334,7 +334,8 @@ function LocationForm() {
         showToast("Số điện thoại này đã tồn tại trong hệ thống.", "error");
         setIsLoadingSubmit(false);
         return;
-      } else {
+      }
+      if (data.message === "Ok") {
         setModal(false);
         setAccountModalProgress(1);
         setSubmitData({

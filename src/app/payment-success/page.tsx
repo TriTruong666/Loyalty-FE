@@ -33,7 +33,7 @@ export default function PaymentSuccessPage() {
         </Button>
         <Button
           as={Link}
-          href="/dashboard/user-orders"
+          href="/dashboard/orders"
           className="font-bold w-full"
           variant="flat"
           radius="full"

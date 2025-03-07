@@ -12,6 +12,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateOrderService } from "../service/orderService";
 import { useState } from "react";
 import { showToast } from "../utils/toast";
+import { useGetUserInfo } from "../hooks/hook";
 const DynamicLottie = dynamic(() => import("lottie-react"), { ssr: false });
 export default function CancelOrderModal() {
   const isToggleModal = useAtomValue(cancelOrderModalState);
@@ -28,6 +29,8 @@ export default function CancelOrderModal() {
 }
 
 function ConfirmCancel() {
+  const { data: info } = useGetUserInfo();
+
   const setDetailModal = useSetAtom(orderDetailModalState);
   const orderId = useAtomValue(cancelOrderState);
   const setModal = useSetAtom(cancelOrderModalState);
@@ -79,13 +82,33 @@ function ConfirmCancel() {
       <p className="font-bold text-[24px] mb-[30px]">
         Bạn sẽ huỷ đơn #{orderId}!
       </p>
-      <div className="flex items-center border border-gray-400 border-opacity-40 gap-x-[20px] px-[20px] py-[10px] rounded-lg">
-        <BsFillInfoCircleFill className="text-[30px] text-normal" />
-        <p className="text-normal text-sm">
-          Hành động này không thể được hoàn tác, vui lòng liên hệ với phía khách
-          hàng để xác nhận huỷ đơn.
-        </p>
-      </div>
+      {info?.type === "ceo" && (
+        <div className="flex items-center border border-gray-400 border-opacity-40 gap-x-[20px] px-[20px] py-[10px] rounded-lg">
+          <BsFillInfoCircleFill className="text-[30px] text-normal" />
+          <p className="text-normal text-sm">
+            Hành động này không thể được hoàn tác, vui lòng liên hệ với phía
+            khách hàng để xác nhận huỷ đơn.
+          </p>
+        </div>
+      )}
+      {info?.type === "admin" && (
+        <div className="flex items-center border border-gray-400 border-opacity-40 gap-x-[20px] px-[20px] py-[10px] rounded-lg">
+          <BsFillInfoCircleFill className="text-[30px] text-normal" />
+          <p className="text-normal text-sm">
+            Hành động này không thể được hoàn tác, vui lòng liên hệ với phía
+            khách hàng để xác nhận huỷ đơn.
+          </p>
+        </div>
+      )}
+      {info?.type === "sales" && (
+        <div className="flex items-center border border-gray-400 border-opacity-40 gap-x-[20px] px-[20px] py-[10px] rounded-lg">
+          <BsFillInfoCircleFill className="text-[30px] text-normal" />
+          <p className="text-normal text-sm">
+            Hành động này không thể được hoàn tác, phía khách hàng sẽ được liên
+            hệ để thông báo về việc huỷ đơn của bạn.
+          </p>
+        </div>
+      )}
       <div className="flex self-end gap-x-[20px] mt-[20px]">
         <Button variant="flat" size="md" onPress={handleToggleModalOff}>
           <p className="font-semibold">Thoát</p>

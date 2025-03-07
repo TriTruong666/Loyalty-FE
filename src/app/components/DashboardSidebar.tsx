@@ -20,7 +20,7 @@ import { userInfoState } from "../store/accountAtoms";
 import { cartState } from "../store/cartAtoms";
 import { getCartFromStorage } from "../service/cartService";
 import { useEffect } from "react";
-import { useGetAllUser } from "../hooks/hook";
+import { useGetAllOrders, useGetAllUser } from "../hooks/hook";
 import { IoLockOpenOutline } from "react-icons/io5";
 
 export default function DashboardSidebar() {
@@ -101,6 +101,8 @@ function StaffMenu() {
   );
 }
 function AdminMenu() {
+  const { data: allOrders } = useGetAllOrders();
+  const ordersLength = allOrders?.length;
   const menu = [
     {
       name: "Tổng quan",
@@ -126,7 +128,7 @@ function AdminMenu() {
       name: "Đơn hàng",
       icon: LuFileText,
       path: "/dashboard/orders",
-      typography: 10,
+      typography: ordersLength,
     },
     {
       name: "Thư viện",
@@ -136,7 +138,7 @@ function AdminMenu() {
     {
       name: "Thông báo",
       icon: PiNotification,
-      path: "/dashboard/admin-notification",
+      path: "/dashboard/notification",
       typography: 3,
     },
   ];
@@ -309,7 +311,8 @@ function UserMenu() {
     (sum, item) => sum + (item.quantity || 0),
     0
   );
-
+  const { data: allOrders } = useGetAllOrders();
+  const ordersLength = allOrders?.length;
   const userMenu = [
     {
       name: "Tổng quan",
@@ -331,12 +334,12 @@ function UserMenu() {
       name: "Đơn hàng",
       icon: LuFileText,
       path: "/dashboard/orders",
-      typography: 10,
+      typography: ordersLength,
     },
     {
       name: "Thông báo",
       icon: PiNotification,
-      path: "/dashboard/user-notification",
+      path: "/dashboard/notification",
       typography: 3,
     },
   ];

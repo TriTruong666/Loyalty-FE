@@ -65,10 +65,10 @@ export default function CheckoutPage() {
     if (isCartLoaded && cart.cartItems.length === 0) {
       router.push("/dashboard/cart");
     }
-    if (salesCustomerId === "") {
+    if (info?.type === "sales" && salesCustomerId === "") {
       router.push("/dashboard/cart");
     }
-  }, [cart, isCartLoaded, router, salesCustomerId]);
+  }, [cart, isCartLoaded, router, salesCustomerId, info]);
   useEffect(() => {
     if (info) {
       setInfo(info);
