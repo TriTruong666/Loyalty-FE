@@ -69,6 +69,25 @@ function ConfirmCancel() {
   const handleToggleModalOff = () => {
     setModal(false);
   };
+  const handleWarningContent = (role: string) => {
+    switch (role) {
+      case "admin":
+        return `Hành động này không thể được hoàn tác, 
+      vui lòng liên hệ với phía khách hàng để xác nhận huỷ đơn.`;
+      case "ceo":
+        return `Hành động này không thể được hoàn tác, 
+      vui lòng liên hệ với phía khách hàng để xác nhận huỷ đơn.`;
+      case "sales":
+        return ` Hành động này không thể được hoàn tác, phía khách hàng sẽ được liên
+            hệ để thông báo về việc huỷ đơn của bạn.`;
+      case "business":
+        return `Hành động này không thể được hoàn tác, vui lòng suy nghĩ kỹ trước khi huỷ đơn, phía hệ thống sẽ gọi cho bạn sớm nhất để huỷ.`;
+      case "personal":
+        return `Hành động này không thể được hoàn tác, vui lòng suy nghĩ kỹ trước khi huỷ đơn, phía hệ thống sẽ gọi cho bạn sớm nhất để huỷ.`;
+      default:
+        return "";
+    }
+  };
   return (
     <div className="flex flex-col items-center justify-center">
       <div className="flex justify-center mb-[15px]">
@@ -82,33 +101,12 @@ function ConfirmCancel() {
       <p className="font-bold text-[24px] mb-[30px]">
         Bạn sẽ huỷ đơn #{orderId}!
       </p>
-      {info?.type === "ceo" && (
-        <div className="flex items-center border border-gray-400 border-opacity-40 gap-x-[20px] px-[20px] py-[10px] rounded-lg">
-          <BsFillInfoCircleFill className="text-[30px] text-normal" />
-          <p className="text-normal text-sm">
-            Hành động này không thể được hoàn tác, vui lòng liên hệ với phía
-            khách hàng để xác nhận huỷ đơn.
-          </p>
-        </div>
-      )}
-      {info?.type === "admin" && (
-        <div className="flex items-center border border-gray-400 border-opacity-40 gap-x-[20px] px-[20px] py-[10px] rounded-lg">
-          <BsFillInfoCircleFill className="text-[30px] text-normal" />
-          <p className="text-normal text-sm">
-            Hành động này không thể được hoàn tác, vui lòng liên hệ với phía
-            khách hàng để xác nhận huỷ đơn.
-          </p>
-        </div>
-      )}
-      {info?.type === "sales" && (
-        <div className="flex items-center border border-gray-400 border-opacity-40 gap-x-[20px] px-[20px] py-[10px] rounded-lg">
-          <BsFillInfoCircleFill className="text-[30px] text-normal" />
-          <p className="text-normal text-sm">
-            Hành động này không thể được hoàn tác, phía khách hàng sẽ được liên
-            hệ để thông báo về việc huỷ đơn của bạn.
-          </p>
-        </div>
-      )}
+      <div className="flex items-center border border-gray-400 border-opacity-40 gap-x-[20px] px-[20px] py-[10px] rounded-lg">
+        <BsFillInfoCircleFill className="text-[30px] text-normal" />
+        <p className="text-normal text-sm">
+          {handleWarningContent(info?.type as string)}
+        </p>
+      </div>
       <div className="flex self-end gap-x-[20px] mt-[20px]">
         <Button variant="flat" size="md" onPress={handleToggleModalOff}>
           <p className="font-semibold">Thoát</p>

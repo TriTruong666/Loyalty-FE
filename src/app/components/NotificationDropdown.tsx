@@ -4,9 +4,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { AiOutlineNotification } from "react-icons/ai";
 import { useAtomValue } from "jotai";
 import { notificationDropdownState } from "../store/dropdownAtoms";
-
+import { useGetListNotification } from "../hooks/hook";
+import { Notification as NotificationProps } from "../interfaces/Notification";
+import { formatRelativeTime } from "../utils/format";
+import Link from "next/link";
 export default function NotificationDropdown() {
   const isToggleDropdown = useAtomValue(notificationDropdownState);
+  const { data: notifications } = useGetListNotification();
 
   return (
     <AnimatePresence>
@@ -20,15 +24,14 @@ export default function NotificationDropdown() {
         >
           {/* Header */}
           <p className="font-open font-light w-full px-[20px] py-[20px] sticky top-0 left-0 bg-background z-[60]">
-            Thông báo của bạn
+            Thông báo
           </p>
 
           {/* List */}
           <div className="flex flex-col border-t border-gray-400-40">
-            <NotificationItem />
-            <NotificationItem />
-            <NotificationItem />
-            <NotificationItem />
+            {notifications?.map((item) => (
+              <NotificationItem key={item.id} {...item} />
+            ))}
           </div>
         </motion.div>
       )}
@@ -36,16 +39,19 @@ export default function NotificationDropdown() {
   );
 }
 
-function NotificationItem() {
+function NotificationItem(props: NotificationProps) {
   return (
-    <div className="flex gap-x-[10px] border-b border-gray-400-40 px-[20px] py-[10px] duration-200 transition-all hover:bg-gray-500 hover:bg-opacity-10 cursor-pointer">
+    <Link
+      href={`/dashboard/notification/detail/${props.id}`}
+      className="flex gap-x-[10px] border-b border-gray-400-40 px-[20px] py-[10px] duration-200 transition-all hover:bg-gray-500 hover:bg-opacity-10 cursor-pointer"
+    >
       <AiOutlineNotification className="text-[22px]" />
       <div className="flex flex-col">
-        <p className="line-clamp-2 font-semibold text-sm">
-          Thông báo về việc bảo trì server
+        <p className="line-clamp-2 font-semibold text-sm">{props.title}</p>
+        <p className="text-[12px] text-normal">
+          {formatRelativeTime(props.createdDate)}
         </p>
-        <p className="text-[12px] text-normal">2 phút trước</p>
       </div>
-    </div>
+    </Link>
   );
 }

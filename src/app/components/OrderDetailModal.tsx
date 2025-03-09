@@ -23,19 +23,22 @@ import {
   deliveryOrderState,
   detailOrderState,
 } from "../store/orderAtomts";
-import { useGetDetailOrder, useGetUserInfo } from "../hooks/hook";
+import { useGetDetailOrder } from "../hooks/hook";
 import { LoadingTable } from "./loading";
 import { LineItem as LineItemProps } from "../interfaces/Order";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import { FiTruck } from "react-icons/fi";
 import { FaFlagCheckered } from "react-icons/fa";
+import { userInfoState } from "../store/accountAtoms";
 export default function OrderDetailModal() {
-  const { data: info } = useGetUserInfo();
+  const info = useAtomValue(userInfoState);
   return (
     <>
       {info?.type === "admin" && <AdminOrderDetail />}
       {info?.type === "ceo" && <AdminOrderDetail />}
       {info?.type === "sales" && <UserOrderDetail />}
+      {info?.type === "business" && <UserOrderDetail />}
+      {info?.type === "personal" && <UserOrderDetail />}
     </>
   );
 }
@@ -91,6 +94,7 @@ const LineItem = (props: LineItemProps) => {
 };
 
 function AdminOrderDetail() {
+  const info = useAtomValue(userInfoState);
   const setCancelModalId = useSetAtom(cancelOrderState);
   const setCancelModal = useSetAtom(cancelOrderModalState);
   const setConfirmModalId = useSetAtom(confirmOrderState);
@@ -175,6 +179,9 @@ function AdminOrderDetail() {
       default:
         return "";
     }
+  };
+  const handleCancelStatusByRole = (role: string) => {
+    return ["admin", "ceo"].includes(role);
   };
   const handleToggleCancelOrderModalOn = (orderId: string) => {
     setCancelModalId(orderId);
@@ -430,7 +437,7 @@ function AdminOrderDetail() {
                 {/* Footer Buttons */}
 
                 <div className="sticky left-0 bottom-0 flex justify-between px-[15px] gap-x-[15px] py-[25px] bg-[#111111] border-t border-gray-400-40">
-                  {detail?.orderStatus !== "cancelled" ? (
+                  {detail?.orderStatus !== "cancelled" && (
                     <Button
                       onPress={() =>
                         handleToggleCancelOrderModalOn(
@@ -445,8 +452,10 @@ function AdminOrderDetail() {
                       <RiFileCloseLine />
                       <p>Huỷ đơn hàng</p>
                     </Button>
-                  ) : (
-                    <>
+                  )}
+
+                  {detail?.orderStatus === "cancelled" &&
+                    handleCancelStatusByRole(info?.type as string) && (
                       <p className="text-[13px] text-normal font-light">
                         Lưu ý: Đối với đơn hàng{" "}
                         <span className="font-semibold text-danger-400">
@@ -458,8 +467,7 @@ function AdminOrderDetail() {
                         </span>{" "}
                         thì hãy liên hệ với khách hàng để hoàn tiền.
                       </p>
-                    </>
-                  )}
+                    )}
 
                   {detail?.orderStatus === "pending" && (
                     <Button
@@ -517,6 +525,7 @@ function AdminOrderDetail() {
 }
 
 function UserOrderDetail() {
+  const info = useAtomValue(userInfoState);
   const setCancelModalId = useSetAtom(cancelOrderState);
   const setCancelModal = useSetAtom(cancelOrderModalState);
   const setCheckTransactionModal = useSetAtom(checkTransactionModalState);
@@ -596,6 +605,21 @@ function UserOrderDetail() {
         return "";
     }
   };
+  const handleButtonRole = (role: string) => {
+    switch (role) {
+      case "admin":
+        return true;
+      case "ceo":
+        return true;
+      case "sales":
+        return true;
+      default:
+        return false;
+    }
+  };
+  const handleCancelStatusByRole = (role: string) => {
+    return ["admin", "ceo"].includes(role);
+  };
   const handleToggleCancelOrderModalOn = (orderId: string) => {
     setCancelModalId(orderId);
     setCancelModal(true);
@@ -647,18 +671,19 @@ function UserOrderDetail() {
                     <IoIosInformationCircleOutline className="text-[20px]" />
                     <p className="text-[12px]">
                       Đơn hàng này hiện chưa được thanh toán.{" "}
-                      {detail.orderStatus !== "cancelled" && (
-                        <span
-                          className="text-primary font-semibold cursor-pointer hover:underline"
-                          onClick={() =>
-                            handleToggleCheckTransactionOn(
-                              detail.transaction.id
-                            )
-                          }
-                        >
-                          Nhấp vào đây để xác nhận
-                        </span>
-                      )}
+                      {detail.orderStatus !== "cancelled" &&
+                        handleButtonRole(info?.type as string) && (
+                          <span
+                            className="text-primary font-semibold cursor-pointer hover:underline"
+                            onClick={() =>
+                              handleToggleCheckTransactionOn(
+                                detail.transaction.id
+                              )
+                            }
+                          >
+                            Nhấp vào đây để xác nhận
+                          </span>
+                        )}
                     </p>
                   </div>
                 )}
@@ -839,7 +864,7 @@ function UserOrderDetail() {
                 {/* Footer Buttons */}
 
                 <div className="sticky left-0 bottom-0 flex justify-between px-[15px] gap-x-[15px] py-[25px] bg-[#111111] border-t border-gray-400-40">
-                  {detail?.orderStatus !== "cancelled" ? (
+                  {detail?.orderStatus !== "cancelled" && (
                     <Button
                       onPress={() =>
                         handleToggleCancelOrderModalOn(
@@ -854,8 +879,10 @@ function UserOrderDetail() {
                       <RiFileCloseLine />
                       <p>Huỷ đơn hàng</p>
                     </Button>
-                  ) : (
-                    <>
+                  )}
+
+                  {detail?.orderStatus === "cancelled" &&
+                    handleCancelStatusByRole(info?.type as string) && (
                       <p className="text-[13px] text-normal font-light">
                         Lưu ý: Đối với đơn hàng{" "}
                         <span className="font-semibold text-danger-400">
@@ -867,8 +894,7 @@ function UserOrderDetail() {
                         </span>{" "}
                         thì hãy liên hệ với khách hàng để hoàn tiền.
                       </p>
-                    </>
-                  )}
+                    )}
                 </div>
               </>
             )}

@@ -7,6 +7,7 @@ import * as BrandService from "@/app/service/brandService";
 import * as AccountService from "@/app/service/accountService";
 import * as LocationService from "@/app/service/locationService";
 import * as OrderService from "@/app/service/orderService";
+import * as NotificationService from "@/app/service/notificationService";
 import { CloudinaryAsset } from "../interfaces/Cloudinary";
 import { Brand } from "../interfaces/Brand";
 import { User } from "../interfaces/Account";
@@ -15,6 +16,7 @@ import { Order } from "../interfaces/Order";
 import { SalesCustomer } from "../interfaces/SalesCustomer";
 import { userInfoState } from "../store/accountAtoms";
 import { useAtomValue } from "jotai";
+import { Notification } from "../interfaces/Notification";
 function useFetch<T>(
   queryKey: any[],
   queryFn: () => Promise<T>,
@@ -130,7 +132,7 @@ export function useGetWardByDistrict(districtId: string) {
   );
 }
 export function useGetOrderByLimitByStatus(page: number, status: string) {
-  return useFetch<Order[]>(["orders", page], async () =>
+  return useFetch<Order[]>(["orders", page, status], async () =>
     OrderService.getOrderByLimitByStatus(page, status)
   );
 }
@@ -153,5 +155,17 @@ export function useGetAllSalesCustomer() {
 export function useGetSalesCustomerByLimit(page: number, limit: number) {
   return useFetch<SalesCustomer[]>(["sales-customers", page], async () =>
     AccountService.getSalesCustomerByLimit(page, limit)
+  );
+}
+
+export function useGetListNotification() {
+  return useFetch<Notification[]>(["notifications"], async () =>
+    NotificationService.getListNotification()
+  );
+}
+
+export function useGetDetailNotification(id: string) {
+  return useFetch<Notification>(["notifications", id], async () =>
+    NotificationService.getDetailNotification(id)
   );
 }

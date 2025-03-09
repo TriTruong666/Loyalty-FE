@@ -1,4 +1,11 @@
+"use client";
+import { useGetDetailNotification } from "@/app/hooks/hook";
+import { useParams } from "next/navigation";
+
 export default function DetailNotificationPage() {
+  const params = useParams();
+  const id = params.id;
+  const { data: detail, isLoading } = useGetDetailNotification(id as string);
   return (
     <div className="flex flex-col px-[40px] py-[40px] items-center gap-y-[10px]">
       <p className="text-center text-[30px] font-semibold max-w-[90%]">

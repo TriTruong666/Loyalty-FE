@@ -18,13 +18,9 @@ import {
   confirmOrderModalState,
   orderDetailModalState,
 } from "@/app/store/modalAtoms";
-import { useAtom, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { ChangeEvent, useEffect, useState } from "react";
-import {
-  useGetAllOrders,
-  useGetOrderByLimitByStatus,
-  useGetUserInfo,
-} from "@/app/hooks/hook";
+import { useGetAllOrders, useGetOrderByLimitByStatus } from "@/app/hooks/hook";
 import { LoadingTable } from "@/app/components/loading";
 import { formatPrice } from "@/app/utils/format";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -38,14 +34,17 @@ import {
   noteOrderState,
 } from "@/app/store/orderAtomts";
 import { TbFolderCancel } from "react-icons/tb";
+import { userInfoState } from "@/app/store/accountAtoms";
 
 export default function OrderPage() {
-  const { data: info } = useGetUserInfo();
+  const info = useAtomValue(userInfoState);
   return (
     <>
       {info?.type === "admin" && <AdminOrderTable />}
       {info?.type === "ceo" && <AdminOrderTable />}
       {info?.type === "sales" && <UserOrderTable />}
+      {info?.type === "business" && <UserOrderTable />}
+      {info?.type === "personal" && <UserOrderTable />}
     </>
   );
 }
@@ -374,6 +373,7 @@ function AdminOrderTable() {
   );
 }
 function UserOrderTable() {
+  const info = useAtomValue(userInfoState);
   const setOrderDetailModal = useSetAtom(orderDetailModalState);
   const [orderId, setOrderId] = useAtom(noteOrderState);
   const setDetailModalId = useSetAtom(detailOrderState);
@@ -470,6 +470,18 @@ function UserOrderTable() {
         return "Đã thanh toán";
       default:
         return "";
+    }
+  };
+  const handleButtonRole = (role: string) => {
+    switch (role) {
+      case "admin":
+        return true;
+      case "ceo":
+        return true;
+      case "sales":
+        return true;
+      default:
+        return false;
     }
   };
   if (isLoading || !isMounted) {
@@ -577,7 +589,8 @@ function UserOrderTable() {
                       </Button>
                     </DropdownTrigger>
                     <DropdownMenu>
-                      {order.transaction.transactionStatus === "pending" ? (
+                      {handleButtonRole(info?.type as string) &&
+                      order.transaction.transactionStatus === "pending" ? (
                         <DropdownItem
                           onPress={() =>
                             handleCheckTransactionModalOn(order.transaction.id)
