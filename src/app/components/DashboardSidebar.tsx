@@ -20,7 +20,11 @@ import { userInfoState } from "../store/accountAtoms";
 import { cartState } from "../store/cartAtoms";
 import { getCartFromStorage } from "../service/cartService";
 import { useEffect } from "react";
-import { useGetAllOrders, useGetAllUser } from "../hooks/hook";
+import {
+  useGetAllOrders,
+  useGetAllUser,
+  useGetListNotification,
+} from "../hooks/hook";
 import { IoLockOpenOutline } from "react-icons/io5";
 
 export default function DashboardSidebar() {
@@ -63,6 +67,8 @@ export default function DashboardSidebar() {
 }
 
 function StaffMenu() {
+  const { data: notification } = useGetListNotification();
+  const notiLength = notification?.length;
   const menu = [
     {
       name: "Tổng quan",
@@ -79,7 +85,7 @@ function StaffMenu() {
       name: "Thông báo",
       icon: PiNotification,
       path: "/dashboard/notification",
-      typography: 3,
+      typography: notiLength,
     },
   ];
 
@@ -103,6 +109,8 @@ function StaffMenu() {
 function AdminMenu() {
   const { data: allOrders } = useGetAllOrders();
   const ordersLength = allOrders?.length;
+  const { data: notification } = useGetListNotification();
+  const notiLength = notification?.length;
   const menu = [
     {
       name: "Tổng quan",
@@ -139,7 +147,7 @@ function AdminMenu() {
       name: "Thông báo",
       icon: PiNotification,
       path: "/dashboard/notification",
-      typography: 3,
+      typography: notiLength,
     },
   ];
 
@@ -313,6 +321,8 @@ function UserMenu() {
   );
   const { data: allOrders } = useGetAllOrders();
   const ordersLength = allOrders?.length;
+  const { data: notification } = useGetListNotification();
+  const notiLength = notification?.length;
   const userMenu = [
     {
       name: "Tổng quan",
@@ -340,7 +350,7 @@ function UserMenu() {
       name: "Thông báo",
       icon: PiNotification,
       path: "/dashboard/notification",
-      typography: 3,
+      typography: notiLength,
     },
   ];
   return (

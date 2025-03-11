@@ -5,7 +5,7 @@ import { IoShieldCheckmarkOutline } from "react-icons/io5";
 import { BsBellFill } from "react-icons/bs";
 import { IoIosSettings } from "react-icons/io";
 import { FaShoppingCart } from "react-icons/fa";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import {
   cartDropdownState,
   notificationDropdownState,
@@ -13,6 +13,8 @@ import {
 } from "../store/dropdownAtoms";
 import { cartState } from "../store/cartAtoms";
 import { getCartFromStorage } from "../service/cartService";
+import { useGetListNotification } from "../hooks/hook";
+import { userInfoState } from "../store/accountAtoms";
 
 export default function DashboardHeader() {
   return (
@@ -73,6 +75,9 @@ function SearchBar() {
 function MainBar() {
   const [notiDropdown, setNotiDropdown] = useAtom(notificationDropdownState);
   const [cartDropdown, setCartDropdown] = useAtom(cartDropdownState);
+  const info = useAtomValue(userInfoState);
+  const { data: notification } = useGetListNotification();
+  const notiLength = notification?.length;
   const [profileDropdown, setProfileDropdown] = useAtom(
     profileSettingDropdownState
   );
@@ -100,6 +105,22 @@ function MainBar() {
     setNotiDropdown(false);
     setCartDropdown(false);
   };
+  const showCartByRole = (role: string) => {
+    switch (role) {
+      case "admin":
+        return false;
+      case "ceo":
+        return false;
+      case "sales":
+        return true;
+      case "business":
+        return true;
+      case "personal":
+        return true;
+      default:
+        return false;
+    }
+  };
   return (
     <div className="flex items-center">
       <div className="flex items-center gap-x-2 border border-[#34C724] px-2 py-1 rounded-full mr-4">
@@ -113,19 +134,22 @@ function MainBar() {
       >
         <BsBellFill className="text-[20px]" />
         <span className="absolute -top-1 left-[30px] bg-red-500 text-white text-[8px] px-[6px] py-[1px] rounded-full font-bold">
-          10
+          {notiLength}
         </span>
       </div>
       {/* Cart Icon with Badge */}
-      <div
-        className="relative px-4 border-l border-gray-300 cursor-pointer"
-        onClick={handleToggleCartDropdown}
-      >
-        <FaShoppingCart className="text-[20px]" />
-        <span className="absolute -top-1 left-[30px] bg-red-500 text-white text-[8px] px-[6px] py-[1px] rounded-full font-bold">
-          {totalQuantity}
-        </span>
-      </div>
+      {showCartByRole(info?.type as string) && (
+        <div
+          className="relative px-4 border-l border-gray-300 cursor-pointer"
+          onClick={handleToggleCartDropdown}
+        >
+          <FaShoppingCart className="text-[20px]" />
+          <span className="absolute -top-1 left-[30px] bg-red-500 text-white text-[8px] px-[6px] py-[1px] rounded-full font-bold">
+            {totalQuantity}
+          </span>
+        </div>
+      )}
+
       <div
         className="px-4 border-l border-gray-300 cursor-pointer"
         onClick={handleToggleProfileModal}

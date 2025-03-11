@@ -66,24 +66,24 @@ export const getCustomerUserByLimitByStatus = async (
     console.error(error);
   }
 };
-interface Address {
+interface CreateAddress {
   provinceCode: string;
   districtCode: string;
   wardCode: string;
   street: string;
 }
 
-interface User {
+interface CreateUser {
   userName: string;
   email: string;
   phoneNumber: string;
   birthday?: string;
-  address: Address;
+  address: CreateAddress;
   mst?: string;
   type: string;
 }
 
-export const createAccountService = async (data: User) => {
+export const createAccountService = async (data: CreateUser) => {
   try {
     const res = await axiosClient.post(`/api/user/create`, data);
     return res.data;
@@ -168,6 +168,50 @@ interface SalesCustomer {
 export const createSalesCustomer = async (data: SalesCustomer) => {
   try {
     const res = await axiosClient.post(`/api/salescustomer`, data);
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+interface UpdateAddress {
+  provincecode?: string;
+  districtcode?: string;
+  wardcode?: string;
+  street?: string;
+}
+
+export interface UpdateUser {
+  userName?: string;
+  email?: string;
+  phoneNumber?: string;
+  birthday?: string;
+  address?: UpdateAddress;
+  mst?: string;
+  type?: string;
+  status?: string;
+  note?: string;
+  discountCustom?: number;
+}
+
+export const updateUserService = async (userId: string, data: UpdateUser) => {
+  try {
+    const res = await axiosClient.put(`/api/user/update/${userId}`, data);
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+interface ChangePassword {
+  email: string;
+  oldPassword: string;
+  newPassword: string;
+}
+
+export const ChangePasswordService = async (data: ChangePassword) => {
+  try {
+    const res = await axiosClient.post(`/api/user/change-password`, data);
     return res.data;
   } catch (error) {
     console.error(error);

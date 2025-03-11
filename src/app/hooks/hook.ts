@@ -104,10 +104,10 @@ export function useGetUserInfo() {
 
 export function useGetAllUser() {
   const userInfo = useAtomValue(userInfoState);
-  const allowedRoles = ["admin", "ceo"]; // Allowed roles
+  const allowedRoles = ["admin", "ceo"];
 
   return useFetch<User[]>(["users"], async () => AccountService.getAllUser(), {
-    enabled: !!userInfo && allowedRoles.includes(userInfo.type), // Enable only if user has access
+    enabled: !!userInfo && allowedRoles.includes(userInfo.type),
   });
 }
 
