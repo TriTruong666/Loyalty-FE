@@ -58,3 +58,12 @@ export const getDetailOrderService = async (orderId: string) => {
     console.error(error);
   }
 };
+
+export const checkTransactionService = async (orderId: string) => {
+  try {
+    const res = await axiosClient.post(`/api/transaction/order/${orderId}`);
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};

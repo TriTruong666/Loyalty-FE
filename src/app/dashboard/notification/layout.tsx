@@ -25,7 +25,7 @@ export default function NotificationLayout({
         </>
       ) : (
         <>
-          <div className="flex flex-col w-[50%] border-r border-gray-400-40 min-h-[calc(100vh-80px)]">
+          <div className="flex flex-col w-[50%] border-r border-gray-400-40 min-h-[calc(100vh-80px)] max-h-[calc(100vh-80px)] overflow-y-auto">
             <div className="flex items-center justify-between px-[40px] py-[20px]">
               <div className="flex flex-col gap-y-[5px]">
                 <p className="text-[28px] font-light select-none">Thông báo</p>
@@ -92,7 +92,9 @@ export default function NotificationLayout({
         </>
       )}
 
-      <div className="w-[50%]">{children}</div>
+      <div className="w-[50%] min-h-[calc(100vh-80px)] max-h-[calc(100vh-80px)] overflow-y-auto">
+        {children}
+      </div>
     </div>
   );
 }

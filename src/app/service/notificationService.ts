@@ -31,3 +31,12 @@ export const getDetailNotification = async (id: string) => {
     console.error(error);
   }
 };
+
+export const deleteNotificationService = async (id: string) => {
+  try {
+    const res = await axiosClient.delete(`/api/notification/${id}`);
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};

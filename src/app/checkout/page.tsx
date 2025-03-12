@@ -48,6 +48,8 @@ import { LoadingDashboard } from "../components/loading";
 import { useRouter } from "next/navigation";
 import { GrMoney } from "react-icons/gr";
 import { Toaster } from "react-hot-toast";
+import { createPaymentQR } from "../service/paymentService";
+import { paymentState, qrImageState } from "../store/paymentAtoms";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -77,6 +79,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="flex flex-col min-h-screen p-[30px] w-screen overflow-hidden bg-background font-open">
+      <Toaster position="top-center" reverseOrder={false} />
       <Link
         color="foreground"
         href="/dashboard/cart"
@@ -373,6 +376,7 @@ function Summary() {
   const gateway = useAtomValue(paymentMethodState);
   const subtotalCartValue = useAtomValue(subtotalCartValueAtom);
   const setResponse = useSetAtom(checkoutResponseState);
+  const setQRImage = useSetAtom(qrImageState);
   const discountByTypeValue = useAtomValue(discountUniqueState);
   const discountByDistributionValue = useAtomValue(discountPPState);
   const totalCartValue = useAtomValue(totalCartValueAtoms);
@@ -381,6 +385,7 @@ function Summary() {
   const [cart, setCart] = useAtom(cartState);
   const [note, setNote] = useAtom(noteCheckoutState);
   const submitData = useAtomValue(checkoutState);
+  const submitPaymentData = useAtomValue(paymentState);
   const [isMounted, setIsMounted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
@@ -399,9 +404,17 @@ function Summary() {
     onSuccess(data) {
       if (data.message) {
         if (gateway === "bank_transfer") {
-          router.push("/scan-qr");
-          setIsLoading(false);
           setResponse(data.message);
+          setIsLoading(false);
+          paymentMutation.mutate({
+            orderID: data.message,
+            description: `PicareVN Loyalty ${data.message}`,
+            amount: totalCartValue,
+            userID: info?.userId as string,
+          });
+          router.push("/scan-qr");
+          console.log(submitPaymentData);
+          setIsLoading(false);
         }
         if (gateway !== "bank_transfer") {
           if (typeof window !== "undefined") {
@@ -419,6 +432,24 @@ function Summary() {
           }, 500);
         }
       }
+    },
+  });
+  const paymentMutation = useMutation({
+    mutationKey: ["scan-qr"],
+    mutationFn: createPaymentQR,
+    onMutate() {
+      setIsLoading(true);
+    },
+    onSuccess(data) {
+      if (data.code === "SOMETHING_WENT_WRONG") {
+        showToast("Lỗi khi tạo mã QR, vui lòng thử lại", "error");
+        setIsLoading(false);
+      }
+      if (data?.responseBody?.qrDataUrl) {
+        setQRImage(data.responseBody.qrDataUrl);
+        setIsLoading(false);
+      }
+      setIsLoading(false);
     },
   });
   const handleSubmit = async () => {
@@ -444,7 +475,6 @@ function Summary() {
   }
   return (
     <div className="flex flex-col w-[30%] ">
-      <Toaster position="top-center" reverseOrder={false} />
       <div className="flex flex-col gap-y-[5px]">
         <p className="text-[22px] font-light select-none">Chi tiết đơn hàng</p>
       </div>

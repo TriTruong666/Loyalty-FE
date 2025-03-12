@@ -102,15 +102,39 @@ export default function ProductDetailPage() {
               Đơn vị: {unitProduct(detail?.unit as string)}
             </p>
           </div>
-          <Button
-            size="lg"
-            className="w-full"
-            onPress={handleAddProductToCart}
-            variant="flat"
-            color="secondary"
-          >
-            <p className="font-bold font-open">Thêm vào giỏ hàng</p>
-          </Button>
+          {detail?.status === "hethang" && (
+            <Button
+              size="lg"
+              className="w-full"
+              isDisabled
+              variant="flat"
+              color="danger"
+            >
+              <p className="font-bold font-open">Sản phẩm đang hết hàng!</p>
+            </Button>
+          )}
+          {detail?.status === "hetban" && (
+            <Button
+              size="lg"
+              className="w-full"
+              isDisabled
+              variant="flat"
+              color="danger"
+            >
+              <p className="font-bold font-open">Sản phẩm đang hết hàng!</p>
+            </Button>
+          )}
+          {detail?.status === "dangban" && (
+            <Button
+              size="lg"
+              className="w-full"
+              onPress={handleAddProductToCart}
+              variant="flat"
+              color="secondary"
+            >
+              <p className="font-bold font-open">Thêm vào giỏ hàng</p>
+            </Button>
+          )}
         </div>
       </div>
 

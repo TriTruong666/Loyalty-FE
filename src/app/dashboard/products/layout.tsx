@@ -6,11 +6,33 @@ import { Suspense } from "react";
 import { HiPlusSmall } from "react-icons/hi2";
 import { PiExport } from "react-icons/pi";
 import ProductLoadingTableLayout from "./loading";
+import { useAllProduct } from "@/app/hooks/hook";
+import { download, generateCsv, mkConfig } from "export-to-csv";
 
 export default function ProductDashboardLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const setAddProductModal = useSetAtom(addProductModalState);
+  const { data: allProducts } = useAllProduct();
+  const handleOnDownloadCSV = () => {
+    if (!allProducts || allProducts.length === 0) {
+      console.warn("No data available for CSV export.");
+      return;
+    }
+
+    const csvConfig = mkConfig({
+      useKeysAsHeaders: true,
+      filename: "Data sản phẩm",
+    });
+    const csvData = allProducts.map((product) => ({
+      id: product.productId,
+      productName: product.productName,
+      price: product.price,
+    }));
+
+    const csv = generateCsv(csvConfig)(csvData);
+    download(csvConfig)(csv);
+  };
   const handleOpenModal = () => {
     setAddProductModal(true);
   };
@@ -24,7 +46,10 @@ export default function ProductDashboardLayout({
           </p>
         </div>
         <div className="flex items-center gap-x-3">
-          <div className="flex items-center border border-gray-400-40 px-4 py-[6px] rounded-md cursor-pointer gap-x-2">
+          <div
+            onClick={handleOnDownloadCSV}
+            className="flex items-center border border-gray-400-40 px-4 py-[6px] rounded-md cursor-pointer gap-x-2"
+          >
             <PiExport className="text-[16px] text-foreground" />
             <p className="text-[12px] text-foreground">Xuất CSV</p>
           </div>

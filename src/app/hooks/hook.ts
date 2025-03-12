@@ -37,12 +37,12 @@ export function useAllProduct() {
   );
 }
 export function useGetProductByBrand(handle: string, status: string) {
-  return useFetch<Product[]>(["shop", handle], async () =>
+  return useFetch<Product[]>(["products", handle], async () =>
     ProductService.getProductByBrand(handle, status)
   );
 }
 export function useGetProductDetailByHandle(handle: string) {
-  return useFetch<Product>(["product-detail", handle], async () =>
+  return useFetch<Product>(["products", handle], async () =>
     ProductService.getProductDetailByHandle(handle)
   );
 }
