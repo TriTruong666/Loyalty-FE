@@ -55,14 +55,14 @@ function ProductTable() {
     }
   }, [filteredAllProduct]);
   const queryClient = useQueryClient();
-  const deleteProductMutation = useMutation({
-    mutationKey: ["delete-product"],
-    mutationFn: deleteProductService,
-    onSuccess() {
-      showToast("Xoá thành công", "success");
-      queryClient.invalidateQueries({ queryKey: ["products"] });
-    },
-  });
+  // const deleteProductMutation = useMutation({
+  //   mutationKey: ["delete-product"],
+  //   mutationFn: deleteProductService,
+  //   onSuccess() {
+  //     showToast("Xoá thành công", "success");
+  //     queryClient.invalidateQueries({ queryKey: ["products"] });
+  //   },
+  // });
   const updateStatusMutation = useMutation({
     mutationKey: ["update-status"],
     mutationFn: async ({ userId, data }: { userId: string; data: any }) =>
@@ -104,13 +104,13 @@ function ProductTable() {
         return "";
     }
   };
-  const handleDelProduct = async (productId: string) => {
-    try {
-      await deleteProductMutation.mutateAsync(productId);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // const handleDelProduct = async (productId: string) => {
+  //   try {
+  //     await deleteProductMutation.mutateAsync(productId);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
   const handleChangeStatusProduct = async (data: Product) => {
     try {
       await updateStatusMutation.mutateAsync({
@@ -240,7 +240,7 @@ function ProductTable() {
                       </Button>
                     </DropdownTrigger>
                     <DropdownMenu>
-                      <DropdownItem
+                      {/* <DropdownItem
                         onPress={() =>
                           handleDelProduct(item.productId as string)
                         }
@@ -254,7 +254,7 @@ function ProductTable() {
                         <p className="group-hover:text-danger">
                           Xoá (for test)
                         </p>
-                      </DropdownItem>
+                      </DropdownItem> */}
                       <DropdownItem
                         onPress={() => handleUpdateProduct(item)}
                         className="group"
