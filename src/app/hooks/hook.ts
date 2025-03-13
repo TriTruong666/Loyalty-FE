@@ -8,6 +8,7 @@ import * as AccountService from "@/app/service/accountService";
 import * as LocationService from "@/app/service/locationService";
 import * as OrderService from "@/app/service/orderService";
 import * as NotificationService from "@/app/service/notificationService";
+import * as AnalyticsService from "@/app/service/analyticsService";
 import { CloudinaryAsset } from "../interfaces/Cloudinary";
 import { Brand } from "../interfaces/Brand";
 import { User } from "../interfaces/Account";
@@ -17,6 +18,7 @@ import { SalesCustomer } from "../interfaces/SalesCustomer";
 import { userInfoState } from "../store/accountAtoms";
 import { useAtomValue } from "jotai";
 import { Notification } from "../interfaces/Notification";
+import { AnalyticsData } from "../interfaces/Analytics";
 function useFetch<T>(
   queryKey: any[],
   queryFn: () => Promise<T>,
@@ -96,6 +98,12 @@ export function useGetCustomerUserByLimitByStatus(
   );
 }
 
+export function useGetAllCustomerUser() {
+  return useFetch<User[]>(["users"], async () =>
+    AccountService.getAllCustomerUser()
+  );
+}
+
 export function useGetUserInfo() {
   return useFetch<User>(["user-info"], async () =>
     AccountService.getUserInfo()
@@ -167,5 +175,16 @@ export function useGetListNotification() {
 export function useGetDetailNotification(id: string) {
   return useFetch<Notification>(["notifications", id], async () =>
     NotificationService.getDetailNotification(id)
+  );
+}
+
+export function useGetTotalOrderValue() {
+  return useFetch<AnalyticsData>(["total-order-value"], async () =>
+    AnalyticsService.getOrderTotalValueService()
+  );
+}
+export function useGetOrderValueByTime(from: string, to: string) {
+  return useFetch<AnalyticsData>(["total-order-value"], async () =>
+    AnalyticsService.getOrderValueByTime(from, to)
   );
 }

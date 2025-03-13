@@ -66,6 +66,16 @@ export const getCustomerUserByLimitByStatus = async (
     console.error(error);
   }
 };
+export const getAllCustomerUser = async () => {
+  try {
+    const res = await axiosClient.get(
+      `/api/user/limitcustomer?limit=1000000&page=1&status=active`
+    );
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
 interface CreateAddress {
   provinceCode: string;
   districtCode: string;

@@ -241,7 +241,7 @@ function AdminOrderDetail() {
                   </Button>
                 </div>
                 {detail?.transaction.transactionStatus === "pending" && (
-                  <div className="flex items-center px-[15px] py-[20px] gap-x-[10px] bg-gray-700 bg-opacity-30">
+                  <div className="flex items-center px-[15px] py-[20px] gap-x-[10px] bg-gray-700 bg-opacity-30 ">
                     <IoIosInformationCircleOutline className="text-[20px]" />
                     <p className="text-[12px]">
                       Đơn hàng này hiện chưa được thanh toán.{" "}

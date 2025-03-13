@@ -16,13 +16,10 @@ import { formatPrice } from "@/app/utils/format";
 import { useEffect, useState } from "react";
 import { LoadingTable } from "@/app/components/loading";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  deleteProductService,
-  updateProductService,
-} from "@/app/service/productService";
+import { updateProductService } from "@/app/service/productService";
 import { LuPackageX } from "react-icons/lu";
 import { Select, SelectItem } from "@heroui/react";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { dataUpdateProductState } from "@/app/store/productAtoms";
 import { Product } from "@/app/interfaces/Product";
 import { updateProductModalState } from "@/app/store/modalAtoms";
@@ -39,7 +36,7 @@ export default function ProductPage() {
 function ProductTable() {
   const userInfo = useAtomValue(userInfoState);
   const setUpdateModal = useSetAtom(updateProductModalState);
-  const [selectedProduct, setSelectedProduct] = useAtom(dataUpdateProductState);
+  const setSelectedProduct = useSetAtom(dataUpdateProductState);
   const [isUpdating, setIsUpdating] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
