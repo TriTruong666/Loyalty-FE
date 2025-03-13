@@ -9,7 +9,7 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import React, { ReactNode, useMemo } from "react";
+import React, { ReactNode, useMemo, useState } from "react";
 import { PiMoneyWavyLight } from "react-icons/pi";
 import { formatPrice } from "../utils/format";
 import { FaRegFileAlt } from "react-icons/fa";
@@ -20,6 +20,8 @@ import {
   useAllProduct,
   useGetAllCustomerUser,
   useGetAllOrders,
+  useGetOrderByLimitByStatus,
+  useGetOrderValueByDaily,
   useGetTotalOrderValue,
 } from "../hooks/hook";
 
@@ -106,36 +108,102 @@ function BasicAnalyticsItem(props: BasicAnalyticsItemProps) {
 }
 
 function RevenueChart() {
+  const [selectedSort, setSelectedSort] = useState<string>("last10");
+
+  // Move getDateRange function ABOVE its usage
+  const getDateRange = (filter: string) => {
+    const now = new Date();
+    let from;
+
+    switch (filter) {
+      case "last10":
+        from = new Date();
+        from.setDate(now.getDate() - 10);
+        break;
+      case "last30":
+        from = new Date();
+        from.setMonth(now.getMonth() - 1);
+        break;
+      case "lastYear":
+        from = new Date();
+        from.setFullYear(now.getFullYear() - 1);
+        break;
+      default:
+        from = now;
+    }
+
+    const to = now;
+
+    const formatDate = (date: Date) => date.toISOString().split("T")[0];
+
+    return {
+      from: formatDate(from),
+      to: formatDate(to),
+    };
+  };
+
+  // Now use getDateRange without any error
+  const { from, to } = useMemo(
+    () => getDateRange(selectedSort),
+    [selectedSort]
+  );
+
+  const { data: revenue } = useGetOrderValueByDaily(from, to);
+
   const dateSort = [
-    {
-      key: "last10",
-      title: "10 ngày trước",
-    },
-    {
-      key: "last30",
-      title: "Tháng trước",
-    },
-    {
-      key: "lastYear",
-      title: "Năm trước",
-    },
+    { key: "last10", title: "10 ngày trước" },
+    { key: "last30", title: "Tháng trước" },
+    { key: "lastYear", title: "Năm trước" },
   ];
+
   const data = useMemo(() => {
-    return Array.from({ length: 12 }, (_, i) => ({
-      Tháng: new Date(2025, i).toLocaleString("default", {
-        month: "short",
-      }),
-      "Doanh thu": Math.floor(Math.random() * 100000000), // Random between 1000 - 11000
-    }));
-  }, []);
+    if (!revenue?.data) return [];
+
+    const startDate = new Date(from);
+    const endDate = new Date(to);
+    const dateMap = new Map();
+
+    revenue.data.forEach(({ date, total }) => {
+      dateMap.set(date, total);
+    });
+
+    const result = [];
+    const currentDate = new Date(startDate);
+
+    while (currentDate <= endDate) {
+      const formattedDate = currentDate.toISOString().split("T")[0];
+      const [year, month, day] = formattedDate.split("-");
+      const displayDate = `${day}-${month}-${year}`;
+
+      result.push({
+        date: displayDate,
+        "Doanh thu": dateMap.get(formattedDate) || 0,
+      });
+
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    return result;
+  }, [revenue, from, to]);
+
   return (
     <div className="flex flex-col bg-neutral-900 bg-opacity-40 border border-gray-400-40 rounded-xl font-open">
       <div className="flex justify-between p-[20px] rounded-xl items-center">
         <p className="text-normal font-light">Biểu đồ doanh thu</p>
         <div className="w-[250px]">
-          <Select aria-label="sort" placeholder="Bộ lọc" variant="underlined">
+          <Select
+            aria-label="sort"
+            placeholder="Bộ lọc"
+            variant="underlined"
+            selectedKeys={[selectedSort]}
+            onChange={(e) => {
+              setSelectedSort(e.target.value);
+            }}
+          >
             {dateSort.map((item) => (
-              <SelectItem key={item.key}>{item.title}</SelectItem>
+              <SelectItem key={item.key} value={item.key}>
+                {item.title}
+              </SelectItem>
             ))}
           </Select>
         </div>
@@ -170,7 +238,7 @@ function RevenueChart() {
               formatter={(value) => `${formatPrice(value as number)}`}
               labelFormatter={(_, payload) => {
                 if (payload && payload.length > 0) {
-                  return `${payload[0].payload.Tháng}`; // Lấy đúng giá trị từ data
+                  return `${payload[0].payload.date}`; // Lấy đúng giá trị từ data
                 }
                 return "";
               }}
@@ -201,20 +269,64 @@ interface CircleChartProps {
 }
 
 function OrderSummary() {
+  const { data: orders } = useGetOrderByLimitByStatus(1, "pending");
+  const newOrders = orders?.slice(0, 5);
+  const { data: allOrders } = useGetAllOrders();
+  const pendingOrders = allOrders?.filter(
+    (order) => order.orderStatus === "pending"
+  ).length;
+  const confirmedOrders = allOrders?.filter(
+    (order) => order.orderStatus === "confirmed"
+  ).length;
+  const deliveryOrders = allOrders?.filter(
+    (order) => order.orderStatus === "exported"
+  ).length;
+  const completeOrders = allOrders?.filter(
+    (order) => order.orderStatus === "complete"
+  ).length;
+  const cancelOrders = allOrders?.filter(
+    (order) => order.orderStatus === "cancelled"
+  ).length;
   const chartData: CircleChartProps = {
     color: [
       "hsl(var(--heroui-warning-600))", // Đang chờ
+      "hsl(var(--heroui-primary-600))", // Da xac nhan
       "hsl(var(--heroui-secondary))", // Đang giao
       "hsl(var(--heroui-success))", // Đã giao
       "hsl(var(--heroui-danger))", // Đã huỷ
     ],
-    category: ["Đang chờ", "Đang giao", "Đã giao", "Đã huỷ"],
+    category: ["Đang chờ", "Đã xác nhận", "Đang giao", "Đã giao", "Đã huỷ"],
     chartData: [
-      { name: "Đang chờ", value: 30 },
-      { name: "Đang giao", value: 10 },
-      { name: "Đã giao", value: 20 },
-      { name: "Đã huỷ", value: 5 },
+      { name: "Đang chờ", value: pendingOrders as number },
+      { name: "Đã xác nhận", value: confirmedOrders as number },
+      { name: "Đang giao", value: deliveryOrders as number },
+      { name: "Đã giao", value: completeOrders as number },
+      { name: "Đã huỷ", value: cancelOrders as number },
     ],
+  };
+  const handleFinanceStatus = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "bg-gray-700";
+      case "cancelled":
+        return "bg-danger-50 text-red-600";
+      case "confirmed":
+        return "bg-success-200";
+      default:
+        return "";
+    }
+  };
+  const handleFinanceStatusName = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "Chưa thanh toán";
+      case "cancelled":
+        return "Đã huỷ đơn";
+      case "confirmed":
+        return "Đã thanh toán";
+      default:
+        return "";
+    }
   };
   return (
     <div className="flex gap-[20px]">
@@ -241,46 +353,26 @@ function OrderSummary() {
             </tr>
           </thead>
           <tbody>
-            <tr className="grid grid-cols-12 py-2">
-              <td className="col-span-3 text-[13px]">GHT200005</td>
-              <td className="col-span-3 text-[13px]">Trương Hoàng Trí</td>
-              <td className="col-span-3 text-[13px]">
-                {formatPrice(49999999)}
-              </td>
-              <td className="col-span-3 text-[13px]">GHT200005</td>
-            </tr>
-            <tr className="grid grid-cols-12 py-2">
-              <td className="col-span-3 text-[13px]">GHT200005</td>
-              <td className="col-span-3 text-[13px]">Trương Hoàng Trí</td>
-              <td className="col-span-3 text-[13px]">
-                {formatPrice(49999999)}
-              </td>
-              <td className="col-span-3 text-[13px]">GHT200005</td>
-            </tr>
-            <tr className="grid grid-cols-12 py-2">
-              <td className="col-span-3 text-[13px]">GHT200005</td>
-              <td className="col-span-3 text-[13px]">Trương Hoàng Trí</td>
-              <td className="col-span-3 text-[13px]">
-                {formatPrice(49999999)}
-              </td>
-              <td className="col-span-3 text-[13px]">GHT200005</td>
-            </tr>
-            <tr className="grid grid-cols-12 py-2">
-              <td className="col-span-3 text-[13px]">GHT200005</td>
-              <td className="col-span-3 text-[13px]">Trương Hoàng Trí</td>
-              <td className="col-span-3 text-[13px]">
-                {formatPrice(49999999)}
-              </td>
-              <td className="col-span-3 text-[13px]">GHT200005</td>
-            </tr>
-            <tr className="grid grid-cols-12 py-2">
-              <td className="col-span-3 text-[13px]">GHT200005</td>
-              <td className="col-span-3 text-[13px]">Trương Hoàng Trí</td>
-              <td className="col-span-3 text-[13px]">
-                {formatPrice(49999999)}
-              </td>
-              <td className="col-span-3 text-[13px]">GHT200005</td>
-            </tr>
+            {newOrders?.map((order) => (
+              <tr key={order.orderId} className="grid grid-cols-12 py-2">
+                <td className="col-span-3 text-[13px]">{order.orderId}</td>
+                <td className="col-span-3 text-[13px]">{order.customerName}</td>
+                <td className="col-span-3 text-[13px]">
+                  {formatPrice(order.totalPayment)}
+                </td>
+                <td className="col-span-3 flex justify-start">
+                  <p
+                    className={`text-[10px] font-semibold text-center px-[20px] py-[4px] rounded-lg ${handleFinanceStatus(
+                      order.transaction.transactionStatus
+                    )}`}
+                  >
+                    {handleFinanceStatusName(
+                      order.transaction.transactionStatus
+                    )}
+                  </p>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

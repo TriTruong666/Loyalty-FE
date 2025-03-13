@@ -18,7 +18,7 @@ import { SalesCustomer } from "../interfaces/SalesCustomer";
 import { userInfoState } from "../store/accountAtoms";
 import { useAtomValue } from "jotai";
 import { Notification } from "../interfaces/Notification";
-import { AnalyticsData } from "../interfaces/Analytics";
+import { AnalyticsData, AnalyticsRevenueData } from "../interfaces/Analytics";
 function useFetch<T>(
   queryKey: any[],
   queryFn: () => Promise<T>,
@@ -184,7 +184,12 @@ export function useGetTotalOrderValue() {
   );
 }
 export function useGetOrderValueByTime(from: string, to: string) {
-  return useFetch<AnalyticsData>(["total-order-value"], async () =>
+  return useFetch<AnalyticsData>(["total-order-value", from, to], async () =>
     AnalyticsService.getOrderValueByTime(from, to)
+  );
+}
+export function useGetOrderValueByDaily(from: string, to: string) {
+  return useFetch<AnalyticsRevenueData>(["value-daily", from, to], async () =>
+    AnalyticsService.getOrderValueByDaily(from, to)
   );
 }

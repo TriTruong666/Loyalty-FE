@@ -19,3 +19,14 @@ export const getOrderValueByTime = async (from: string, to: string) => {
     console.error(error);
   }
 };
+
+export const getOrderValueByDaily = async (from: string, to: string) => {
+  try {
+    const res = await axiosClient.get(
+      `/api/analytic/sum-price-daily?from=${from}&to=${to}`
+    );
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
