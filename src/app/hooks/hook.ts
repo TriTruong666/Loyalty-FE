@@ -18,7 +18,11 @@ import { SalesCustomer } from "../interfaces/SalesCustomer";
 import { userInfoState } from "../store/accountAtoms";
 import { useAtomValue } from "jotai";
 import { Notification } from "../interfaces/Notification";
-import { AnalyticsData, AnalyticsRevenueData } from "../interfaces/Analytics";
+import {
+  AnalyticsDailyRevenueData,
+  AnalyticsData,
+  AnalyticsYearlyRevenueData,
+} from "../interfaces/Analytics";
 function useFetch<T>(
   queryKey: any[],
   queryFn: () => Promise<T>,
@@ -39,7 +43,7 @@ export function useAllProduct() {
   );
 }
 export function useGetProductByBrand(handle: string, status: string) {
-  return useFetch<Product[]>(["products", handle], async () =>
+  return useFetch<Product[]>(["products", handle, status], async () =>
     ProductService.getProductByBrand(handle, status)
   );
 }
@@ -75,17 +79,17 @@ export function useGetUserByLimitByTypeByStatus(
   type: string,
   status: string
 ) {
-  return useFetch<User[]>(["users", page], async () =>
+  return useFetch<User[]>(["users", page, type, status], async () =>
     AccountService.getUserByLimitByTypeByStatus(page, type, status)
   );
 }
 export function useGetUserByLimitByType(page: number, type: string) {
-  return useFetch<User[]>(["users", page], async () =>
+  return useFetch<User[]>(["users", page, type], async () =>
     AccountService.getUserByLimitByType(page, type)
   );
 }
 export function useGetUserByLimitByStatus(page: number, status: string) {
-  return useFetch<User[]>(["users", page], async () =>
+  return useFetch<User[]>(["users", page, status], async () =>
     AccountService.getUserByLimitByStatus(page, status)
   );
 }
@@ -93,13 +97,13 @@ export function useGetCustomerUserByLimitByStatus(
   page: number,
   status: string
 ) {
-  return useFetch<User[]>(["users", page], async () =>
+  return useFetch<User[]>(["customers", page], async () =>
     AccountService.getCustomerUserByLimitByStatus(page, status)
   );
 }
 
 export function useGetAllCustomerUser() {
-  return useFetch<User[]>(["users"], async () =>
+  return useFetch<User[]>(["customers"], async () =>
     AccountService.getAllCustomerUser()
   );
 }
@@ -189,7 +193,13 @@ export function useGetOrderValueByTime(from: string, to: string) {
   );
 }
 export function useGetOrderValueByDaily(from: string, to: string) {
-  return useFetch<AnalyticsRevenueData>(["value-daily", from, to], async () =>
-    AnalyticsService.getOrderValueByDaily(from, to)
+  return useFetch<AnalyticsDailyRevenueData>(
+    ["value-daily", from, to],
+    async () => AnalyticsService.getOrderValueByDaily(from, to)
+  );
+}
+export function useGetOrderValueByYear() {
+  return useFetch<AnalyticsYearlyRevenueData>(["value-yearly"], async () =>
+    AnalyticsService.getOrderValueByYear()
   );
 }

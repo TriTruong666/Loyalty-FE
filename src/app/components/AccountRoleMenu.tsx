@@ -12,9 +12,6 @@ export function AccountRoleMenu() {
   const filteredSales = allAccounts
     ?.filter((account) => account.type === "sales")
     .filter((account) => account.status === "active").length;
-  const filteredStaff = allAccounts
-    ?.filter((account) => account.type === "staff")
-    .filter((account) => account.status === "active").length;
   const filteredInactive = allAccounts?.filter(
     (account) => account.status === "inactive"
   ).length;
@@ -38,11 +35,6 @@ export function AccountRoleMenu() {
       name: "Sales",
       path: "/dashboard/accounts/sales",
       count: filteredSales,
-    },
-    {
-      name: "Nhân viên",
-      path: "/dashboard/accounts/staff",
-      count: filteredStaff,
     },
     {
       name: "Bị khoá",

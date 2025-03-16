@@ -106,6 +106,12 @@ function LoginForm() {
         setError("Thử lại, sai email hoặc mật khẩu");
         setIsLoading(false);
       }
+      if (data.code === "ACCOUNT_HAS_NOT_BEEN_ACTIVATED") {
+        setError(
+          "Tài khoản của bạn đã bị khoá! Vui lòng gửi mail đến picareloyalty@gmail.com để được hỗ trợ"
+        );
+        setIsLoading(false);
+      }
       if (data.message === "Login successfully") {
         setIsLoading(false);
         setProgress(2);

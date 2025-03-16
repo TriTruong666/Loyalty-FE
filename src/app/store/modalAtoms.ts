@@ -25,3 +25,7 @@ export const checkTransactionModalState = atom(false);
 export const addSalesAccountModalState = atom(false);
 
 export const confirmCompleteModalState = atom(false);
+
+export const blockAccountModalState = atom(false);
+
+export const unlockAccountModalState = atom(false);

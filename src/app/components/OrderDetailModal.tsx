@@ -1,7 +1,7 @@
-import { Button } from "@heroui/react";
+import { Button, Link } from "@heroui/react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { IoCloseSharp } from "react-icons/io5";
+import { IoCloseSharp, IoImagesOutline } from "react-icons/io5";
 import { LuPen } from "react-icons/lu";
 import { formatDate, formatPrice, formatTime } from "../utils/format";
 import { RiFileCloseLine } from "react-icons/ri";
@@ -207,6 +207,7 @@ function AdminOrderDetail() {
     <AnimatePresence>
       {detailModal && (
         <motion.div
+          onClick={handleModalOff}
           className="fixed w-screen h-screen flex justify-end bg-black bg-opacity-70 z-[40] font-open"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -214,6 +215,7 @@ function AdminOrderDetail() {
         >
           {/* DETAIL */}
           <motion.div
+            onClick={(e) => e.stopPropagation()}
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
@@ -240,6 +242,7 @@ function AdminOrderDetail() {
                     <IoCloseSharp className="text-[20px] text-normal" />
                   </Button>
                 </div>
+
                 {detail?.transaction.transactionStatus === "pending" && (
                   <div className="flex items-center px-[15px] py-[20px] gap-x-[10px] bg-gray-700 bg-opacity-30 ">
                     <IoIosInformationCircleOutline className="text-[20px]" />
@@ -273,6 +276,24 @@ function AdminOrderDetail() {
                     <IoIosInformationCircleOutline className="text-[20px]" />
                     <p className="text-[12px]">
                       Thanh toán thất bại do đơn hàng đã bị huỷ
+                    </p>
+                  </div>
+                )}
+                {/* Attachment */}
+                {detail?.attachment !== null && (
+                  <div className="flex items-center px-[15px] py-[20px] gap-x-[10px] bg-secondary-500 bg-opacity-30 ">
+                    <IoImagesOutline className="text-[20px]" />
+                    <p className="text-[12px]">
+                      Xem phiếu xuất kho hoặc hoá đơn.{" "}
+                      <Link
+                        isExternal
+                        href={detail?.attachment}
+                        className="text-[12px]"
+                      >
+                        <span className="text-yellow-400 font-semibold cursor-pointer hover:underline">
+                          Nhấp vào đây để xem
+                        </span>
+                      </Link>
                     </p>
                   </div>
                 )}
@@ -368,15 +389,15 @@ function AdminOrderDetail() {
                 <div className="flex flex-col px-[15px] py-[25px] border-b border-gray-400-40">
                   <p className="text-[11px] text-normal mb-[15px]">Sản phẩm</p>
                   <div className="flex flex-col gap-y-[15px] mb-[15px]">
-                    {detail?.lineItems.slice(0, 3).map((item) => (
+                    {detail?.lineItems.map((item) => (
                       <LineItem key={item.productId} {...item} />
                     ))}
                   </div>
-                  {(detail?.lineItems ?? []).length > 3 && (
+                  {/* {(detail?.lineItems ?? []).length > 3 && (
                     <p className="text-[11px] text-normal">
                       +{(detail?.lineItems ?? []).length - 3} sản phẩm khác
                     </p>
-                  )}
+                  )} */}
                 </div>
                 {/* Invoice Summary */}
                 <div className="flex flex-col px-[15px] py-[25px] border-b border-gray-400-40">
@@ -700,6 +721,24 @@ function UserOrderDetail() {
                     <IoIosInformationCircleOutline className="text-[20px]" />
                     <p className="text-[12px]">
                       Thanh toán thất bại do đơn hàng đã bị huỷ
+                    </p>
+                  </div>
+                )}
+                {/* Attachment */}
+                {detail?.attachment !== null && (
+                  <div className="flex items-center px-[15px] py-[20px] gap-x-[10px] bg-secondary-500 bg-opacity-30 ">
+                    <IoImagesOutline className="text-[20px]" />
+                    <p className="text-[12px]">
+                      Xem phiếu xuất kho hoặc hoá đơn.{" "}
+                      <Link
+                        isExternal
+                        href={detail?.attachment}
+                        className="text-[12px]"
+                      >
+                        <span className="text-yellow-400 font-semibold cursor-pointer hover:underline">
+                          Nhấp vào đây để xem
+                        </span>
+                      </Link>
                     </p>
                   </div>
                 )}

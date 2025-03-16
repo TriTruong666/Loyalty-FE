@@ -45,6 +45,7 @@ export default function CartPage() {
   const [salesCustomerId, setSalesCustomerId] = useAtom(salesCustomerState);
   const [isLoading, setIsLoading] = useState(false);
   const { data: accounts } = useGetSalesCustomerByLimit(1, 100);
+  const filteredCustomers = accounts?.filter((user) => user.status === false);
   const router = useRouter();
   useEffect(() => {
     if (cart.cartItems.length > 0) return;
@@ -201,7 +202,7 @@ export default function CartPage() {
                 variant="underlined"
                 size="sm"
               >
-                {(accounts ?? []).map((user) => (
+                {(filteredCustomers ?? []).map((user) => (
                   <SelectItem
                     value={user.customerIDOfSales}
                     key={user.customerIDOfSales}

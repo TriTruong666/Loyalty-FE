@@ -1,5 +1,5 @@
 "use client";
-import { IoIosInformationCircleOutline } from "react-icons/io";
+import { IoIosInformationCircleOutline, IoIosUnlock } from "react-icons/io";
 import { Pagination } from "@heroui/pagination";
 import { useGetAllUser, useGetUserByLimitByStatus } from "@/app/hooks/hook";
 import { useEffect, useState } from "react";
@@ -13,10 +13,11 @@ import {
   SelectItem,
 } from "@heroui/react";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { showToast } from "@/app/utils/toast";
-import { IoCheckmarkSharp } from "react-icons/io5";
 import { LoadingTable } from "@/app/components/loading";
 import { FaUserXmark } from "react-icons/fa6";
+import { unlockAccountModalState } from "@/app/store/modalAtoms";
+import { unlockAccountState } from "@/app/store/accountAtoms";
+import { useSetAtom } from "jotai";
 export default function AccountPage() {
   return (
     <div className="flex flex-col">
@@ -26,10 +27,13 @@ export default function AccountPage() {
 }
 
 function AccountAdminTable() {
+  const setModal = useSetAtom(unlockAccountModalState);
+  const setUserId = useSetAtom(unlockAccountState);
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const limit = 8;
   const { data: allAccounts } = useGetAllUser();
+  const [isMounted, setIsMounted] = useState(false);
   const { data: accounts, isLoading } = useGetUserByLimitByStatus(
     page,
     "inactive"
@@ -40,8 +44,8 @@ function AccountAdminTable() {
   useEffect(() => {
     if (filteredAllAccounts) {
       setTotalPage(Math.ceil(filteredAllAccounts.length / limit));
-      console.log(totalPage);
     }
+    setIsMounted(true);
   }, [filteredAllAccounts]);
   const accountSort = [
     {
@@ -53,7 +57,11 @@ function AccountAdminTable() {
       title: "Tên Z-A",
     },
   ];
-  if (isLoading) {
+  const handleToggleUnlockModalOn = (userId: string) => {
+    setModal(true);
+    setUserId(userId);
+  };
+  if (isLoading || !isMounted) {
     return (
       <>
         <LoadingTable />
@@ -114,7 +122,7 @@ function AccountAdminTable() {
                 key={user.userId}
                 className="grid grid-cols-12 mx-[20px] px-[20px] py-4 items-center border-b border-gray-600 border-opacity-40"
               >
-                <td className="col-span-1 text-[13px]">{user.userId}</td>
+                <td className="col-span-2 text-[13px]">{user.userId}</td>
                 <td className="col-span-2 flex items-center gap-x-2">
                   <div className="flex flex-col">
                     <p className="text-[13px] font-semibold">{user.userName}</p>
@@ -131,13 +139,15 @@ function AccountAdminTable() {
                 </td>
                 <td className="col-span-2 flex justify-center">
                   <div
-                    className={`flex justify-center w-fit px-3 gap-x-1 py-[2px] border border-success rounded-lg`}
+                    className={`flex justify-center w-fit px-3 gap-x-1 py-[2px] border border-danger-400 rounded-lg`}
                   >
-                    <IoIosInformationCircleOutline className={`text-success`} />
+                    <IoIosInformationCircleOutline
+                      className={`text-danger-400`}
+                    />
                     <p
-                      className={`text-[11px] font-semibold font-open text-success`}
+                      className={`text-[11px] font-semibold font-open text-danger-400`}
                     >
-                      Đang hoạt động
+                      Bị khoá
                     </p>
                   </div>
                 </td>
@@ -151,18 +161,16 @@ function AccountAdminTable() {
                     </DropdownTrigger>
                     <DropdownMenu>
                       <DropdownItem
-                        onPress={() =>
-                          showToast("Tài khoản đã được duyệt!", "success")
-                        }
+                        onPress={() => handleToggleUnlockModalOn(user.userId)}
                         className="group"
                         color="default"
                         startContent={
-                          <IoCheckmarkSharp className="text-[16px] group-hover:text-success" />
+                          <IoIosUnlock className="text-[16px] group-hover:text-success" />
                         }
-                        key="approve"
+                        key="block"
                       >
                         <p className="group-hover:text-success">
-                          Duyệt tài khoản
+                          Gỡ chặn tài khoản
                         </p>
                       </DropdownItem>
                     </DropdownMenu>

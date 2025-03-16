@@ -1,9 +1,24 @@
 "use client";
 import { useGetAllBrand } from "@/app/hooks/hook";
+import { userInfoState } from "@/app/store/accountAtoms";
+import { useAtomValue } from "jotai";
 import Image from "next/image";
 import Link from "next/link";
+import { MdReportGmailerrorred } from "react-icons/md";
 
 export default function ShopPage() {
+  const info = useAtomValue(userInfoState);
+  if (info?.inDebt === true) {
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center font-open gap-y-[10px]">
+        <MdReportGmailerrorred className="text-danger-300 text-[60px]" />
+        <p className="text-danger-300">
+          Hiện tại bạn đang có đơn công nợ và chưa được thanh toán, bạn sẽ không
+          thể mua ngay lúc này !
+        </p>
+      </div>
+    );
+  }
   return (
     <div className="flex flex-col font-open py-[20px]">
       <div className="px-[40px] flex flex-col gap-y-1">

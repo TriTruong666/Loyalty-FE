@@ -19,9 +19,12 @@ import { cartState } from "@/app/store/cartAtoms";
 import { addToCart } from "@/app/service/cartService";
 import { showToast } from "@/app/utils/toast";
 import { BsBox2 } from "react-icons/bs";
+import { userInfoState } from "@/app/store/accountAtoms";
+import { MdReportGmailerrorred } from "react-icons/md";
 const layoutState = atom("layout2");
 const ITEMS_PER_LOAD = 8;
 export default function BrandProductShopPage() {
+  const info = useAtomValue(userInfoState);
   const params = useParams();
   const handle = params.handle;
   const brandTitle = (handle: string) => {
@@ -40,6 +43,17 @@ export default function BrandProductShopPage() {
         return "";
     }
   };
+  if (info?.inDebt === true) {
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center font-open gap-y-[10px]">
+        <MdReportGmailerrorred className="text-danger-300 text-[60px]" />
+        <p className="text-danger-300">
+          Hiện tại bạn đang có đơn công nợ và chưa được thanh toán, bạn sẽ không
+          thể mua ngay lúc này !
+        </p>
+      </div>
+    );
+  }
   return (
     <div className="flex flex-col font-open py-[20px] h-full overflow-auto">
       <div className="flex items-center justify-between px-[40px]">

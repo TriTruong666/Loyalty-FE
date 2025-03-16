@@ -11,7 +11,6 @@ import { RiBuilding2Fill } from "react-icons/ri";
 import { Select, SelectItem } from "@heroui/select";
 import { IoIosPin } from "react-icons/io";
 import { Button } from "@heroui/button";
-import { GrUserWorker } from "react-icons/gr";
 import { ChangeEvent, ReactNode, useState } from "react";
 import { dataCreateAccountState } from "../store/accountAtoms";
 import { showToast } from "../utils/toast";
@@ -83,7 +82,7 @@ function ChooseAccountType() {
           onChange={setSelected}
           name="accountType"
         />
-        <RadioButton
+        {/* <RadioButton
           icon={<GrUserWorker size={24} />}
           title="Tài khoản nhân viên"
           description="Tài khoản nhân viên quản lý đơn hàng"
@@ -91,7 +90,7 @@ function ChooseAccountType() {
           selected={selected}
           onChange={setSelected}
           name="accountType"
-        />
+        /> */}
         <RadioButton
           icon={<FaUserCheck size={24} />}
           title="Tài khoản cá nhân"

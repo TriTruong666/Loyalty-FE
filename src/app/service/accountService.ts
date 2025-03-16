@@ -227,3 +227,21 @@ export const ChangePasswordService = async (data: ChangePassword) => {
     console.error(error);
   }
 };
+
+export const blockAccountService = async (id: string) => {
+  try {
+    const res = await axiosClient.post(`/api/user/ban/${id}`);
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const unlockAccountService = async (id: string) => {
+  try {
+    const res = await axiosClient.post(`/api/user/unban/${id}`);
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};

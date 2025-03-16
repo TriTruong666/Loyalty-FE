@@ -28,6 +28,8 @@ import DeliveryOrderConfirmModal from "../components/DeliveryOrderConfirmModal";
 import CheckTransactionModal from "../components/CheckTransactionModal";
 import AddSalesAccountModal from "../components/AddSalesAccountModal";
 import ConfirmCompleteModal from "../components/ConfirmCompleteModal";
+import BlockAccountModal from "../components/BlockAccountModal";
+import UnlockAccountModal from "../components/UnlockAccountModal";
 
 export default function DashboardLayout({
   children,
@@ -54,6 +56,8 @@ export default function DashboardLayout({
   return (
     <div className="flex min-h-screen relative overflow-hidden">
       <Toaster position="top-center" reverseOrder={false} />
+      <UnlockAccountModal />
+      <BlockAccountModal />
       <AddSalesAccountModal />
       <CheckTransactionModal />
       <ConfirmCompleteModal />

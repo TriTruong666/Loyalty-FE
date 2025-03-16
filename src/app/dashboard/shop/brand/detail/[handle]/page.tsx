@@ -8,10 +8,13 @@ import { useParams } from "next/navigation";
 import { ProductDetailSkeleton } from "@/app/components/skeleton";
 import { addToCart } from "@/app/service/cartService";
 import { showToast } from "@/app/utils/toast";
-import { useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { cartState } from "@/app/store/cartAtoms";
+import { userInfoState } from "@/app/store/accountAtoms";
+import { MdReportGmailerrorred } from "react-icons/md";
 
 export default function ProductDetailPage() {
+  const info = useAtomValue(userInfoState);
   const params = useParams();
   const handle = params.handle;
   const setCart = useSetAtom(cartState);
@@ -66,6 +69,17 @@ export default function ProductDetailPage() {
         return "Miếng";
     }
   };
+  if (info?.inDebt === true) {
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center font-open gap-y-[10px]">
+        <MdReportGmailerrorred className="text-danger-300 text-[60px]" />
+        <p className="text-danger-300">
+          Hiện tại bạn đang có đơn công nợ và chưa được thanh toán, bạn sẽ không
+          thể mua ngay lúc này !
+        </p>
+      </div>
+    );
+  }
   if (isLoading) {
     return (
       <div className="">

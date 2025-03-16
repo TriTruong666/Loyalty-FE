@@ -30,3 +30,12 @@ export const getOrderValueByDaily = async (from: string, to: string) => {
     console.error(error);
   }
 };
+
+export const getOrderValueByYear = async () => {
+  try {
+    const res = await axiosClient.get(`/api/analytic/yearly-revenue`);
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};

@@ -16,10 +16,12 @@ import {
   SelectItem,
 } from "@heroui/react";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { showToast } from "@/app/utils/toast";
-import { IoCheckmarkSharp } from "react-icons/io5";
 import { LoadingTable } from "@/app/components/loading";
 import { FaUserXmark } from "react-icons/fa6";
+import { useAtomValue, useSetAtom } from "jotai";
+import { blockAccountState, userInfoState } from "@/app/store/accountAtoms";
+import { blockAccountModalState } from "@/app/store/modalAtoms";
+import { MdOutlineBlock } from "react-icons/md";
 export default function AccountPage() {
   return (
     <div className="flex flex-col">
@@ -29,6 +31,9 @@ export default function AccountPage() {
 }
 
 function AccountAdminTable() {
+  const setModal = useSetAtom(blockAccountModalState);
+  const setUserId = useSetAtom(blockAccountState);
+  const info = useAtomValue(userInfoState);
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const [isMounted, setIsMounted] = useState(false);
@@ -41,7 +46,8 @@ function AccountAdminTable() {
   );
   const filteredAllAccounts = allAccounts
     ?.filter((account) => account.type === "admin")
-    .filter((account) => account.status === "active");
+    .filter((account) => account.status === "active")
+    .filter((account) => account.userName !== info?.userName);
   useEffect(() => {
     if (filteredAllAccounts) {
       setTotalPage(Math.ceil(filteredAllAccounts.length / limit));
@@ -59,6 +65,10 @@ function AccountAdminTable() {
     },
   ];
 
+  const handleBlockModalOn = (userId: string) => {
+    setModal(true);
+    setUserId(userId);
+  };
   if (isLoading || !isMounted) {
     return (
       <>
@@ -158,18 +168,16 @@ function AccountAdminTable() {
                     </DropdownTrigger>
                     <DropdownMenu>
                       <DropdownItem
-                        onPress={() =>
-                          showToast("Tài khoản đã được duyệt!", "success")
-                        }
+                        onPress={() => handleBlockModalOn(user.userId)}
                         className="group"
                         color="default"
                         startContent={
-                          <IoCheckmarkSharp className="text-[16px] group-hover:text-success" />
+                          <MdOutlineBlock className="text-[16px] group-hover:text-danger" />
                         }
-                        key="approve"
+                        key="block"
                       >
-                        <p className="group-hover:text-success">
-                          Duyệt tài khoản
+                        <p className="group-hover:text-danger">
+                          Chặn tài khoản
                         </p>
                       </DropdownItem>
                     </DropdownMenu>

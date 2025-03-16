@@ -2,11 +2,20 @@ export interface AnalyticsData {
   data: number | string;
 }
 
-export interface AnalyticsRevenueData {
-  data: Revenue[];
+export interface AnalyticsDailyRevenueData {
+  data: DailyRevenue[];
 }
 
-export interface Revenue {
+export interface DailyRevenue {
   date: string;
+  total: number;
+}
+
+export interface AnalyticsYearlyRevenueData {
+  data: YearlyRevenue[];
+}
+
+export interface YearlyRevenue {
+  month: string;
   total: number;
 }

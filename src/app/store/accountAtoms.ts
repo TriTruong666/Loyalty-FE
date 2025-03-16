@@ -23,3 +23,7 @@ export const dataCreateSalesAccountState = atom({
   phoneNumber: "",
   salePersonID: "",
 });
+
+export const blockAccountState = atom("");
+
+export const unlockAccountState = atom("");

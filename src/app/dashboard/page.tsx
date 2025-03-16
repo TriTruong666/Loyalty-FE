@@ -2,7 +2,6 @@
 import {
   AreaChart,
   Area,
-  XAxis,
   Tooltip,
   ResponsiveContainer,
   PieChart,
@@ -14,7 +13,11 @@ import { PiMoneyWavyLight } from "react-icons/pi";
 import { formatPrice } from "../utils/format";
 import { FaRegFileAlt } from "react-icons/fa";
 import { AiOutlineUser } from "react-icons/ai";
-import { LuPackageOpen } from "react-icons/lu";
+import {
+  LuArrowDownRight,
+  LuArrowUpRight,
+  LuPackageOpen,
+} from "react-icons/lu";
 import { Select, SelectItem } from "@heroui/react";
 import {
   useAllProduct,
@@ -22,10 +25,15 @@ import {
   useGetAllOrders,
   useGetOrderByLimitByStatus,
   useGetOrderValueByDaily,
+  useGetOrderValueByYear,
   useGetTotalOrderValue,
 } from "../hooks/hook";
+import { atom, useAtom, useSetAtom } from "jotai";
+
+const dashboardProgressState = atom(1);
 
 export default function DashboardPage() {
+  const [progress, setProgress] = useAtom(dashboardProgressState);
   const { data: totalValue } = useGetTotalOrderValue();
   const { data: allOrders } = useGetAllOrders();
   const { data: allAcounts } = useGetAllCustomerUser();
@@ -33,9 +41,10 @@ export default function DashboardPage() {
   const basicAnalytics: BasicAnalyticsItemProps[] = [
     {
       icon: <PiMoneyWavyLight className="text-[16px]" />,
-      title: "Tổng doanh thu",
+      title: "Tổng giá trị đơn hàng",
       type: "money",
       value: totalValue?.data as number,
+      onClick: () => handleOnClickItem(2),
     },
     {
       icon: <FaRegFileAlt className="text-[16px]" />,
@@ -57,22 +66,35 @@ export default function DashboardPage() {
     },
   ];
 
+  const handleOnClickItem = (value: number) => {
+    setProgress(value);
+  };
+
   return (
     <div className="flex flex-col font-open py-[20px]">
-      {/* Basic Summary */}
-      <div className="grid grid-cols-4 px-[40px] gap-[20px]">
-        {basicAnalytics.map((item) => (
-          <BasicAnalyticsItem key={item.title} {...item} />
-        ))}
-      </div>
-      {/* Revenue Chart */}
-      <div className="flex flex-col px-[40px] mt-[20px]">
-        <RevenueChart />
-      </div>
-      <div className="flex flex-col px-[40px] mt-[20px]">
-        <OrderSummary />
-      </div>
-      {/* Order Summary */}
+      {progress === 1 && (
+        <>
+          {/* Basic Summary */}
+          <div className="grid grid-cols-4 px-[40px] gap-[20px]">
+            {basicAnalytics.map((item) => (
+              <BasicAnalyticsItem key={item.title} {...item} />
+            ))}
+          </div>
+          {/* Revenue Chart */}
+          <div className="flex flex-col px-[40px] mt-[20px]">
+            <RevenueChart />
+          </div>
+          {/* Order Summary */}
+          <div className="flex flex-col px-[40px] mt-[20px]">
+            <OrderSummary />
+          </div>
+        </>
+      )}
+      {progress === 2 && (
+        <div className="px-[40px]">
+          <RevenueDetail />
+        </div>
+      )}
     </div>
   );
 }
@@ -82,11 +104,15 @@ interface BasicAnalyticsItemProps {
   value: number;
   type: "number" | "money";
   icon: ReactNode;
+  onClick?: () => void;
 }
 
 function BasicAnalyticsItem(props: BasicAnalyticsItemProps) {
   return (
-    <div className="flex justify-between p-[15px] transition-all duration-300 hover:bg-opacity-90 cursor-pointer border border-gray-400-40 rounded-xl bg-neutral-900 bg-opacity-40 font-open">
+    <div
+      onClick={props.onClick}
+      className="flex justify-between p-[15px] transition-all duration-300 hover:bg-opacity-90 cursor-pointer border border-gray-400-40 rounded-xl bg-neutral-900 bg-opacity-40 font-open"
+    >
       <div className="flex flex-col gap-y-[10px]">
         <p className="text-normal font-light text-sm">{props.title}</p>
         {props.type === "number" && (
@@ -124,10 +150,10 @@ function RevenueChart() {
         from = new Date();
         from.setMonth(now.getMonth() - 1);
         break;
-      case "lastYear":
-        from = new Date();
-        from.setFullYear(now.getFullYear() - 1);
-        break;
+      // case "lastYear":
+      //   from = new Date();
+      //   from.setFullYear(now.getFullYear() - 1);
+      //   break;
       default:
         from = now;
     }
@@ -148,22 +174,36 @@ function RevenueChart() {
     [selectedSort]
   );
 
-  const { data: revenue } = useGetOrderValueByDaily(from, to);
-
+  const { data: daily } = useGetOrderValueByDaily(from, to);
+  const { data: yearly } = useGetOrderValueByYear();
   const dateSort = [
     { key: "last10", title: "10 ngày trước" },
     { key: "last30", title: "Tháng trước" },
-    { key: "lastYear", title: "Năm trước" },
+    { key: "currentYear", title: "Năm nay" },
   ];
 
   const data = useMemo(() => {
-    if (!revenue?.data) return [];
+    if (selectedSort === "currentYear") {
+      if (!yearly?.data) return [];
+
+      return yearly.data.map(({ month, total }) => {
+        const [mm, yyyy] = month.split("-");
+        const displayMonth = `Tháng ${mm}-${yyyy}`;
+
+        return {
+          date: displayMonth,
+          "Doanh thu": total,
+        };
+      });
+    }
+
+    if (!daily?.data) return [];
 
     const startDate = new Date(from);
     const endDate = new Date(to);
     const dateMap = new Map();
 
-    revenue.data.forEach(({ date, total }) => {
+    daily.data.forEach(({ date, total }) => {
       dateMap.set(date, total);
     });
 
@@ -184,7 +224,7 @@ function RevenueChart() {
     }
 
     return result;
-  }, [revenue, from, to]);
+  }, [selectedSort, daily, yearly, from, to]);
 
   return (
     <div className="flex flex-col bg-neutral-900 bg-opacity-40 border border-gray-400-40 rounded-xl font-open">
@@ -238,13 +278,13 @@ function RevenueChart() {
               formatter={(value) => `${formatPrice(value as number)}`}
               labelFormatter={(_, payload) => {
                 if (payload && payload.length > 0) {
-                  return `${payload[0].payload.date}`; // Lấy đúng giá trị từ data
+                  return `${payload[0].payload.date}`;
                 }
                 return "";
               }}
             />
             <Area
-              type="monotoneX"
+              type="monotone"
               dataKey="Doanh thu"
               stroke="#a4ff66"
               fill="url(#colorUv)"
@@ -435,6 +475,24 @@ function OrderSummary() {
                 )}
                 cursor={false}
               />
+              <g>
+                <text textAnchor="middle" x="50%" y="48%">
+                  <tspan
+                    className="fill-default-500 text-tiny"
+                    dy="-0.5em"
+                    x="50%"
+                  >
+                    Tổng đơn
+                  </tspan>
+                  <tspan
+                    className="fill-foreground text-medium font-semibold"
+                    dy="1.5em"
+                    x="50%"
+                  >
+                    {allOrders?.length}
+                  </tspan>
+                </text>
+              </g>
             </PieChart>
           </ResponsiveContainer>
           <div className="flex flex-col gap-y-[10px]">
@@ -451,6 +509,153 @@ function OrderSummary() {
             ))}
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function RevenueDetail() {
+  const setProgress = useSetAtom(dashboardProgressState);
+  const handleBack = () => {
+    setProgress(1);
+  };
+  const { data: yearly } = useGetOrderValueByYear();
+
+  const data = useMemo(() => {
+    if (!yearly?.data) return [];
+
+    return yearly.data.map(({ month, total }) => {
+      const [mm, yyyy] = month.split("-");
+      const displayMonth = `Tháng ${mm}-${yyyy}`;
+
+      return {
+        date: displayMonth,
+        "Doanh thu": total,
+      };
+    });
+  }, [yearly]);
+
+  const { currentMonthTotal, lastMonthTotal, increasePercentage } =
+    useMemo(() => {
+      if (!yearly?.data)
+        return {
+          currentMonthTotal: 0,
+          lastMonthTotal: 0,
+          increasePercentage: "N/A",
+        };
+
+      const today = new Date();
+      const currentMonth = String(today.getMonth() + 1).padStart(2, "0");
+      const currentYear = today.getFullYear();
+      const lastMonth = String(today.getMonth()).padStart(2, "0");
+
+      // Lấy dữ liệu doanh thu
+      const currentData = yearly.data.find(
+        (item) => item.month === `${currentMonth}-${currentYear}`
+      );
+      const lastData = yearly.data.find(
+        (item) => item.month === `${lastMonth}-${currentYear}`
+      );
+
+      const currentTotal = currentData ? currentData.total : 0;
+      const lastTotal = lastData ? lastData.total : 0;
+
+      let percentage = "N/A";
+      if (lastTotal > 0) {
+        percentage = `${(
+          ((currentTotal - lastTotal) / lastTotal) *
+          100
+        ).toFixed(2)}%`;
+      } else if (currentTotal > 0) {
+        percentage = "∞%";
+      } else {
+        percentage = "0%";
+      }
+
+      return {
+        currentMonthTotal: currentTotal,
+        lastMonthTotal: lastTotal,
+        increasePercentage: percentage,
+      };
+    }, [yearly]);
+
+  return (
+    <div className="flex flex-col">
+      <p
+        className="w-fit text-normal text-sm underline cursor-pointer"
+        onClick={handleBack}
+      >
+        Quay lại
+      </p>
+      <div className="flex justify-between mt-[40px] font-open">
+        {/* This month vs last month */}
+        <div className="flex justify-between p-[20px] bg-neutral-900 bg-opacity-40 border border-gray-400-40 rounded-xl w-full">
+          {/* detail */}
+          <div className="flex flex-col justify-between gap-y-[20px]">
+            <p className="font-light text-normal text-[18px]">
+              Giá trị đơn hàng tháng này
+            </p>
+            <p className="font-semibold text-foreground text-[24px]">
+              {formatPrice(currentMonthTotal as number)}
+            </p>
+            <p className="flex items-center gap-x-[6px]">
+              {lastMonthTotal > 0 && currentMonthTotal > lastMonthTotal ? (
+                <span className="flex items-center text-primary gap-x-[5px]">
+                  <LuArrowUpRight className="text-[20px]" />
+                  <span>{increasePercentage}</span>
+                </span>
+              ) : lastMonthTotal > 0 && currentMonthTotal < lastMonthTotal ? (
+                <span className="flex items-center text-red-500 gap-x-[5px]">
+                  <LuArrowDownRight className="text-[20px]" />
+                  <span>{increasePercentage}</span>
+                </span>
+              ) : (
+                <span className="text-gray-400">{increasePercentage}</span>
+              )}
+              <span className="text-normal">so với tháng trước</span>
+            </p>
+          </div>
+          {/* chart */}
+          <div className="flex w-[50%]">
+            <ResponsiveContainer width="100%" height={140}>
+              <AreaChart data={data}>
+                <defs>
+                  {lastMonthTotal > 0 && currentMonthTotal > lastMonthTotal ? (
+                    <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#a4ff66" stopOpacity={0.4} />
+                      <stop offset="95%" stopColor="#a4ff66" stopOpacity={0} />
+                    </linearGradient>
+                  ) : lastMonthTotal > 0 &&
+                    currentMonthTotal < lastMonthTotal ? (
+                    <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#ef4444" stopOpacity={0.4} />
+                      <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                    </linearGradient>
+                  ) : (
+                    <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#9ca3af" stopOpacity={0.4} />
+                      <stop offset="95%" stopColor="#9ca3af" stopOpacity={0} />
+                    </linearGradient>
+                  )}
+                </defs>
+                <Area
+                  type="monotone"
+                  dataKey="Doanh thu"
+                  stroke={
+                    lastMonthTotal > 0 && currentMonthTotal > lastMonthTotal
+                      ? "#a4ff66"
+                      : lastMonthTotal > 0 && currentMonthTotal < lastMonthTotal
+                      ? "#ef4444"
+                      : "#9ca3af"
+                  }
+                  fill="url(#colorUv)"
+                  strokeWidth={2}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+        {/* grid of other revenue */}
       </div>
     </div>
   );

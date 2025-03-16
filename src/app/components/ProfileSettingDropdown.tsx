@@ -83,13 +83,6 @@ export default function ProfileSettingDropdown() {
                     )}
                   </div>
                 </div>
-                <div
-                  className={`col-span-1 flex justify-start w-fit px-5 py-[2px] rounded-lg ${rankingTheme(
-                    "gold"
-                  )}`}
-                >
-                  <p className=" text-[11px] font-semibold text-white">Gold</p>
-                </div>
               </div>
               <div className="flex flex-col mt-[20px] gap-y-[10px]">
                 <Item

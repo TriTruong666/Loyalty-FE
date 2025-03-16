@@ -1,6 +1,7 @@
 "use client";
 import NormalInput from "@/app/components/NormalInput";
 import { ChangePasswordService } from "@/app/service/accountService";
+import { logoutService } from "@/app/service/authenticateService";
 import { userInfoState } from "@/app/store/accountAtoms";
 import { showToast } from "@/app/utils/toast";
 import { useMutation } from "@tanstack/react-query";
@@ -22,6 +23,10 @@ export default function SettingPage() {
     newPassword: "",
     confirmPassword: "",
   });
+  const logoutMutation = useMutation({
+    mutationKey: ["logout"],
+    mutationFn: logoutService,
+  });
   const changeMutation = useMutation({
     mutationKey: ["change-password"],
     mutationFn: ChangePasswordService,
@@ -35,6 +40,7 @@ export default function SettingPage() {
       }
       if (data.message === "Password changed successfully") {
         showToast("Thay đổi mật khẩu thành công", "success");
+        showToast("Bạn sẽ phải đăng nhập lại!", "success");
         setIsSubmit(false);
         setIsLocked(true);
         setSubmitData({
@@ -42,6 +48,9 @@ export default function SettingPage() {
           oldPassword: "",
           confirmPassword: "",
         });
+        setTimeout(() => {
+          logoutMutation.mutateAsync();
+        }, 2000);
       }
       setIsSubmit(false);
     },
