@@ -13,6 +13,7 @@ export interface User {
   address: Address;
   rank: Rank;
   inDebt: boolean;
+  currentPoint: number;
 }
 
 interface Address {

@@ -26,6 +26,7 @@ import {
   discountCustomState,
   discountPPState,
   discountUniqueState,
+  estimatePointState,
   subtotalCartValueAtom,
   totalCartValueAtoms,
 } from "../store/cartAtoms";
@@ -377,6 +378,7 @@ function Summary() {
   const subtotalCartValue = useAtomValue(subtotalCartValueAtom);
   const setResponse = useSetAtom(checkoutResponseState);
   const setQRImage = useSetAtom(qrImageState);
+  const estimatePoint = useAtomValue(estimatePointState);
   const discountByTypeValue = useAtomValue(discountUniqueState);
   const discountByDistributionValue = useAtomValue(discountPPState);
   const totalCartValue = useAtomValue(totalCartValueAtoms);
@@ -559,6 +561,10 @@ function Summary() {
               </p>
             </div>
           )}
+          <div className="flex justify-between">
+            <p className="font-light text-normal">Điểm tích luỹ được</p>
+            <p className="font-bold">{estimatePoint} điểm</p>
+          </div>
           <div className="flex justify-between">
             <p className="font-semibold text-normal">Tổng</p>
             <p className="font-bold text-primary">

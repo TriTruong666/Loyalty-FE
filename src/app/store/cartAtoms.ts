@@ -77,3 +77,8 @@ export const totalCartValueAtoms = atom((get) => {
   const discountCustom = get(discountCustomState);
   return subtotal - discountUnique - discountPP - discountCustom;
 });
+
+export const estimatePointState = atom((get) => {
+  const subtotal = get(subtotalCartValueAtom);
+  return Math.floor(subtotal / 100000);
+});
