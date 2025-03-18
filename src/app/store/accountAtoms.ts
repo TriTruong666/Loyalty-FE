@@ -21,6 +21,7 @@ export const dataCreateAccountState = atom({
 export const dataCreateSalesAccountState = atom({
   userName: "",
   phoneNumber: "",
+  mst: "",
   salePersonID: "",
 });
 

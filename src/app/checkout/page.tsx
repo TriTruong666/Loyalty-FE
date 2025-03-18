@@ -197,9 +197,7 @@ function LocationForm() {
               }}
             >
               {(provinces ?? []).map((province) => (
-                <SelectItem value={province.code} key={province.code}>
-                  {province.fullName}
-                </SelectItem>
+                <SelectItem key={province.code}>{province.fullName}</SelectItem>
               ))}
             </Select>
           </div>
@@ -225,9 +223,7 @@ function LocationForm() {
               }}
             >
               {(districts ?? []).map((district) => (
-                <SelectItem value={district.code} key={district.code}>
-                  {district.fullName}
-                </SelectItem>
+                <SelectItem key={district.code}>{district.fullName}</SelectItem>
               ))}
             </Select>
           </div>
@@ -253,9 +249,7 @@ function LocationForm() {
               }}
             >
               {(wards ?? []).map((ward) => (
-                <SelectItem value={ward.code} key={ward.code}>
-                  {ward.fullName}
-                </SelectItem>
+                <SelectItem key={ward.code}>{ward.fullName}</SelectItem>
               ))}
             </Select>
           </div>

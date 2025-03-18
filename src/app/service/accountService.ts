@@ -173,6 +173,7 @@ interface SalesCustomer {
   userName: string;
   phoneNumber: string;
   salePersonID: string;
+  mst: string;
 }
 
 export const createSalesCustomer = async (data: SalesCustomer) => {

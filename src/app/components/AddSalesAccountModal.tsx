@@ -10,6 +10,7 @@ import { ChangeEvent, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createSalesCustomer } from "../service/accountService";
 import { showToast } from "../utils/toast";
+import { RiBuilding2Fill } from "react-icons/ri";
 
 export default function AddSalesAccountModal() {
   const [submitData, setSubmitData] = useAtom(dataCreateSalesAccountState);
@@ -34,6 +35,7 @@ export default function AddSalesAccountModal() {
         setSubmitData({
           phoneNumber: "",
           salePersonID: "",
+          mst: "",
           userName: "",
         });
         setIsSubmit(false);
@@ -61,7 +63,8 @@ export default function AddSalesAccountModal() {
     if (
       submitData.phoneNumber === "" ||
       submitData.salePersonID === "" ||
-      submitData.userName === ""
+      submitData.userName === "" ||
+      submitData.mst === ""
     ) {
       showToast("Vui lòng nhập đầy đủ thông tin", "error");
       return;
@@ -95,7 +98,7 @@ export default function AddSalesAccountModal() {
           <div className="flex flex-col gap-3 w-full">
             <NormalInput
               name="userName"
-              label="Tên người dùng"
+              label="Tên khách hàng"
               placeholder="Nguyễn Văn A"
               onChange={handleOnChange}
               icon={<FaUserTie size={20} />}
@@ -108,7 +111,16 @@ export default function AddSalesAccountModal() {
               icon={<MdLocalPhone size={20} />}
               max={10}
             />
+            <NormalInput
+              onChange={handleOnChange}
+              name="mst"
+              label="Mã số thuế"
+              placeholder="1801783273"
+              max={10}
+              icon={<RiBuilding2Fill size={20} />}
+            />
           </div>
+
           <div className="w-full">
             <Select
               variant="underlined"
@@ -120,9 +132,7 @@ export default function AddSalesAccountModal() {
               }}
             >
               {filteredAccounts.map((user) => (
-                <SelectItem key={user.userId} value={user.userId}>
-                  {user.userName}
-                </SelectItem>
+                <SelectItem key={user.userId}>{user.userName}</SelectItem>
               ))}
             </Select>
           </div>

@@ -206,7 +206,7 @@ export default function CartPage() {
               >
                 {(filteredCustomers ?? []).map((user) => (
                   <SelectItem
-                    value={user.customerIDOfSales}
+                    // value={user.customerIDOfSales}
                     key={user.customerIDOfSales}
                   >
                     {user.userName}
@@ -357,7 +357,8 @@ export default function CartPage() {
 }
 
 const CartItem = (props: CartItemProps) => {
-  const [quantity, setQuantity] = useState(props.quantity);
+  const [quantity, setQuantity] = useState<number | string>(props.quantity);
+
   const setCart = useSetAtom(cartState);
 
   const handleRemove = () => {
@@ -371,6 +372,22 @@ const CartItem = (props: CartItemProps) => {
     setQuantity(newQuantity);
     updateCartItemQuantity(props.id, newQuantity, setCart);
   };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+
+    if (value === "") {
+      setQuantity(""); // Cho phép xóa input
+      return;
+    }
+
+    const newQuantity = Number(value);
+    if (!isNaN(newQuantity) && newQuantity >= 1) {
+      setQuantity(newQuantity);
+      updateCartItemQuantity(props.id, newQuantity, setCart);
+    }
+  };
+
   const unitProduct = (unit: string) => {
     switch (unit) {
       case "1":
@@ -403,16 +420,21 @@ const CartItem = (props: CartItemProps) => {
               isIconOnly
               variant="flat"
               size="sm"
-              onPress={() => handleQuantityChange(quantity + 1)}
+              onPress={() => handleQuantityChange(Number(quantity) + 1)} // Ép kiểu về number
             >
               <p className="text-[20px]">+</p>
             </Button>
-            <p>{quantity}</p>
+            <Input
+              onChange={handleInputChange}
+              className="max-w-[100px]"
+              value={`${quantity}`}
+              type="number"
+            />
             <Button
               isIconOnly
               variant="flat"
               size="sm"
-              onPress={() => handleQuantityChange(quantity - 1)}
+              onPress={() => handleQuantityChange(Number(quantity) - 1)} // Ép kiểu về number
             >
               <p className="text-[20px]">-</p>
             </Button>
