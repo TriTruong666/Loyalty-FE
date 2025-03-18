@@ -26,7 +26,7 @@ import {
   useGetUserInfo,
 } from "@/app/hooks/hook";
 import { LoadingTable } from "@/app/components/loading";
-import { formatPrice } from "@/app/utils/format";
+import { formatDate, formatPrice, formatTime } from "@/app/utils/format";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateOrderService } from "@/app/service/orderService";
 import { Input } from "@heroui/react";
@@ -214,7 +214,7 @@ function AdminOrderTable() {
         <table className="flex flex-col w-full">
           <thead>
             <tr className="grid grid-cols-12 mx-[20px] px-[20px] py-4 bg-[#111111] rounded-lg">
-              <th className="col-span-2 text-[12px] text-normal font-light text-start">
+              <th className="col-span-2 text-[12px] text-danger-400 font-light text-start">
                 Mã đơn hàng
               </th>
               <th className="col-span-2 text-[12px] text-normal font-light text-start">
@@ -227,7 +227,7 @@ function AdminOrderTable() {
                 Trạng thái thanh toán
               </th>
               <th className="col-span-3 text-[12px] text-normal font-light text-start">
-                Ghi chú của khách
+                Ngày tạo đơn
               </th>
               <th className="col-span-1 text-[12px] text-normal font-light text-end">
                 Thêm
@@ -240,7 +240,9 @@ function AdminOrderTable() {
                 key={order.orderId}
                 className="grid grid-cols-12 mx-[20px] px-[20px] py-4 items-center border-b border-gray-600 border-opacity-40 relative"
               >
-                <td className="col-span-2 text-[13px]">{order.orderId}</td>
+                <td className="col-span-2 text-[13px] text-danger-400">
+                  {order.orderId}
+                </td>
                 <td className="col-span-2 text-[13px] text-start font-semibold">
                   {order.customerName}
                 </td>
@@ -259,7 +261,8 @@ function AdminOrderTable() {
                   </p>
                 </td>
                 <td className="col-span-3 text-[13px] text-start">
-                  {order.note}
+                  {formatDate(order?.createdAt as string)} lúc{" "}
+                  {formatTime(order?.createdAt as string)}
                 </td>
                 <td className="col-span-1 text-[13px] font-semibold flex justify-end">
                   <Dropdown>
@@ -550,7 +553,7 @@ function UserOrderTable() {
         <table className="flex flex-col w-full">
           <thead>
             <tr className="grid grid-cols-12 mx-[20px] px-[20px] py-4 bg-[#111111] rounded-lg">
-              <th className="col-span-2 text-[12px] text-normal font-light text-start">
+              <th className="col-span-2 text-[12px] text-danger-400 font-light text-start">
                 Mã đơn hàng
               </th>
               <th className="col-span-2 text-[12px] text-normal font-light text-start">
@@ -563,7 +566,7 @@ function UserOrderTable() {
                 Trạng thái thanh toán
               </th>
               <th className="col-span-3 text-[12px] text-normal font-light text-start">
-                Ghi chú của bạn
+                Ngày tạo đơn
               </th>
               <th className="col-span-1 text-[12px] text-normal font-light text-end">
                 Thêm
@@ -576,7 +579,9 @@ function UserOrderTable() {
                 key={order.orderId}
                 className="grid grid-cols-12 mx-[20px] px-[20px] py-4 items-center border-b border-gray-600 border-opacity-40 relative"
               >
-                <td className="col-span-2 text-[13px]">{order.orderId}</td>
+                <td className="col-span-2 text-[13px] text-danger-400">
+                  {order.orderId}
+                </td>
                 <td className="col-span-2 text-[13px] text-start font-semibold">
                   {order.customerName}
                 </td>
@@ -595,7 +600,8 @@ function UserOrderTable() {
                   </p>
                 </td>
                 <td className="col-span-3 text-[13px] text-start">
-                  {order.note}
+                  {formatDate(order?.createdAt as string)} lúc{" "}
+                  {formatTime(order?.createdAt as string)}
                 </td>
                 <td className="col-span-1 text-[13px] font-semibold flex justify-end">
                   <Dropdown>

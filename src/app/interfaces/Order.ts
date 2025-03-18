@@ -55,6 +55,7 @@ interface SalesCustomer {
   status: boolean;
   salePersonID: string;
   note: string;
+  mst: string;
 }
 
 export interface Order {

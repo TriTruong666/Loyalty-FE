@@ -335,7 +335,9 @@ function AdminOrderDetail() {
                 {/* Customer Info */}
                 <div className="flex flex-col px-[15px] py-[25px] border-b border-gray-400-40">
                   <div className="flex justify-between">
-                    <p className="text-[11px] text-normal">Thông tin cá nhân</p>
+                    <p className="text-[11px] text-normal">
+                      Thông tin người đặt
+                    </p>
                     <Button variant="light" size="sm" isIconOnly>
                       <LuPen className="text-normal" />
                     </Button>
@@ -352,7 +354,9 @@ function AdminOrderDetail() {
                 {detail?.salesCustomer !== null && (
                   <div className="flex flex-col px-[15px] py-[25px] border-b border-gray-400-40">
                     <div className="flex justify-between">
-                      <p className="text-[11px] text-normal">Khách của Sales</p>
+                      <p className="text-[11px] text-normal">
+                        Khách của Sales Team
+                      </p>
                       <Button variant="light" size="sm" isIconOnly>
                         <LuPen className="text-normal" />
                       </Button>

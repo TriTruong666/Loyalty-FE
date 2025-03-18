@@ -94,6 +94,10 @@ export default function ScanQRPage() {
 
       <div className="flex flex-col mt-[20px] items-center gap-y-[10px]">
         <p className="font-light text-normal text-sm">
+          Mã đơn hàng:{" "}
+          <span className="font-semibold text-foreground">{orderId}</span>
+        </p>
+        <p className="font-light text-normal text-sm">
           Ngân hàng thụ hưởng:{" "}
           <span className="font-semibold text-foreground">
             Ngân Hàng Quân Đội MB

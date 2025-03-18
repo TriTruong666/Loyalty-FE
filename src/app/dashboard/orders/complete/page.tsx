@@ -26,7 +26,7 @@ import {
   useGetUserInfo,
 } from "@/app/hooks/hook";
 import { LoadingTable } from "@/app/components/loading";
-import { formatPrice } from "@/app/utils/format";
+import { formatDate, formatPrice, formatTime } from "@/app/utils/format";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateOrderService } from "@/app/service/orderService";
 import { Input } from "@heroui/react";
@@ -227,7 +227,7 @@ function AdminOrderTable() {
                 Trạng thái thanh toán
               </th>
               <th className="col-span-3 text-[12px] text-normal font-light text-start">
-                Ghi chú
+                Ngày tạo đơn
               </th>
               <th className="col-span-1 text-[12px] text-normal font-light text-end">
                 Thêm
@@ -259,7 +259,8 @@ function AdminOrderTable() {
                   </p>
                 </td>
                 <td className="col-span-3 text-[13px] text-start">
-                  {order.note}
+                  {formatDate(order?.createdAt as string)} lúc{" "}
+                  {formatTime(order?.createdAt as string)}
                 </td>
                 <td className="col-span-1 text-[13px] font-semibold flex justify-end">
                   <Dropdown>
@@ -551,7 +552,7 @@ function UserOrderTable() {
                 Trạng thái thanh toán
               </th>
               <th className="col-span-3 text-[12px] text-normal font-light text-start">
-                Ghi chú của bạn
+                Ngày tạo đơn
               </th>
               <th className="col-span-1 text-[12px] text-normal font-light text-end">
                 Thêm
@@ -583,7 +584,8 @@ function UserOrderTable() {
                   </p>
                 </td>
                 <td className="col-span-3 text-[13px] text-start">
-                  {order.note}
+                  {formatDate(order?.createdAt as string)} lúc{" "}
+                  {formatTime(order?.createdAt as string)}
                 </td>
                 <td className="col-span-1 text-[13px] font-semibold flex justify-end">
                   <Dropdown>

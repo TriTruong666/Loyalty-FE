@@ -33,6 +33,7 @@ export const checkoutState = atom<Checkout | null>((get) => {
   const user = get(userInfoState);
   const discountCustom = user?.rank.discountCustom;
   const salesCustomer = get(salesCustomerState);
+
   if (
     paymentMethod === "" ||
     address.districtCode === "" ||

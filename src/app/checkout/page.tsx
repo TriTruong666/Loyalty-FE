@@ -93,11 +93,173 @@ export default function CheckoutPage() {
         {/* infomation */}
         <div className="flex flex-col w-[70%] gap-y-[30px] pr-[50px]">
           <InfomationForm />
-          <LocationForm />
+          {info?.type === "sales" && <SalesLocationForm />}
+          {info?.type !== "sales" && <LocationForm />}
           <PaymentMethod />
         </div>
         {/* summary */}
         <Summary />
+      </div>
+    </div>
+  );
+}
+
+function SalesLocationForm() {
+  const [submitLocationData, setSubmitLocationData] =
+    useAtom(shippingAddressState);
+  const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
+  const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
+  const [selectedWard, setSelectedWard] = useState<string | null>(null);
+  const { data: provinces } = useGetAllProvince();
+  const { data: districts } = useGetDistrictByProvince(
+    selectedProvince as string
+  );
+  const { data: wards } = useGetWardByDistrict(selectedDistrict as string);
+
+  useEffect(() => {
+    setSubmitLocationData((prev) => ({
+      provinceCode: prev.provinceCode || "79",
+      districtCode: prev.districtCode || "",
+      wardCode: prev.wardCode || "",
+      street: prev.street || "",
+    }));
+
+    setSelectedProvince((prev) => prev ?? "79");
+    setSelectedDistrict((prev) => prev ?? null);
+    setSelectedWard((prev) => prev ?? null);
+  }, []);
+
+  const handleProvinceChange = (provinceCode: string) => {
+    console.log(submitLocationData);
+    setSelectedProvince(provinceCode);
+    setSelectedDistrict(null);
+    setSelectedWard(null);
+    setSubmitLocationData((prev) => ({
+      ...prev,
+      provinceCode,
+      districtCode: "",
+      wardCode: "",
+    }));
+  };
+
+  const handleDistrictChange = (districtCode: string) => {
+    console.log(submitLocationData);
+    setSelectedDistrict(districtCode);
+    setSelectedWard(null);
+    setSubmitLocationData((prev) => ({
+      ...prev,
+      districtCode,
+      wardCode: "",
+    }));
+  };
+
+  const handleWardChange = (wardCode: string) => {
+    console.log(submitLocationData);
+    setSelectedWard(wardCode);
+    setSubmitLocationData((prev) => ({
+      ...prev,
+      wardCode,
+    }));
+  };
+
+  const handleStreetChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSubmitLocationData((prev) => ({
+      ...prev,
+      street: e.target.value,
+    }));
+  };
+  return (
+    <div className="flex flex-col">
+      <div className="flex gap-x-[20px] items-center justify-between">
+        <p className="text-[22px] font-light select-none">Địa chỉ giao hàng</p>
+      </div>
+      <div className="flex flex-col mt-[30px] gap-y-[20px]">
+        <div className="flex gap-x-[10px]">
+          <div className="flex flex-col w-full gap-y-2 font-inter">
+            <label
+              htmlFor="date"
+              className="font-semibold text-sm 2xl:text-[12px] mb-1"
+            >
+              Tỉnh / Thành phố
+            </label>
+            <Select
+              isVirtualized
+              variant="underlined"
+              placeholder="Tỉnh / Thành phố"
+              aria-label="Tỉnh / Thành phố"
+              scrollShadowProps={{
+                isEnabled: false,
+              }}
+              selectedKeys={selectedProvince ? [selectedProvince] : []}
+              onSelectionChange={(keys) => {
+                const selectedKey = Array.from(keys)[0] as string;
+                handleProvinceChange(selectedKey);
+              }}
+            >
+              {(provinces ?? []).map((province) => (
+                <SelectItem key={province.code}>{province.fullName}</SelectItem>
+              ))}
+            </Select>
+          </div>
+          <div className="flex flex-col w-full gap-y-2 font-inter">
+            <label
+              htmlFor="date"
+              className="font-semibold text-sm 2xl:text-[12px] mb-1"
+            >
+              Quận / Huyện
+            </label>
+            <Select
+              isVirtualized
+              variant="underlined"
+              placeholder="Quận / Huyện"
+              aria-label="Quận / Huyện"
+              scrollShadowProps={{
+                isEnabled: false,
+              }}
+              selectedKeys={selectedDistrict ? [selectedDistrict] : []}
+              onSelectionChange={(keys) => {
+                const selectedKey = Array.from(keys)[0] as string;
+                handleDistrictChange(selectedKey);
+              }}
+            >
+              {(districts ?? []).map((district) => (
+                <SelectItem key={district.code}>{district.fullName}</SelectItem>
+              ))}
+            </Select>
+          </div>
+          <div className="flex flex-col w-full gap-y-2 font-inter">
+            <label
+              htmlFor="date"
+              className="font-semibold text-sm 2xl:text-[12px] mb-1"
+            >
+              Phường / Xã
+            </label>
+            <Select
+              isVirtualized
+              variant="underlined"
+              placeholder="Phường / Xã"
+              aria-label="Phường / Xã"
+              scrollShadowProps={{
+                isEnabled: false,
+              }}
+              selectedKeys={selectedWard ? [selectedWard] : []}
+              onSelectionChange={(keys) => {
+                const selectedKey = Array.from(keys)[0] as string;
+                handleWardChange(selectedKey);
+              }}
+            >
+              {(wards ?? []).map((ward) => (
+                <SelectItem key={ward.code}>{ward.fullName}</SelectItem>
+              ))}
+            </Select>
+          </div>
+        </div>
+        <NormalInput
+          onChange={handleStreetChange}
+          label="Địa chỉ giao hàng"
+          placeholder="Nhập địa chỉ giao hàng"
+          icon={<TbTruck className="text-[20px]" />}
+        />
       </div>
     </div>
   );
@@ -450,7 +612,12 @@ function Summary() {
   });
   const handleSubmit = async () => {
     if (submitData === null) {
+      console.log(submitData);
       showToast("Vui lòng kiểm tra lại thông tin còn thiếu.", "error");
+      return;
+    }
+    if (gateway === "debt" && subtotalCartValue > 30000000) {
+      showToast("Đơn công nợ không thể vượt quá 30 triệu", "error");
       return;
     }
     try {
