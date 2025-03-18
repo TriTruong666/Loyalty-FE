@@ -241,9 +241,7 @@ function RevenueChart() {
             }}
           >
             {dateSort.map((item) => (
-              <SelectItem key={item.key} value={item.key}>
-                {item.title}
-              </SelectItem>
+              <SelectItem key={item.key}>{item.title}</SelectItem>
             ))}
           </Select>
         </div>

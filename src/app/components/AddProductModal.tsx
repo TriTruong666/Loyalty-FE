@@ -171,12 +171,10 @@ function ProductForm() {
             >
               {brands?.length ? (
                 brands.map((brand) => (
-                  <SelectItem value={brand.brandId} key={brand.brandId}>
-                    {brand.brandName}
-                  </SelectItem>
+                  <SelectItem key={brand.brandId}>{brand.brandName}</SelectItem>
                 ))
               ) : (
-                <SelectItem value="">Đang tải thương hiệu...</SelectItem>
+                <SelectItem>Đang tải thương hiệu...</SelectItem>
               )}
             </Select>
           </div>
@@ -198,9 +196,7 @@ function ProductForm() {
               placeholder="Đơn vị"
             >
               {units.map((unit) => (
-                <SelectItem value={unit.id} key={unit.id}>
-                  {unit.unitName}
-                </SelectItem>
+                <SelectItem key={unit.id}>{unit.unitName}</SelectItem>
               ))}
             </Select>
           </div>

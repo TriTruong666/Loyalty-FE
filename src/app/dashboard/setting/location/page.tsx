@@ -178,9 +178,7 @@ export default function SettingPage() {
               }}
             >
               {(provinces ?? []).map((province) => (
-                <SelectItem value={province.code} key={province.code}>
-                  {province.fullName}
-                </SelectItem>
+                <SelectItem key={province.code}>{province.fullName}</SelectItem>
               ))}
             </Select>
           </div>
@@ -206,9 +204,7 @@ export default function SettingPage() {
               }}
             >
               {(districts ?? []).map((district) => (
-                <SelectItem value={district.code} key={district.code}>
-                  {district.fullName}
-                </SelectItem>
+                <SelectItem key={district.code}>{district.fullName}</SelectItem>
               ))}
             </Select>
           </div>
@@ -234,9 +230,7 @@ export default function SettingPage() {
               }}
             >
               {(wards ?? []).map((ward) => (
-                <SelectItem value={ward.code} key={ward.code}>
-                  {ward.fullName}
-                </SelectItem>
+                <SelectItem key={ward.code}>{ward.fullName}</SelectItem>
               ))}
             </Select>
           </div>
