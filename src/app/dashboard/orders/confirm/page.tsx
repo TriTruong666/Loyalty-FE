@@ -12,6 +12,7 @@ import { Button } from "@heroui/button";
 import { BsThreeDotsVertical, BsTruck } from "react-icons/bs";
 import { showToast } from "@/app/utils/toast";
 import {
+  attachmentOrderModalState,
   cancelOrderModalState,
   checkTransactionModalState,
   deliveryOrderModalState,
@@ -30,6 +31,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateOrderService } from "@/app/service/orderService";
 import { Input } from "@heroui/react";
 import {
+  attachmentOrderState,
   cancelOrderState,
   checkTransactionOrderState,
   deliveryOrderState,
@@ -38,6 +40,7 @@ import {
 } from "@/app/store/orderAtomts";
 import { TbFolderCancel } from "react-icons/tb";
 import { userInfoState } from "@/app/store/accountAtoms";
+import { IoCameraOutline } from "react-icons/io5";
 
 export default function OrderPage() {
   const { data: info } = useGetUserInfo();
@@ -62,6 +65,8 @@ function AdminOrderTable() {
   const setCancelModal = useSetAtom(cancelOrderModalState);
   const setCheckTransactionModalId = useSetAtom(checkTransactionOrderState);
   const setCheckTransactionModal = useSetAtom(checkTransactionModalState);
+  const setAttactmentModalId = useSetAtom(attachmentOrderState);
+  const setAttachmentModal = useSetAtom(attachmentOrderModalState);
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const [noteData, setNoteData] = useState("");
@@ -138,6 +143,10 @@ function AdminOrderTable() {
   const handleCheckTransactionModalOn = (transactionId: string) => {
     setCheckTransactionModalId(transactionId);
     setCheckTransactionModal(true);
+  };
+  const handleToggleAttachmentModalOn = (orderId: string) => {
+    setAttactmentModalId(orderId);
+    setAttachmentModal(true);
   };
   const handleFinanceStatus = (status: string) => {
     switch (status) {
@@ -306,11 +315,24 @@ function AdminOrderTable() {
                         className="group"
                         color="default"
                         startContent={
-                          <FaXmark className="text-[16px] group-hover:text-success" />
+                          <FaXmark className="text-[16px] group-hover:text-danger" />
                         }
                         key="deny"
                       >
-                        <p className="group-hover:text-success">Từ chối</p>
+                        <p className="group-hover:text-danger">Huỷ đơn</p>
+                      </DropdownItem>
+                      <DropdownItem
+                        onPress={() =>
+                          handleToggleAttachmentModalOn(order.orderId)
+                        }
+                        className="group"
+                        color="default"
+                        startContent={
+                          <IoCameraOutline className="text-[16px] " />
+                        }
+                        key="photo"
+                      >
+                        <p className="">Chụp phiếu xuất kho</p>
                       </DropdownItem>
                       <DropdownItem
                         onPress={() => handleToggleNoteModalOn(order.orderId)}
@@ -383,6 +405,8 @@ function UserOrderTable() {
   const setDetailModalId = useSetAtom(detailOrderState);
   const setCheckTransactionModalId = useSetAtom(checkTransactionOrderState);
   const setCheckTransactionModal = useSetAtom(checkTransactionModalState);
+  const setCancelModal = useSetAtom(cancelOrderModalState);
+  const setCancelModalId = useSetAtom(cancelOrderState);
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const [noteData, setNoteData] = useState("");
@@ -451,6 +475,10 @@ function UserOrderTable() {
   const handleCheckTransactionModalOn = (transactionId: string) => {
     setCheckTransactionModalId(transactionId);
     setCheckTransactionModal(true);
+  };
+  const handleToggleCancelOrderModalOn = (orderId: string) => {
+    setCancelModalId(orderId);
+    setCancelModal(true);
   };
   const handleFinanceStatus = (status: string) => {
     switch (status) {
@@ -612,6 +640,19 @@ function UserOrderTable() {
                           </p>
                         </DropdownItem>
                       ) : null}
+                      <DropdownItem
+                        onPress={() =>
+                          handleToggleCancelOrderModalOn(order.orderId)
+                        }
+                        className="group"
+                        color="default"
+                        startContent={
+                          <FaXmark className="text-[16px] group-hover:text-success" />
+                        }
+                        key="deny"
+                      >
+                        <p className="group-hover:text-success">Huỷ đơn hàng</p>
+                      </DropdownItem>
                       <DropdownItem
                         onPress={() => handleToggleNoteModalOn(order.orderId)}
                         className="group"

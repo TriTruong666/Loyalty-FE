@@ -30,6 +30,7 @@ import ConfirmCompleteModal from "../components/ConfirmCompleteModal";
 import BlockAccountModal from "../components/BlockAccountModal";
 import UnlockAccountModal from "../components/UnlockAccountModal";
 import ConfirmOrderModal from "../components/ConfirmOrderModal";
+import AttachmentModal from "../components/AttachmentModal";
 
 export default function DashboardLayout({
   children,
@@ -70,7 +71,7 @@ export default function DashboardLayout({
       <NotificationDropdown />
       <CreateNotificationModal />
       <ConfirmOrderModal />
-      {/* <AttachmentModal /> */}
+      <AttachmentModal />
       <AddProductModal />
       <AddAccountModal />
       <DashboardSidebar />

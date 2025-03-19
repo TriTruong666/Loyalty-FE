@@ -19,10 +19,10 @@ import {
   loginService,
   verifyLoginService,
 } from "./service/authenticateService";
-import { Button } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { showToast } from "./utils/toast";
 import { useGetUserInfo } from "./hooks/hook";
+import { Button } from "@heroui/react";
 
 export default function Home() {
   const progressState = useAtomValue(loginProgressState);

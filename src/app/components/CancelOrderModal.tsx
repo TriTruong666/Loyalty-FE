@@ -81,9 +81,9 @@ function ConfirmCancel() {
         return ` Hành động này không thể được hoàn tác, phía khách hàng sẽ được liên
             hệ để thông báo về việc huỷ đơn của bạn.`;
       case "business":
-        return `Hành động này không thể được hoàn tác, vui lòng suy nghĩ kỹ trước khi huỷ đơn, phía hệ thống sẽ gọi cho bạn sớm nhất để huỷ.`;
+        return `Hành động này không thể được hoàn tác, vui lòng suy nghĩ kỹ trước khi huỷ đơn, phía hệ thống sẽ gọi cho bạn sớm nhất để xác nhận.`;
       case "personal":
-        return `Hành động này không thể được hoàn tác, vui lòng suy nghĩ kỹ trước khi huỷ đơn, phía hệ thống sẽ gọi cho bạn sớm nhất để huỷ.`;
+        return `Hành động này không thể được hoàn tác, vui lòng suy nghĩ kỹ trước khi huỷ đơn, phía hệ thống sẽ gọi cho bạn sớm nhất để xác nhận.`;
       default:
         return "";
     }

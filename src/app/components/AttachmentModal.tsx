@@ -6,14 +6,11 @@ import Image from "next/image";
 import { IoCloudUploadOutline } from "react-icons/io5";
 import { Button } from "@heroui/react";
 import { useAtomValue, useSetAtom } from "jotai";
-import {
-  confirmOrderModalState,
-  orderDetailModalState,
-} from "../store/modalAtoms";
+import { attachmentOrderModalState } from "../store/modalAtoms";
 import { updateOrderService } from "../service/orderService";
-import { confirmOrderState } from "../store/orderAtomts";
+import { attachmentOrderState } from "../store/orderAtomts";
 export default function AttachmentModal() {
-  const isToggleModal = useAtomValue(confirmOrderModalState);
+  const isToggleModal = useAtomValue(attachmentOrderModalState);
   if (!isToggleModal) {
     return <></>;
   }
@@ -26,10 +23,8 @@ export default function AttachmentModal() {
   );
 }
 function ImageDropZone() {
-  const setDetailModal = useSetAtom(orderDetailModalState);
-
-  const orderIdValue = useAtomValue(confirmOrderState);
-  const setModal = useSetAtom(confirmOrderModalState);
+  const orderIdValue = useAtomValue(attachmentOrderState);
+  const setModal = useSetAtom(attachmentOrderModalState);
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState<boolean>(false);
@@ -45,8 +40,7 @@ function ImageDropZone() {
       if (data.message === "Ok") {
         queryClient.invalidateQueries({ queryKey: ["orders"] });
         setIsUploading(false);
-        showToast("Duyệt đơn hàng thành công", "success");
-        setDetailModal(false);
+        showToast("Xuất hình ảnh phiếu giao hàng thành công", "success");
         setModal(false);
         setPreviewUrl(null);
       }
@@ -63,7 +57,6 @@ function ImageDropZone() {
       updateOrderMutation.mutateAsync({
         attachment: data as string,
         orderID: orderIdValue,
-        orderStatus: "confirmed",
       });
     },
   });
@@ -95,7 +88,9 @@ function ImageDropZone() {
   };
   return (
     <div className="flex flex-col justify-center items-center gap-y-3 w-full">
-      <p className="text-[28px] font-bold font-inter">Thêm ảnh hoá đơn</p>
+      <p className="text-[28px] font-bold font-inter">
+        Thêm ảnh phiếu giao hàng
+      </p>
       <p className="text-[12px] text-normal">
         Vui lòng chọn ảnh với kích thước 800 x 400 để hiển thị tốt nhất.
       </p>
@@ -171,7 +166,7 @@ function ImageDropZone() {
           isDisabled={!isSubmitFile}
           isLoading={isUploading}
         >
-          <p className="text-secondary font-bold">Duyệt đơn hàng</p>
+          <p className="text-secondary font-bold">Xuất ảnh lên</p>
         </Button>
       </div>
     </div>

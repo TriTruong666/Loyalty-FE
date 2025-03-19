@@ -307,11 +307,11 @@ function AdminOrderTable() {
                         className="group"
                         color="default"
                         startContent={
-                          <FaXmark className="text-[16px] group-hover:text-success" />
+                          <FaXmark className="text-[16px] group-hover:text-danger" />
                         }
                         key="deny"
                       >
-                        <p className="group-hover:text-success">Từ chối</p>
+                        <p className="group-hover:text-danger">Huỷ đơn</p>
                       </DropdownItem>
                       <DropdownItem
                         onPress={() => handleToggleNoteModalOn(order.orderId)}
