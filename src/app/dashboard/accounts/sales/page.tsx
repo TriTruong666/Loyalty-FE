@@ -25,12 +25,12 @@ import { MdOutlineBlock } from "react-icons/md";
 export default function AccountPage() {
   return (
     <div className="flex flex-col">
-      <AccountStaffTable />
+      <AccountSalesTable />
     </div>
   );
 }
 
-function AccountStaffTable() {
+function AccountSalesTable() {
   const setModal = useSetAtom(blockAccountModalState);
   const setUserId = useSetAtom(blockAccountState);
   const [page, setPage] = useState(1);

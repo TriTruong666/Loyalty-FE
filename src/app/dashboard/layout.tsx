@@ -6,7 +6,6 @@ import DashboardHeader from "../components/DashboardHeader";
 import DashboardLoadingLayout from "./loading";
 import AddProductModal from "../components/AddProductModal";
 import AddAccountModal from "../components/AddAccountModal";
-import ConfirmOrderModal from "../components/ConfirmOrderModal";
 import CreateNotificationModal from "../components/CreateNotificationModal";
 import NotificationDropdown from "../components/NotificationDropdown";
 import CartDropdown from "../components/CartDropdown";
@@ -30,6 +29,7 @@ import AddSalesAccountModal from "../components/AddSalesAccountModal";
 import ConfirmCompleteModal from "../components/ConfirmCompleteModal";
 import BlockAccountModal from "../components/BlockAccountModal";
 import UnlockAccountModal from "../components/UnlockAccountModal";
+import ConfirmOrderModal from "../components/ConfirmOrderModal";
 
 export default function DashboardLayout({
   children,
@@ -70,6 +70,7 @@ export default function DashboardLayout({
       <NotificationDropdown />
       <CreateNotificationModal />
       <ConfirmOrderModal />
+      {/* <AttachmentModal /> */}
       <AddProductModal />
       <AddAccountModal />
       <DashboardSidebar />

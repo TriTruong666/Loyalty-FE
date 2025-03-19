@@ -19,18 +19,6 @@ import { userInfoState } from "../store/accountAtoms";
 export default function ProfileSettingDropdown() {
   const userInfo = useAtomValue(userInfoState);
   const isToggleDropdown = useAtomValue(profileSettingDropdownState);
-  const rankingTheme = (title: string) => {
-    switch (title) {
-      case "gold":
-        return "bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-yellow-600 via-orange-500 to-gray-900";
-      case "bronze":
-        return "bg-[conic-gradient(at_bottom_left,_var(--tw-gradient-stops))] from-[#78716C] via-black to-[#737373]";
-      case "silver":
-        return "bg-[conic-gradient(at_bottom_right,_var(--tw-gradient-stops))] from-[#D6D3D1] via-[#262626] to-[#ECFCCB]";
-      default:
-        return "";
-    }
-  };
   const logoutMutation = useMutation({
     mutationKey: ["logout"],
     mutationFn: logoutService,
@@ -40,6 +28,26 @@ export default function ProfileSettingDropdown() {
       await logoutMutation.mutateAsync();
     } catch (error) {
       console.error(error);
+    }
+  };
+  const handleRoleName = (role: string) => {
+    switch (role) {
+      case "business":
+        return "Doanh nghiệp";
+      case "admin":
+        return "Sales Admin";
+      case "sales":
+        return "Sales Team";
+      case "ceo":
+        return "System Admin";
+      case "personal":
+        return "Cá Nhân";
+      case "business":
+        return "Doanh nghiệp";
+      case "staff":
+        return "Nhân viên";
+      default:
+        return "";
     }
   };
   return (
@@ -63,24 +71,9 @@ export default function ProfileSettingDropdown() {
                     <p className="text-[13px]">
                       {userInfo?.userName.toUpperCase()}
                     </p>
-                    {userInfo?.type === "business" && (
-                      <p className="text-[11px] font-light">Doanh nghiệp</p>
-                    )}
-                    {userInfo?.type === "admin" && (
-                      <p className="text-[11px] font-light">Admin</p>
-                    )}
-                    {userInfo?.type === "staff" && (
-                      <p className="text-[11px] font-light">Nhân viên</p>
-                    )}
-                    {userInfo?.type === "ceo" && (
-                      <p className="text-[11px] font-light">CEO</p>
-                    )}
-                    {userInfo?.type === "personal" && (
-                      <p className="text-[11px] font-light">Cá nhân</p>
-                    )}
-                    {userInfo?.type === "sales" && (
-                      <p className="text-[11px] font-light">Sales</p>
-                    )}
+                    <p className="text-[11px] font-light">
+                      {handleRoleName(userInfo?.type as string)}
+                    </p>
                   </div>
                 </div>
               </div>

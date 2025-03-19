@@ -16,10 +16,12 @@ import {
   SelectItem,
 } from "@heroui/react";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { showToast } from "@/app/utils/toast";
-import { IoCheckmarkSharp } from "react-icons/io5";
 import { LoadingTable } from "@/app/components/loading";
 import { FaUserXmark } from "react-icons/fa6";
+import { blockAccountModalState } from "@/app/store/modalAtoms";
+import { blockAccountState } from "@/app/store/accountAtoms";
+import { useSetAtom } from "jotai";
+import { MdOutlineBlock } from "react-icons/md";
 export default function AccountPage() {
   return (
     <div className="flex flex-col">
@@ -29,8 +31,11 @@ export default function AccountPage() {
 }
 
 function AccountStaffTable() {
+  const setModal = useSetAtom(blockAccountModalState);
+  const setUserId = useSetAtom(blockAccountState);
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
+  const [isMounted, setIsMounted] = useState(false);
   const limit = 8;
   const { data: allAccounts } = useGetAllUser();
   const { data: accounts, isLoading } = useGetUserByLimitByTypeByStatus(
@@ -44,8 +49,8 @@ function AccountStaffTable() {
   useEffect(() => {
     if (filteredAllAccounts) {
       setTotalPage(Math.ceil(filteredAllAccounts.length / limit));
-      console.log(totalPage);
     }
+    setIsMounted(true);
   }, [filteredAllAccounts]);
   const accountSort = [
     {
@@ -57,7 +62,11 @@ function AccountStaffTable() {
       title: "Tên Z-A",
     },
   ];
-  if (isLoading) {
+  const handleBlockModalOn = (userId: string) => {
+    setModal(true);
+    setUserId(userId);
+  };
+  if (isLoading || !isMounted) {
     return (
       <>
         <LoadingTable />
@@ -118,7 +127,7 @@ function AccountStaffTable() {
                 key={user.userId}
                 className="grid grid-cols-12 mx-[20px] px-[20px] py-4 items-center border-b border-gray-600 border-opacity-40"
               >
-                <td className="col-span-1 text-[13px]">{user.userId}</td>
+                <td className="col-span-2 text-[13px]">{user.userId}</td>
                 <td className="col-span-2 flex items-center gap-x-2">
                   <div className="flex flex-col">
                     <p className="text-[13px] font-semibold">{user.userName}</p>
@@ -155,18 +164,16 @@ function AccountStaffTable() {
                     </DropdownTrigger>
                     <DropdownMenu>
                       <DropdownItem
-                        onPress={() =>
-                          showToast("Tài khoản đã được duyệt!", "success")
-                        }
+                        onPress={() => handleBlockModalOn(user.userId)}
                         className="group"
                         color="default"
                         startContent={
-                          <IoCheckmarkSharp className="text-[16px] group-hover:text-success" />
+                          <MdOutlineBlock className="text-[16px] group-hover:text-danger" />
                         }
-                        key="approve"
+                        key="block"
                       >
-                        <p className="group-hover:text-success">
-                          Duyệt tài khoản
+                        <p className="group-hover:text-danger">
+                          Chặn tài khoản
                         </p>
                       </DropdownItem>
                     </DropdownMenu>

@@ -282,7 +282,7 @@ function MenuOnlyForCEO() {
 
   const ceoMenu = [
     {
-      name: "Xét duyệt",
+      name: "Xét duyệt tài khoản",
       icon: IoLockOpenOutline,
       path: "/dashboard/permission",
       typography:
@@ -293,7 +293,7 @@ function MenuOnlyForCEO() {
   ];
   return (
     <div className="flex flex-col pt-4 ">
-      <p className="text-normal text-[12px] px-6 py-2">Dành cho CEO</p>
+      <p className="text-normal text-[12px] px-6 py-2">Dành cho System Admin</p>
       <div className="flex flex-col gap-y-3 mt-2">
         {ceoMenu.map((item, i) => (
           <MenuItem

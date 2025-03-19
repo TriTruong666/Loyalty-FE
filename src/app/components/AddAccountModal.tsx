@@ -23,6 +23,7 @@ import {
 } from "../hooks/hook";
 import { useMutation } from "@tanstack/react-query";
 import { createAccountService } from "../service/accountService";
+import { GrUserWorker } from "react-icons/gr";
 
 const createAccountProgress = atom(1);
 const selectedAccountType = atom("");
@@ -75,22 +76,22 @@ function ChooseAccountType() {
       <div className="flex flex-col items-center w-full gap-y-4 mt-4">
         <RadioButton
           icon={<FaUserTag size={24} />}
-          title="Tài khoản Sales"
-          description="Tài khoản sales dành cho nhân viên bán hàng."
+          title="Tài khoản Sales Team"
+          description="Tài khoản sales dành cho các Sales Team"
           value="sales"
           selected={selected}
           onChange={setSelected}
           name="accountType"
         />
-        {/* <RadioButton
+        <RadioButton
           icon={<GrUserWorker size={24} />}
           title="Tài khoản nhân viên"
-          description="Tài khoản nhân viên quản lý đơn hàng"
+          description="Tài khoản dành cho kế toán hoặc nhân viên giao hàng"
           value="staff"
           selected={selected}
           onChange={setSelected}
           name="accountType"
-        /> */}
+        />
         <RadioButton
           icon={<FaUserCheck size={24} />}
           title="Tài khoản cá nhân"
@@ -135,7 +136,7 @@ function ChooseAccountType() {
 }
 
 function RegistrationForm() {
-  const [value, setValue] = useState(parseDate("2024-04-04"));
+  // const [value, setValue] = useState(parseDate("2024-04-04"));
   const [submitData, setSubmitData] = useAtom(dataCreateAccountState);
   const setAccountModalProgress = useSetAtom(createAccountProgress);
   const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -151,7 +152,6 @@ function RegistrationForm() {
   const handleGoNext = () => {
     setSubmitData({
       ...submitData,
-      birthday: value.toString(),
     });
     if (
       submitData.email === "" ||
@@ -176,7 +176,6 @@ function RegistrationForm() {
       ...submitData,
       type: "",
       mst: "",
-      birthday: "",
     });
     setAccountModalProgress(1);
   };
@@ -228,7 +227,7 @@ function RegistrationForm() {
         )}
 
         {/* date picker */}
-        {(submitData.type === "business" || submitData.type === "personal") && (
+        {/* {(submitData.type === "business" || submitData.type === "personal") && (
           <div className="flex flex-col w-full gap-y-2 font-inter">
             <label
               htmlFor="date"
@@ -242,7 +241,7 @@ function RegistrationForm() {
               onChange={setValue as any}
             />
           </div>
-        )}
+        )} */}
       </div>
       <div className="flex items-center w-full mt-[20px] gap-x-4">
         <Button
@@ -342,7 +341,7 @@ function LocationForm() {
           userName: "",
           email: "",
           phoneNumber: "",
-          birthday: "",
+
           address: {
             provinceCode: "",
             districtCode: "",
@@ -352,7 +351,7 @@ function LocationForm() {
           mst: "",
           type: "",
         });
-        showToast("Tạo tài khoản thành công", "success");
+        showToast("Tạo tài khoản thành công, trạng thái: CHỜ DUYỆT", "success");
         setIsLoadingSubmit(false);
       }
     },

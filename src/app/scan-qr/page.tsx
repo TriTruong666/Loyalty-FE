@@ -99,19 +99,17 @@ export default function ScanQRPage() {
         </p>
         <p className="font-light text-normal text-sm">
           Ngân hàng thụ hưởng:{" "}
-          <span className="font-semibold text-foreground">
-            Ngân Hàng Quân Đội MB
-          </span>
+          <span className="font-semibold text-foreground">Ngân Hàng ACB</span>
         </p>
         <p className="font-light text-normal text-sm">
           Tài khoản thụ hưởng:{" "}
           <span className="font-semibold text-foreground">
-            TRUONG HOANG TRI
+            CTY TNHH PICARE VIET NAM
           </span>
         </p>
         <p className="font-light text-normal text-sm">
           Số tài khoản:{" "}
-          <span className="font-semibold text-foreground">0921191360</span>
+          <span className="font-semibold text-foreground">PICMS${orderId}</span>
         </p>
         <p className="font-light text-normal text-[15px]">
           Số tiền cần chuyển:{" "}
