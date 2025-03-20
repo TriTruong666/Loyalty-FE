@@ -48,32 +48,6 @@ export default function DashboardLayout({
   const router = useRouter();
   const { data: info } = useGetUserInfo();
   useEffect(() => {
-    const socket = new WebSocket(
-      "wss://loyalty.picare.vn/backend/acb/ws?authorization=cGljYXJlOlBpY2FyZUAyMzU=&type=loyaltybanking&"
-    );
-
-    socket.onopen = () => {
-      console.log("WebSocket connected!");
-      socket.send(JSON.stringify({ type: "subscribe", channel: "updates" })); // Modify based on your backend requirements
-    };
-
-    socket.onmessage = (event) => {
-      console.log("Message received:", event.data);
-    };
-
-    socket.onerror = (error) => {
-      console.error("WebSocket Error:", error);
-    };
-
-    socket.onclose = () => {
-      console.log("WebSocket disconnected!");
-    };
-
-    return () => {
-      socket.close();
-    };
-  }, []);
-  useEffect(() => {
     setInfo(info);
     if (info?.code === "UNKNOWN_ERROR") {
       router.replace("/");

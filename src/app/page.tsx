@@ -29,6 +29,40 @@ export default function Home() {
   const router = useRouter();
   const { data: info } = useGetUserInfo();
   useEffect(() => {
+    const socket = new WebSocket(
+      process.env.NEXT_PUBLIC_WEBSOCKET_API as string
+    );
+
+    socket.onopen = () => {
+      console.log("✅ WebSocket connected!");
+
+      // Send authentication after connection
+      // socket.send(
+      //   JSON.stringify({
+      //     action: "authenticate",
+      //     authorization: "cGljYXJlOlBpY2FyZUAyMzU=",
+      //     type: "loyaltybanking",
+      //   })
+      // );
+    };
+
+    socket.onmessage = (event) => {
+      console.log("📩 Message received:", event.data);
+    };
+
+    socket.onerror = (error) => {
+      console.error("❌ WebSocket Error:", error);
+    };
+
+    socket.onclose = () => {
+      console.log("🔴 WebSocket disconnected!");
+    };
+
+    return () => {
+      socket.close();
+    };
+  }, []);
+  useEffect(() => {
     const isError = info?.code === "UNKNOWN_ERROR";
     if (isError) {
       router.push("/");

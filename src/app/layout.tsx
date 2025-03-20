@@ -5,6 +5,7 @@ import "./globals.css";
 import QueryProvider from "./components/QueryProvider";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ThemeProvider } from "./components/ThemeProvider";
+import WebSocketComponent from "./components/WebsocketComponent";
 
 const interFont = Inter({
   subsets: ["latin"],
