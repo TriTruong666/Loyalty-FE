@@ -33,6 +33,7 @@ import { atom, useAtom, useSetAtom } from "jotai";
 const dashboardProgressState = atom(1);
 
 export default function DashboardPage() {
+  // const { data: websocket } = useWebsocketService();
   const [progress, setProgress] = useAtom(dashboardProgressState);
   const { data: totalValue } = useGetTotalOrderValue();
   const { data: allOrders } = useGetAllOrders();

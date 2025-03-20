@@ -782,41 +782,90 @@ function UserOrderDetail() {
                 </div>
 
                 {/* Customer Info */}
-                <div className="flex flex-col px-[15px] py-[25px] border-b border-gray-400-40">
-                  <div className="flex justify-between">
-                    <p className="text-[11px] text-normal">Thông tin cá nhân</p>
-                    <Button variant="light" size="sm" isIconOnly>
-                      <LuPen className="text-normal" />
-                    </Button>
-                  </div>
-                  <div className="flex flex-col gap-y-[8px]">
-                    <p className="text-[13px]">{detail?.customerName}</p>
-                    <p className="text-[13px] text-[#467AB9]">
-                      {detail?.customerEmail}
-                    </p>
-                    <p className="text-[13px]">{detail?.customerPhone}</p>
-                  </div>
-                </div>
-                {/* Sales Customer Info */}
-                {detail?.salesCustomer !== null && (
-                  <div className="flex flex-col px-[15px] py-[25px] border-b border-gray-400-40">
-                    <div className="flex justify-between">
-                      <p className="text-[11px] text-normal">Khách của Sales</p>
-                      <Button variant="light" size="sm" isIconOnly>
-                        <LuPen className="text-normal" />
-                      </Button>
+                {info?.type !== "sales" && (
+                  <>
+                    <div className="flex flex-col px-[15px] py-[25px] border-b border-gray-400-40">
+                      <div className="flex justify-between">
+                        <p className="text-[11px] text-normal">
+                          Thông tin cá nhân
+                        </p>
+                        <Button variant="light" size="sm" isIconOnly>
+                          <LuPen className="text-normal" />
+                        </Button>
+                      </div>
+                      <div className="flex flex-col gap-y-[8px]">
+                        <p className="text-[13px]">{detail?.customerName}</p>
+                        <p className="text-[13px] text-[#467AB9]">
+                          {detail?.customerEmail}
+                        </p>
+                        <p className="text-[13px]">{detail?.customerPhone}</p>
+                      </div>
                     </div>
-                    <div className="flex flex-col gap-y-[8px]">
-                      <p className="text-[13px]">
-                        {detail?.salesCustomer.userName}
-                      </p>
-                      <p className="text-[13px]">
-                        {detail?.salesCustomer.phoneNumber}
-                      </p>
-                    </div>
-                  </div>
+                    {/* Sales Customer Info */}
+                    {detail?.salesCustomer !== null && (
+                      <div className="flex flex-col px-[15px] py-[25px] border-b border-gray-400-40">
+                        <div className="flex justify-between">
+                          <p className="text-[11px] text-normal">
+                            Khách của Sales
+                          </p>
+                          <Button variant="light" size="sm" isIconOnly>
+                            <LuPen className="text-normal" />
+                          </Button>
+                        </div>
+                        <div className="flex flex-col gap-y-[8px]">
+                          <p className="text-[13px]">
+                            {detail?.salesCustomer.userName}
+                          </p>
+                          <p className="text-[13px]">
+                            {detail?.salesCustomer.phoneNumber}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </>
                 )}
-
+                {info?.type === "sales" && (
+                  <>
+                    <div className="flex flex-col px-[15px] py-[25px] border-b border-gray-400-40">
+                      <div className="flex justify-between">
+                        <p className="text-[11px] text-normal">
+                          Thông tin của bạn
+                        </p>
+                        <Button variant="light" size="sm" isIconOnly>
+                          <LuPen className="text-normal" />
+                        </Button>
+                      </div>
+                      <div className="flex flex-col gap-y-[8px]">
+                        <p className="text-[13px]">{detail?.customerName}</p>
+                        <p className="text-[13px] text-[#467AB9]">
+                          {detail?.customerEmail}
+                        </p>
+                        <p className="text-[13px]">{detail?.customerPhone}</p>
+                      </div>
+                    </div>
+                    {/* Sales Customer Info */}
+                    {detail?.salesCustomer !== null && (
+                      <div className="flex flex-col px-[15px] py-[25px] border-b border-gray-400-40">
+                        <div className="flex justify-between">
+                          <p className="text-[11px] text-normal">
+                            Thông tin khách của b
+                          </p>
+                          <Button variant="light" size="sm" isIconOnly>
+                            <LuPen className="text-normal" />
+                          </Button>
+                        </div>
+                        <div className="flex flex-col gap-y-[8px]">
+                          <p className="text-[13px]">
+                            {detail?.salesCustomer.userName}
+                          </p>
+                          <p className="text-[13px]">
+                            {detail?.salesCustomer.phoneNumber}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
                 {/* Shipping Address */}
                 <div className="flex flex-col px-[15px] py-[25px] border-b border-gray-400-40">
                   <div className="flex justify-between">
