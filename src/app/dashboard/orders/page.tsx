@@ -16,6 +16,7 @@ import {
   cancelOrderModalState,
   checkTransactionModalState,
   confirmOrderModalState,
+  createQRModalState,
   orderDetailModalState,
 } from "@/app/store/modalAtoms";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
@@ -35,6 +36,10 @@ import {
 } from "@/app/store/orderAtomts";
 import { TbFolderCancel } from "react-icons/tb";
 import { userInfoState } from "@/app/store/accountAtoms";
+import { createPaymentQR } from "@/app/service/paymentService";
+import { qrImageState, responsePaymentState } from "@/app/store/paymentAtoms";
+import { Payment } from "@/app/interfaces/Payment";
+import { RiBankCardLine } from "react-icons/ri";
 
 export default function OrderPage() {
   const info = useAtomValue(userInfoState);
@@ -382,6 +387,9 @@ function UserOrderTable() {
   const setCheckTransactionModal = useSetAtom(checkTransactionModalState);
   const setCancelModal = useSetAtom(cancelOrderModalState);
   const setCancelModalId = useSetAtom(cancelOrderState);
+  const setCreateQRModal = useSetAtom(createQRModalState);
+  const setResponseQR = useSetAtom(responsePaymentState);
+  const setQRImage = useSetAtom(qrImageState);
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const [noteData, setNoteData] = useState("");
@@ -407,14 +415,35 @@ function UserOrderTable() {
   const updateNoteMutation = useMutation({
     mutationKey: ["update-note"],
     mutationFn: updateOrderService,
-    onMutate() {},
+    onMutate() {
+      setIsMounted(true);
+    },
     onSuccess(data) {
       if (data.message === "Ok") {
         showToast("Ghi chú thành công", "success");
         queryClient.invalidateQueries({ queryKey: ["orders"] });
         setOrderId("");
         setNoteData("");
+        setIsMounted(false);
       }
+    },
+  });
+  const paymentMutation = useMutation({
+    mutationKey: ["create-qr"],
+    mutationFn: createPaymentQR,
+    onMutate() {
+      setIsMounted(true);
+    },
+    onSuccess(data) {
+      if (data.code === "SOMETHING_WENT_WRONG") {
+        showToast("Lỗi khi tạo mã QR, vui lòng thử lại", "error");
+        setIsMounted(false);
+      }
+      if (data?.responseBody?.qrDataUrl) {
+        setQRImage(data.responseBody.qrDataUrl);
+        setIsMounted(false);
+      }
+      setIsMounted(false);
     },
   });
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -454,6 +483,15 @@ function UserOrderTable() {
   const handleToggleCancelOrderModalOn = (orderId: string) => {
     setCancelModalId(orderId);
     setCancelModal(true);
+  };
+  const handleToggleCreateQRModalOn = async (data: Payment) => {
+    setCreateQRModal(true);
+    setResponseQR(data as any);
+    try {
+      await paymentMutation.mutateAsync(data);
+    } catch (error) {
+      console.error(error);
+    }
   };
   const handleFinanceStatus = (status: string) => {
     switch (status) {
@@ -621,13 +659,32 @@ function UserOrderTable() {
                         }
                         className="group"
                         color="default"
-                        startContent={
-                          <FaXmark className="text-[16px] group-hover:text-success" />
-                        }
+                        startContent={<FaXmark className="text-[16px]" />}
                         key="deny"
                       >
-                        <p className="group-hover:text-success">Huỷ đơn hàng</p>
+                        <p className="">Huỷ đơn hàng</p>
                       </DropdownItem>
+                      {order.transaction.transactionStatus === "pending" ? (
+                        <DropdownItem
+                          onPress={() =>
+                            handleToggleCreateQRModalOn({
+                              amount: order.totalPayment,
+                              description: `PicareVN Loyalty ${order.orderId}`,
+                              orderID: order.orderId,
+                              userID: info?.userId as string,
+                            })
+                          }
+                          className="group"
+                          color="default"
+                          startContent={
+                            <RiBankCardLine className="text-[16px]" />
+                          }
+                          key="bank"
+                        >
+                          <p className="">Tôi muốn chuyển khoản</p>
+                        </DropdownItem>
+                      ) : null}
+
                       <DropdownItem
                         onPress={() => handleToggleNoteModalOn(order.orderId)}
                         className="group"

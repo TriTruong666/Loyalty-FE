@@ -315,14 +315,10 @@ function AdminOrderTable() {
                             }
                             className="group"
                             color="default"
-                            startContent={
-                              <FaXmark className="text-[16px] group-hover:text-success" />
-                            }
+                            startContent={<FaXmark className="text-[16px]" />}
                             key="deny"
                           >
-                            <p className="group-hover:text-success">
-                              Từ chối đơn
-                            </p>
+                            <p className="">Huỷ đơn hàng</p>
                           </DropdownItem>
                         </>
                       ) : null}

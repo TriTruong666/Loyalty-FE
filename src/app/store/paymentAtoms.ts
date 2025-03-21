@@ -8,3 +8,10 @@ export const paymentState = atom({
 });
 
 export const qrImageState = atom("");
+
+export const responsePaymentState = atom({
+  amount: "",
+  orderID: "",
+  userID: "",
+  description: "",
+});

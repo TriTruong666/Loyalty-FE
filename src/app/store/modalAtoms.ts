@@ -31,3 +31,5 @@ export const blockAccountModalState = atom(false);
 export const unlockAccountModalState = atom(false);
 
 export const attachmentOrderModalState = atom(false);
+
+export const createQRModalState = atom(false);

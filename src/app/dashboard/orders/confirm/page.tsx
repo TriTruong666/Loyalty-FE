@@ -321,19 +321,22 @@ function AdminOrderTable() {
                       >
                         <p className="group-hover:text-danger">Huỷ đơn</p>
                       </DropdownItem>
-                      <DropdownItem
-                        onPress={() =>
-                          handleToggleAttachmentModalOn(order.orderId)
-                        }
-                        className="group"
-                        color="default"
-                        startContent={
-                          <IoCameraOutline className="text-[16px] " />
-                        }
-                        key="photo"
-                      >
-                        <p className="">Chụp phiếu xuất kho</p>
-                      </DropdownItem>
+                      {order.attachment === null ? (
+                        <DropdownItem
+                          onPress={() =>
+                            handleToggleAttachmentModalOn(order.orderId)
+                          }
+                          className="group"
+                          color="default"
+                          startContent={
+                            <IoCameraOutline className="text-[16px] " />
+                          }
+                          key="photo"
+                        >
+                          <p className="">Chụp phiếu xuất kho</p>
+                        </DropdownItem>
+                      ) : null}
+
                       <DropdownItem
                         onPress={() => handleToggleNoteModalOn(order.orderId)}
                         className="group"

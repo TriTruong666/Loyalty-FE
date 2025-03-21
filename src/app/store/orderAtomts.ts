@@ -15,3 +15,5 @@ export const checkTransactionOrderState = atom("");
 export const confirmCompleteOrderState = atom("");
 
 export const attachmentOrderState = atom("");
+
+export const createQROrderState = atom("");

@@ -9,7 +9,6 @@ import { MdCheck } from "react-icons/md";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
   cancelOrderModalState,
-  checkTransactionModalState,
   confirmCompleteModalState,
   confirmOrderModalState,
   deliveryOrderModalState,
@@ -17,7 +16,6 @@ import {
 } from "../store/modalAtoms";
 import {
   cancelOrderState,
-  checkTransactionOrderState,
   confirmCompleteOrderState,
   confirmOrderState,
   deliveryOrderState,
@@ -103,8 +101,8 @@ function AdminOrderDetail() {
   const setConfirmCompleteModalId = useSetAtom(confirmCompleteOrderState);
   const setConfirmCompleteModal = useSetAtom(confirmCompleteModalState);
   const setDeliveryModalId = useSetAtom(deliveryOrderState);
-  const setCheckTransactionModal = useSetAtom(checkTransactionModalState);
-  const setCheckTransactionModalId = useSetAtom(checkTransactionOrderState);
+  // const setCheckTransactionModal = useSetAtom(checkTransactionModalState);
+  // const setCheckTransactionModalId = useSetAtom(checkTransactionOrderState);
   const [detailModal, setDetailModal] = useAtom(orderDetailModalState);
   const orderId = useAtomValue(detailOrderState);
   const { data: detail, isLoading } = useGetDetailOrder(orderId);
@@ -195,10 +193,10 @@ function AdminOrderDetail() {
     setDeliveryModalId(orderId);
     setDeliveryModal(true);
   };
-  const handleToggleCheckTransactionOn = (transactionId: string) => {
-    setCheckTransactionModalId(transactionId);
-    setCheckTransactionModal(true);
-  };
+  // const handleToggleCheckTransactionOn = (transactionId: string) => {
+  //   setCheckTransactionModalId(transactionId);
+  //   setCheckTransactionModal(true);
+  // };
   const handleToggleModalConfirmCompleteOn = (orderId: string) => {
     setConfirmCompleteModalId(orderId);
     setConfirmCompleteModal(true);
@@ -247,19 +245,7 @@ function AdminOrderDetail() {
                   <div className="flex items-center px-[15px] py-[20px] gap-x-[10px] bg-gray-700 bg-opacity-30 ">
                     <IoIosInformationCircleOutline className="text-[20px]" />
                     <p className="text-[12px]">
-                      Đơn hàng này hiện chưa được thanh toán.{" "}
-                      {detail.orderStatus !== "cancelled" && (
-                        <span
-                          className="text-primary font-semibold cursor-pointer hover:underline"
-                          onClick={() =>
-                            handleToggleCheckTransactionOn(
-                              detail.transaction.id
-                            )
-                          }
-                        >
-                          Nhấp vào đây để xác nhận
-                        </span>
-                      )}
+                      Đơn hàng này hiện chưa được thanh toán.
                     </p>
                   </div>
                 )}
@@ -553,8 +539,8 @@ function UserOrderDetail() {
   const info = useAtomValue(userInfoState);
   const setCancelModalId = useSetAtom(cancelOrderState);
   const setCancelModal = useSetAtom(cancelOrderModalState);
-  const setCheckTransactionModal = useSetAtom(checkTransactionModalState);
-  const setCheckTransactionModalId = useSetAtom(checkTransactionOrderState);
+  // const setCheckTransactionModal = useSetAtom(checkTransactionModalState);
+  // const setCheckTransactionModalId = useSetAtom(checkTransactionOrderState);
   const [detailModal, setDetailModal] = useAtom(orderDetailModalState);
   const orderId = useAtomValue(detailOrderState);
   const { data: detail, isLoading } = useGetDetailOrder(orderId);
@@ -630,18 +616,18 @@ function UserOrderDetail() {
         return "";
     }
   };
-  const handleButtonRole = (role: string) => {
-    switch (role) {
-      case "admin":
-        return true;
-      case "ceo":
-        return true;
-      case "sales":
-        return true;
-      default:
-        return false;
-    }
-  };
+  // const handleButtonRole = (role: string) => {
+  //   switch (role) {
+  //     case "admin":
+  //       return true;
+  //     case "ceo":
+  //       return true;
+  //     case "sales":
+  //       return true;
+  //     default:
+  //       return false;
+  //   }
+  // };
   const handleCancelStatusByRole = (role: string) => {
     return ["admin", "ceo"].includes(role);
   };
@@ -649,10 +635,10 @@ function UserOrderDetail() {
     setCancelModalId(orderId);
     setCancelModal(true);
   };
-  const handleToggleCheckTransactionOn = (transactionId: string) => {
-    setCheckTransactionModalId(transactionId);
-    setCheckTransactionModal(true);
-  };
+  // const handleToggleCheckTransactionOn = (transactionId: string) => {
+  //   setCheckTransactionModalId(transactionId);
+  //   setCheckTransactionModal(true);
+  // };
 
   return (
     <AnimatePresence>
@@ -695,20 +681,7 @@ function UserOrderDetail() {
                   <div className="flex items-center px-[15px] py-[20px] gap-x-[10px] bg-gray-700 bg-opacity-30">
                     <IoIosInformationCircleOutline className="text-[20px]" />
                     <p className="text-[12px]">
-                      Đơn hàng này hiện chưa được thanh toán.{" "}
-                      {detail.orderStatus !== "cancelled" &&
-                        handleButtonRole(info?.type as string) && (
-                          <span
-                            className="text-primary font-semibold cursor-pointer hover:underline"
-                            onClick={() =>
-                              handleToggleCheckTransactionOn(
-                                detail.transaction.id
-                              )
-                            }
-                          >
-                            Nhấp vào đây để xác nhận
-                          </span>
-                        )}
+                      Đơn hàng này hiện chưa được thanh toán.
                     </p>
                   </div>
                 )}

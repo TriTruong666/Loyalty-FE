@@ -17,6 +17,7 @@ export default function ScanQRPage() {
   const [isLoading, setIsLoading] = useState(false);
   const orderId = useAtomValue(checkoutResponseState);
   const setCart = useSetAtom(cartState);
+
   const url = useAtomValue(qrImageState);
   const totalCartValue = useAtomValue(totalCartValueAtoms);
 
@@ -109,7 +110,7 @@ export default function ScanQRPage() {
         </p>
         <p className="font-light text-normal text-sm">
           Số tài khoản:{" "}
-          <span className="font-semibold text-foreground">PICMS${orderId}</span>
+          <span className="font-semibold text-foreground">PICMS{orderId}</span>
         </p>
         <p className="font-light text-normal text-[15px]">
           Số tiền cần chuyển:{" "}

@@ -31,6 +31,7 @@ import BlockAccountModal from "../components/BlockAccountModal";
 import UnlockAccountModal from "../components/UnlockAccountModal";
 import ConfirmOrderModal from "../components/ConfirmOrderModal";
 import AttachmentModal from "../components/AttachmentModal";
+import CreateQRModal from "../components/CreateQRModal";
 
 export default function DashboardLayout({
   children,
@@ -53,10 +54,33 @@ export default function DashboardLayout({
       router.replace("/");
     }
   }, [info]);
+  // useEffect(() => {
+  //   // Initialize EventSource
+  //   const eventSource = new EventSource(
+  //     `${process.env.NEXT_PUBLIC_API_URL}/acb/subscription/loyaltypicare`
+  //   );
 
+  //   eventSource.onopen = () => {
+  //     console.log("✅ SSE Connection Opened");
+  //   };
+
+  //   eventSource.onmessage = (event) => {
+  //     console.log("📩 New Message:", event.data);
+  //   };
+
+  //   eventSource.onerror = (error) => {
+  //     console.error("❌ SSE Error:", error);
+  //     eventSource.close();
+  //   };
+
+  //   return () => {
+  //     eventSource.close();
+  //   };
+  // }, []);
   return (
     <div className="flex min-h-screen relative overflow-hidden">
       <Toaster position="top-center" reverseOrder={false} />
+      <CreateQRModal />
       <UnlockAccountModal />
       <BlockAccountModal />
       <AddSalesAccountModal />

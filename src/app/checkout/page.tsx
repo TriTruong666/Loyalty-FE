@@ -571,7 +571,6 @@ function Summary() {
             userID: info?.userId as string,
           });
           router.push("/scan-qr");
-          console.log(submitPaymentData);
           setIsLoading(false);
         }
         if (gateway !== "bank_transfer") {
