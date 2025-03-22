@@ -13,8 +13,6 @@ import {
   dataResetState,
   resetProgressState,
 } from "../store/resetAtoms";
-import { useGetUserInfo } from "../hooks/hook";
-import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import {
   forgetPassService,
@@ -23,20 +21,18 @@ import {
 } from "../service/authenticateService";
 import { showToast } from "../utils/toast";
 import { Button } from "@heroui/react";
+import { useGetUserInfo } from "../hooks/hook";
 
 export default function ResetPage() {
   const progressState = useAtomValue(resetProgressState);
   const { data: info } = useGetUserInfo();
-  const router = useRouter();
   useEffect(() => {
-    const isError = info?.code === "UNKNOWN_ERROR";
-    if (isError) {
-      router.push("/reset");
+    if (info) {
+      if (typeof window !== undefined) {
+        window.location.href = "/dashboard";
+      }
     }
-    if (!isError) {
-      router.push("/dashboard");
-    }
-  }, [info]);
+  });
   return (
     <>
       <div className="font-inter relative w-screen h-screen overflow-hidden">

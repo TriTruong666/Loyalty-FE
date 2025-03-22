@@ -18,7 +18,6 @@ import {
 } from "../store/dropdownAtoms";
 import { useGetUserInfo } from "../hooks/hook";
 import { userInfoState } from "../store/accountAtoms";
-import { useRouter } from "next/navigation";
 import UpdateProductModal from "../components/UpdateProductModal";
 import OrderDetailModal from "../components/OrderDetailModal";
 import { detailOrderState } from "../store/orderAtomts";
@@ -46,13 +45,9 @@ export default function DashboardLayout({
     setNotiDropdown(false);
     setCartDropdown(false);
   };
-  const router = useRouter();
   const { data: info } = useGetUserInfo();
   useEffect(() => {
     setInfo(info);
-    if (info?.code === "UNKNOWN_ERROR") {
-      router.replace("/");
-    }
   }, [info]);
   // useEffect(() => {
   //   // Initialize EventSource

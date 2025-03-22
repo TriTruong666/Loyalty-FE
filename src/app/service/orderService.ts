@@ -67,3 +67,16 @@ export const checkTransactionService = async (orderId: string) => {
     console.error(error);
   }
 };
+
+interface createInvoiceProps {
+  orderID: string;
+}
+
+export const createInvoiceService = async (orderId: createInvoiceProps) => {
+  try {
+    const res = await axiosClient.post(`/api/invoice`, orderId);
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};

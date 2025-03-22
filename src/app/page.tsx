@@ -19,49 +19,20 @@ import {
   loginService,
   verifyLoginService,
 } from "./service/authenticateService";
-import { useRouter } from "next/navigation";
 import { showToast } from "./utils/toast";
 import { useGetUserInfo } from "./hooks/hook";
 import { Button } from "@heroui/react";
 
 export default function Home() {
   const progressState = useAtomValue(loginProgressState);
-  const router = useRouter();
   const { data: info } = useGetUserInfo();
-  // useEffect(() => {
-  //   const socket = new WebSocket(
-  //     process.env.NEXT_PUBLIC_WEBSOCKET_API as string
-  //   );
-
-  //   socket.onopen = () => {
-  //     console.log("✅ WebSocket connected!");
-  //   };
-
-  //   socket.onmessage = (event) => {
-  //     console.log("📩 Message received:", event.data);
-  //   };
-
-  //   socket.onerror = (error) => {
-  //     console.error("❌ WebSocket Error:", error);
-  //   };
-
-  //   socket.onclose = () => {
-  //     console.log("🔴 WebSocket disconnected!");
-  //   };
-
-  //   return () => {
-  //     socket.close();
-  //   };
-  // }, []);
   useEffect(() => {
-    const isError = info?.code === "UNKNOWN_ERROR";
-    if (isError) {
-      router.push("/");
+    if (info) {
+      if (typeof window !== undefined) {
+        window.location.href = "/dashboard";
+      }
     }
-    if (!isError) {
-      router.push("/dashboard");
-    }
-  }, [info]);
+  });
   return (
     <div className="font-inter font-light relative w-screen h-screen overflow-hidden">
       <LoginHeader />

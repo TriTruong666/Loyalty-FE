@@ -270,7 +270,7 @@ function AdminOrderDetail() {
                   <div className="flex items-center px-[15px] py-[20px] gap-x-[10px] bg-secondary-500 bg-opacity-30 ">
                     <IoImagesOutline className="text-[20px]" />
                     <p className="text-[12px]">
-                      Xem phiếu xuất kho hoặc hoá đơn.{" "}
+                      Xem phiếu giao hàng.{" "}
                       <Link
                         isExternal
                         href={detail?.attachment}
@@ -706,7 +706,7 @@ function UserOrderDetail() {
                   <div className="flex items-center px-[15px] py-[20px] gap-x-[10px] bg-secondary-500 bg-opacity-30 ">
                     <IoImagesOutline className="text-[20px]" />
                     <p className="text-[12px]">
-                      Xem phiếu xuất kho hoặc hoá đơn.{" "}
+                      Xem phiếu giao hàng.{" "}
                       <Link
                         isExternal
                         href={detail?.attachment}

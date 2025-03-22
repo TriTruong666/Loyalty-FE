@@ -1,4 +1,5 @@
 "use client";
+import DOMPurify from "isomorphic-dompurify";
 import { Pagination } from "@heroui/pagination";
 import { FaInbox, FaMoneyCheckAlt, FaPenAlt } from "react-icons/fa";
 import { FaXmark } from "react-icons/fa6";
@@ -20,15 +21,14 @@ import {
 } from "@/app/store/modalAtoms";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { ChangeEvent, useEffect, useState } from "react";
-import {
-  useGetAllOrders,
-  useGetOrderByLimitByStatus,
-  useGetUserInfo,
-} from "@/app/hooks/hook";
+import { useGetAllOrders, useGetOrderByLimitByStatus } from "@/app/hooks/hook";
 import { LoadingTable } from "@/app/components/loading";
 import { formatDate, formatPrice, formatTime } from "@/app/utils/format";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateOrderService } from "@/app/service/orderService";
+import {
+  createInvoiceService,
+  updateOrderService,
+} from "@/app/service/orderService";
 import { Input } from "@heroui/react";
 import {
   cancelOrderState,
@@ -39,9 +39,11 @@ import {
 } from "@/app/store/orderAtomts";
 import { TbFolderCancel } from "react-icons/tb";
 import { userInfoState } from "@/app/store/accountAtoms";
+import { AiOutlinePrinter } from "react-icons/ai";
 
 export default function OrderPage() {
-  const { data: info } = useGetUserInfo();
+  const info = useAtomValue(userInfoState);
+
   return (
     <>
       {info?.type === "admin" && <AdminOrderTable />}
@@ -54,8 +56,8 @@ export default function OrderPage() {
 }
 
 function AdminOrderTable() {
+  const info = useAtomValue(userInfoState);
   const setOrderDetailModal = useSetAtom(orderDetailModalState);
-  const [orderId, setOrderId] = useAtom(noteOrderState);
   const setDetailModalId = useSetAtom(detailOrderState);
   const setConfirmCompleteModalId = useSetAtom(confirmCompleteOrderState);
   const setConfirmCompleteModal = useSetAtom(confirmCompleteModalState);
@@ -65,7 +67,6 @@ function AdminOrderTable() {
   const setCheckTransactionModal = useSetAtom(checkTransactionModalState);
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
-  const [noteData, setNoteData] = useState("");
   const [isMounted, setIsMounted] = useState(false);
 
   const { data: orders, isLoading } = useGetOrderByLimitByStatus(
@@ -84,49 +85,58 @@ function AdminOrderTable() {
     }
     setIsMounted(true);
   }, [filteredAllProduct]);
-  const queryClient = useQueryClient();
-  const updateNoteMutation = useMutation({
-    mutationKey: ["update-note"],
-    mutationFn: updateOrderService,
-    onMutate() {},
+  const createInvoiceMutation = useMutation({
+    mutationKey: ["create-invoice"],
+    mutationFn: createInvoiceService,
     onSuccess(data) {
-      if (data.message === "Ok") {
-        showToast("Ghi chú thành công", "success");
-        queryClient.invalidateQueries({ queryKey: ["orders"] });
-        setOrderId("");
-        setNoteData("");
+      const safeHTML = DOMPurify.sanitize(data || "", {
+        ALLOWED_ATTR: ["class", "id", "style", "data-*"], // Giữ class, id, style
+      });
+
+      if (typeof window !== "undefined") {
+        const newWindow = window.open("", "_blank");
+
+        if (newWindow) {
+          newWindow.document.open();
+          newWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <meta charset="UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+                <link rel="preconnect" href="https://fonts.googleapis.com" />
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+                <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300..800&display=swap" rel="stylesheet" />
+                <title>Loyalty Invoice</title>
+                <style>
+                  html, body {
+                    padding: 0;
+                    margin: 0;
+                    box-sizing: border-box;
+                    font-family: "Open Sans", sans-serif;
+                    background-color: #f9f9f9;
+                  }
+                </style>
+              </head>
+              <body>
+                ${safeHTML}
+              </body>
+            </html>
+          `);
+          newWindow.document.close();
+        } else {
+          showToast(
+            "Pop-up đã bị chặn, vui lòng cho phép Pop-up để tiếp tục",
+            "error"
+          );
+        }
       }
     },
   });
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && orderId) {
-      handleSubmitNote();
-    }
-  };
-
-  const handleSubmitNote = async () => {
-    try {
-      await updateNoteMutation.mutateAsync({
-        note: noteData,
-        orderID: orderId,
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  const handleOnChangeNote = (e: ChangeEvent<HTMLInputElement>) => {
-    setNoteData(e.target.value);
-  };
   const handleToggleModalConfirmCompleteOn = (orderId: string) => {
     setConfirmCompleteModalId(orderId);
     setConfirmCompleteModal(true);
-  };
-  const handleToggleNoteModalOff = () => {
-    setOrderId("");
-    setNoteData("");
-  };
-  const handleToggleNoteModalOn = (orderId: string) => {
-    setOrderId(orderId);
   };
   const handleToggleOrderDetailModalOn = (orderId: string) => {
     setDetailModalId(orderId);
@@ -139,6 +149,15 @@ function AdminOrderTable() {
   const handleCheckTransactionModalOn = (transactionId: string) => {
     setCheckTransactionModalId(transactionId);
     setCheckTransactionModal(true);
+  };
+  const handleOpenInvoice = async (orderId: string) => {
+    try {
+      await createInvoiceMutation.mutateAsync({
+        orderID: orderId,
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
   const handleFinanceStatus = (status: string) => {
     switch (status) {
@@ -182,7 +201,7 @@ function AdminOrderTable() {
     );
   }
   return (
-    <div className="flex flex-col" onClick={handleToggleNoteModalOff}>
+    <div className="flex flex-col">
       <div className="flex items-center px-[40px] py-[20px] mt-[10px] justify-end gap-x-4">
         <div className="w-[250px]">
           {/* <ThemeProvider value={selectTheme}>
@@ -270,7 +289,8 @@ function AdminOrderTable() {
                       </Button>
                     </DropdownTrigger>
                     <DropdownMenu>
-                      {order.transaction.transactionStatus === "pending" ? (
+                      {info?.type === "staff" &&
+                      order.transaction.transactionStatus === "pending" ? (
                         <DropdownItem
                           onPress={() =>
                             handleCheckTransactionModalOn(order.transaction.id)
@@ -314,15 +334,15 @@ function AdminOrderTable() {
                         <p className="group-hover:text-danger">Huỷ đơn</p>
                       </DropdownItem>
                       <DropdownItem
-                        onPress={() => handleToggleNoteModalOn(order.orderId)}
+                        onPress={() => handleOpenInvoice(order.orderId)}
                         className="group"
                         color="default"
                         startContent={
-                          <FaPenAlt className="text-[16px] group-hover:text-foreground" />
+                          <AiOutlinePrinter className="text-[16px]" />
                         }
-                        key="note"
+                        key="print"
                       >
-                        <p className="group-hover:text-foreground">Ghi chú</p>
+                        <p className="">In hoá đơn</p>
                       </DropdownItem>
                       <DropdownItem
                         onPress={() =>
@@ -340,24 +360,6 @@ function AdminOrderTable() {
                     </DropdownMenu>
                   </Dropdown>
                 </td>
-                {/* this is note modal */}
-                {orderId === order.orderId && (
-                  <td
-                    className="absolute 3xl:left-[80%] 2xl:left-[75%] top-[7px] w-[300px] p-[10px] bg-default-50 rounded-[15px] z-10 modal-content"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <div className="">
-                      <Input
-                        defaultValue={noteData as string}
-                        onChange={handleOnChangeNote}
-                        onKeyDown={handleKeyDown}
-                        placeholder="Viết ghi chú..."
-                        size="sm"
-                        variant="underlined"
-                      />
-                    </div>
-                  </td>
-                )}
               </tr>
             ))}
           </tbody>
@@ -377,12 +379,9 @@ function AdminOrderTable() {
   );
 }
 function UserOrderTable() {
-  const info = useAtomValue(userInfoState);
   const setOrderDetailModal = useSetAtom(orderDetailModalState);
   const [orderId, setOrderId] = useAtom(noteOrderState);
   const setDetailModalId = useSetAtom(detailOrderState);
-  const setCheckTransactionModalId = useSetAtom(checkTransactionOrderState);
-  const setCheckTransactionModal = useSetAtom(checkTransactionModalState);
   const setCancelModal = useSetAtom(cancelOrderModalState);
   const setCancelModalId = useSetAtom(cancelOrderState);
   const [page, setPage] = useState(1);
@@ -420,6 +419,55 @@ function UserOrderTable() {
       }
     },
   });
+  const createInvoiceMutation = useMutation({
+    mutationKey: ["create-invoice"],
+    mutationFn: createInvoiceService,
+    onSuccess(data) {
+      const safeHTML = DOMPurify.sanitize(data || "", {
+        ALLOWED_ATTR: ["class", "id", "style", "data-*"], // Giữ class, id, style
+      });
+
+      if (typeof window !== "undefined") {
+        const newWindow = window.open("", "_blank");
+
+        if (newWindow) {
+          newWindow.document.open();
+          newWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <meta charset="UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+                <link rel="preconnect" href="https://fonts.googleapis.com" />
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+                <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300..800&display=swap" rel="stylesheet" />
+                <title>Loyalty Invoice</title>
+                <style>
+                  html, body {
+                    padding: 0;
+                    margin: 0;
+                    box-sizing: border-box;
+                    font-family: "Open Sans", sans-serif;
+                    background-color: #f9f9f9;
+                  }
+                </style>
+              </head>
+              <body>
+                ${safeHTML}
+              </body>
+            </html>
+          `);
+          newWindow.document.close();
+        } else {
+          showToast(
+            "Pop-up đã bị chặn, vui lòng cho phép Pop-up để tiếp tục",
+            "error"
+          );
+        }
+      }
+    },
+  });
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && orderId) {
       handleSubmitNote();
@@ -430,6 +478,15 @@ function UserOrderTable() {
     try {
       await updateNoteMutation.mutateAsync({
         note: noteData,
+        orderID: orderId,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const handleOpenInvoice = async (orderId: string) => {
+    try {
+      await createInvoiceMutation.mutateAsync({
         orderID: orderId,
       });
     } catch (error) {
@@ -449,10 +506,6 @@ function UserOrderTable() {
   const handleToggleOrderDetailModalOn = (orderId: string) => {
     setDetailModalId(orderId);
     setOrderDetailModal(true);
-  };
-  const handleCheckTransactionModalOn = (transactionId: string) => {
-    setCheckTransactionModalId(transactionId);
-    setCheckTransactionModal(true);
   };
   const handleToggleCancelOrderModalOn = (orderId: string) => {
     setCancelModalId(orderId);
@@ -480,18 +533,6 @@ function UserOrderTable() {
         return "Đã thanh toán";
       default:
         return "";
-    }
-  };
-  const handleButtonRole = (role: string) => {
-    switch (role) {
-      case "admin":
-        return true;
-      case "ceo":
-        return true;
-      case "sales":
-        return true;
-      default:
-        return false;
     }
   };
   if (isLoading || !isMounted) {
@@ -600,24 +641,6 @@ function UserOrderTable() {
                       </Button>
                     </DropdownTrigger>
                     <DropdownMenu>
-                      {handleButtonRole(info?.type as string) &&
-                      order.transaction.transactionStatus === "pending" ? (
-                        <DropdownItem
-                          onPress={() =>
-                            handleCheckTransactionModalOn(order.transaction.id)
-                          }
-                          className="group"
-                          color="default"
-                          startContent={
-                            <FaMoneyCheckAlt className="text-[16px] group-hover:text-success" />
-                          }
-                          key="check"
-                        >
-                          <p className="group-hover:text-success">
-                            Check thanh toán
-                          </p>
-                        </DropdownItem>
-                      ) : null}
                       <DropdownItem
                         onPress={() =>
                           handleToggleCancelOrderModalOn(order.orderId)
@@ -630,6 +653,17 @@ function UserOrderTable() {
                         key="deny"
                       >
                         <p className="group-hover:text-danger">Huỷ đơn</p>
+                      </DropdownItem>
+                      <DropdownItem
+                        onPress={() => handleOpenInvoice(order.orderId)}
+                        className="group"
+                        color="default"
+                        startContent={
+                          <AiOutlinePrinter className="text-[16px]" />
+                        }
+                        key="print"
+                      >
+                        <p className="">In hoá đơn</p>
                       </DropdownItem>
                       <DropdownItem
                         onPress={() => handleToggleNoteModalOn(order.orderId)}

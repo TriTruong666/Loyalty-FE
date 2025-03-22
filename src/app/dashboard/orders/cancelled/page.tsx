@@ -20,11 +20,7 @@ import {
 } from "@/app/store/modalAtoms";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { ChangeEvent, useEffect, useState } from "react";
-import {
-  useGetAllOrders,
-  useGetOrderByLimitByStatus,
-  useGetUserInfo,
-} from "@/app/hooks/hook";
+import { useGetAllOrders, useGetOrderByLimitByStatus } from "@/app/hooks/hook";
 import { LoadingTable } from "@/app/components/loading";
 import { formatDate, formatPrice, formatTime } from "@/app/utils/format";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -41,7 +37,7 @@ import { TbFolderCancel } from "react-icons/tb";
 import { userInfoState } from "@/app/store/accountAtoms";
 
 export default function OrderPage() {
-  const { data: info } = useGetUserInfo();
+  const info = useAtomValue(userInfoState);
   return (
     <>
       {info?.type === "admin" && <AdminOrderTable />}

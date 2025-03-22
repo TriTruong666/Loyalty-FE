@@ -12,7 +12,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateOrderService } from "../service/orderService";
 import { useState } from "react";
 import { showToast } from "../utils/toast";
-import { useGetUserInfo } from "../hooks/hook";
+import { userInfoState } from "../store/accountAtoms";
 const DynamicLottie = dynamic(() => import("lottie-react"), { ssr: false });
 export default function CancelOrderModal() {
   const isToggleModal = useAtomValue(cancelOrderModalState);
@@ -29,8 +29,7 @@ export default function CancelOrderModal() {
 }
 
 function ConfirmCancel() {
-  const { data: info } = useGetUserInfo();
-
+  const info = useAtomValue(userInfoState);
   const setDetailModal = useSetAtom(orderDetailModalState);
   const orderId = useAtomValue(cancelOrderState);
   const setModal = useSetAtom(cancelOrderModalState);

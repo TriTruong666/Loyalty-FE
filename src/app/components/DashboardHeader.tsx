@@ -125,7 +125,7 @@ function MainBar() {
     <div className="flex items-center">
       <div className="flex items-center gap-x-2 border border-[#34C724] px-2 py-1 rounded-full mr-4">
         <IoShieldCheckmarkOutline className="text-[14px] text-[#34C724]" />
-        <p className="text-[12px] text-[#34C724]">Verified</p>
+        <p className="text-[12px] text-[#34C724]">Đã xác thực</p>
       </div>
       {/* Notification Icon with Badge */}
       <div

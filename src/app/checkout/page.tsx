@@ -50,15 +50,18 @@ import { useRouter } from "next/navigation";
 import { GrMoney } from "react-icons/gr";
 import { Toaster } from "react-hot-toast";
 import { createPaymentQR } from "../service/paymentService";
-import { paymentState, qrImageState } from "../store/paymentAtoms";
+import { qrImageState } from "../store/paymentAtoms";
 
 export default function CheckoutPage() {
+  const setInfo = useSetAtom(userInfoState);
   const router = useRouter();
   const cart = useAtomValue(cartState);
-  const setInfo = useSetAtom(userInfoState);
+  const { data: info } = useGetUserInfo();
+  useEffect(() => {
+    setInfo(info);
+  }, [info]);
   const [isCartLoaded, setIsCartLoaded] = useState(false);
   const salesCustomerId = useAtomValue(salesCustomerState);
-  const { data: info } = useGetUserInfo();
   useEffect(() => {
     if (cart !== undefined) {
       setIsCartLoaded(true);
@@ -72,11 +75,6 @@ export default function CheckoutPage() {
       router.push("/dashboard/cart");
     }
   }, [cart, isCartLoaded, router, salesCustomerId, info]);
-  useEffect(() => {
-    if (info) {
-      setInfo(info);
-    }
-  }, [info]);
 
   return (
     <div className="flex flex-col min-h-screen p-[30px] w-screen overflow-hidden bg-background font-open">
@@ -268,7 +266,8 @@ function SalesLocationForm() {
 function LocationForm() {
   const [submitLocationData, setSubmitLocationData] =
     useAtom(shippingAddressState);
-  const { data: info } = useGetUserInfo();
+  const info = useAtomValue(userInfoState);
+
   const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
   const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
   const [selectedWard, setSelectedWard] = useState<string | null>(null);
@@ -429,7 +428,7 @@ function LocationForm() {
 }
 
 function InfomationForm() {
-  const { data: info } = useGetUserInfo();
+  const info = useAtomValue(userInfoState);
   const [submitInfoData, setSubmitInfoData] = useAtom(userInfoCheckoutState);
 
   useEffect(() => {
@@ -543,7 +542,7 @@ function Summary() {
   const [cart, setCart] = useAtom(cartState);
   const [note, setNote] = useAtom(noteCheckoutState);
   const submitData = useAtomValue(checkoutState);
-  const submitPaymentData = useAtomValue(paymentState);
+  // const submitPaymentData = useAtomValue(paymentState);
   const [isMounted, setIsMounted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
