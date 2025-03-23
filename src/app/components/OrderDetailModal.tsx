@@ -9,6 +9,7 @@ import { MdCheck } from "react-icons/md";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
   cancelOrderModalState,
+  checkTransactionModalState,
   confirmCompleteModalState,
   confirmOrderModalState,
   deliveryOrderModalState,
@@ -16,6 +17,7 @@ import {
 } from "../store/modalAtoms";
 import {
   cancelOrderState,
+  checkTransactionOrderState,
   confirmCompleteOrderState,
   confirmOrderState,
   deliveryOrderState,
@@ -28,6 +30,7 @@ import { IoIosInformationCircleOutline } from "react-icons/io";
 import { FiTruck } from "react-icons/fi";
 import { FaFlagCheckered } from "react-icons/fa";
 import { userInfoState } from "../store/accountAtoms";
+import { useState } from "react";
 export default function OrderDetailModal() {
   const info = useAtomValue(userInfoState);
   return (
@@ -37,6 +40,7 @@ export default function OrderDetailModal() {
       {info?.type === "sales" && <UserOrderDetail />}
       {info?.type === "business" && <UserOrderDetail />}
       {info?.type === "personal" && <UserOrderDetail />}
+      {info?.type === "staff" && <StaffOrderDetail />}
     </>
   );
 }
@@ -536,11 +540,11 @@ function AdminOrderDetail() {
 }
 
 function UserOrderDetail() {
+  const [isToggleUpdateInfo, setIsToggleUpdateInfo] = useState(false);
+  const [isToggleUpdateAddress, setIsToggleUpdateAddress] = useState(false);
   const info = useAtomValue(userInfoState);
   const setCancelModalId = useSetAtom(cancelOrderState);
   const setCancelModal = useSetAtom(cancelOrderModalState);
-  // const setCheckTransactionModal = useSetAtom(checkTransactionModalState);
-  // const setCheckTransactionModalId = useSetAtom(checkTransactionOrderState);
   const [detailModal, setDetailModal] = useAtom(orderDetailModalState);
   const orderId = useAtomValue(detailOrderState);
   const { data: detail, isLoading } = useGetDetailOrder(orderId);
@@ -616,18 +620,6 @@ function UserOrderDetail() {
         return "";
     }
   };
-  // const handleButtonRole = (role: string) => {
-  //   switch (role) {
-  //     case "admin":
-  //       return true;
-  //     case "ceo":
-  //       return true;
-  //     case "sales":
-  //       return true;
-  //     default:
-  //       return false;
-  //   }
-  // };
   const handleCancelStatusByRole = (role: string) => {
     return ["admin", "ceo"].includes(role);
   };
@@ -635,15 +627,20 @@ function UserOrderDetail() {
     setCancelModalId(orderId);
     setCancelModal(true);
   };
-  // const handleToggleCheckTransactionOn = (transactionId: string) => {
-  //   setCheckTransactionModalId(transactionId);
-  //   setCheckTransactionModal(true);
-  // };
 
+  const handleToggleUpdateOrderInfo = () => {
+    setIsToggleUpdateInfo(true);
+    setIsToggleUpdateAddress(false);
+  };
+  const handleToggleUpdateOrderAddress = () => {
+    setIsToggleUpdateInfo(false);
+    setIsToggleUpdateAddress(true);
+  };
   return (
     <AnimatePresence>
       {detailModal && (
         <motion.div
+          onClick={handleModalOff}
           className="fixed w-screen h-screen flex justify-end bg-black bg-opacity-70 z-[40] font-open"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -651,11 +648,12 @@ function UserOrderDetail() {
         >
           {/* DETAIL */}
           <motion.div
+            onClick={(e) => e.stopPropagation()}
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "tween", duration: 0.4 }}
-            className="w-[500px] h-full max-h-full overflow-auto bg-[#111111] shadow-md absolute right-0 flex flex-col"
+            className="w-[500px] h-full max-h-full overflow-auto bg-[#111111] shadow-md absolute right-0 flex flex-col z-[30]"
           >
             {isLoading ? (
               <>
@@ -762,7 +760,12 @@ function UserOrderDetail() {
                         <p className="text-[11px] text-normal">
                           Thông tin cá nhân
                         </p>
-                        <Button variant="light" size="sm" isIconOnly>
+                        <Button
+                          variant="light"
+                          size="sm"
+                          isIconOnly
+                          onPress={handleToggleUpdateOrderInfo}
+                        >
                           <LuPen className="text-normal" />
                         </Button>
                       </div>
@@ -821,7 +824,7 @@ function UserOrderDetail() {
                       <div className="flex flex-col px-[15px] py-[25px] border-b border-gray-400-40">
                         <div className="flex justify-between">
                           <p className="text-[11px] text-normal">
-                            Thông tin khách của b
+                            Thông tin khách của bạn
                           </p>
                           <Button variant="light" size="sm" isIconOnly>
                             <LuPen className="text-normal" />
@@ -843,7 +846,12 @@ function UserOrderDetail() {
                 <div className="flex flex-col px-[15px] py-[25px] border-b border-gray-400-40">
                   <div className="flex justify-between">
                     <p className="text-[11px] text-normal">Địa chỉ giao hàng</p>
-                    <Button variant="light" size="sm" isIconOnly>
+                    <Button
+                      variant="light"
+                      size="sm"
+                      isIconOnly
+                      onPress={handleToggleUpdateOrderAddress}
+                    >
                       <LuPen className="text-normal" />
                     </Button>
                   </div>
@@ -929,22 +937,23 @@ function UserOrderDetail() {
                 {/* Footer Buttons */}
 
                 <div className="sticky left-0 bottom-0 flex justify-between px-[15px] gap-x-[15px] py-[25px] bg-[#111111] border-t border-gray-400-40">
-                  {detail?.orderStatus !== "cancelled" && (
-                    <Button
-                      onPress={() =>
-                        handleToggleCancelOrderModalOn(
-                          detail?.orderId as string
-                        )
-                      }
-                      size="sm"
-                      variant="flat"
-                      className="flex w-full"
-                      color="danger"
-                    >
-                      <RiFileCloseLine />
-                      <p>Huỷ đơn hàng</p>
-                    </Button>
-                  )}
+                  {detail?.orderStatus !== "cancelled" &&
+                    detail?.orderStatus !== "complete" && (
+                      <Button
+                        onPress={() =>
+                          handleToggleCancelOrderModalOn(
+                            detail?.orderId as string
+                          )
+                        }
+                        size="sm"
+                        variant="flat"
+                        className="flex w-full"
+                        color="danger"
+                      >
+                        <RiFileCloseLine />
+                        <p>Huỷ đơn hàng</p>
+                      </Button>
+                    )}
 
                   {detail?.orderStatus === "cancelled" &&
                     handleCancelStatusByRole(info?.type as string) && (
@@ -963,7 +972,412 @@ function UserOrderDetail() {
                 </div>
               </>
             )}
-            {/* header */}
+          </motion.div>
+          {/* UPDATE ORDER USER INFO */}
+          {isToggleUpdateInfo && (
+            <motion.div
+              onClick={(e) => e.stopPropagation()}
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "tween", duration: 0.6 }}
+              className="w-[500px] h-full max-h-full overflow-auto bg-[#222222] shadow-md absolute right-[500px] flex flex-col z-[20]"
+            >
+              <div className="flex justify-between bg-[#191919] w-full px-[15px] py-[20px] sticky top-0 left-0 z-10">
+                <p className="text-[18px]">Update Order</p>
+                <Button isIconOnly size="sm" variant="light">
+                  <IoCloseSharp className="text-[20px] text-normal" />
+                </Button>
+              </div>
+
+              <p className="text-center mt-4">Update order details here...</p>
+            </motion.div>
+          )}
+
+          {/* UPDATE ORDER USER ADDRESS */}
+          {isToggleUpdateAddress && (
+            <motion.div
+              onClick={(e) => e.stopPropagation()}
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "tween", duration: 0.6 }}
+              className="w-[500px] h-full max-h-full overflow-auto bg-[#222222] shadow-md absolute right-[500px] flex flex-col z-[20]"
+            >
+              <div className="flex justify-between bg-[#191919] w-full px-[15px] py-[20px] sticky top-0 left-0 z-10">
+                <p className="text-[18px]">Update Order</p>
+                <Button isIconOnly size="sm" variant="light">
+                  <IoCloseSharp className="text-[20px] text-normal" />
+                </Button>
+              </div>
+
+              <p className="text-center mt-4">Update order details here...</p>
+            </motion.div>
+          )}
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+function StaffOrderDetail() {
+  const info = useAtomValue(userInfoState);
+  const setCheckTransactionModal = useSetAtom(checkTransactionModalState);
+  const setCheckTransactionModalId = useSetAtom(checkTransactionOrderState);
+  const [detailModal, setDetailModal] = useAtom(orderDetailModalState);
+  const orderId = useAtomValue(detailOrderState);
+  const { data: detail, isLoading } = useGetDetailOrder(orderId);
+  const handleModalOff = () => {
+    setDetailModal(false);
+  };
+
+  const handleOrderStatus = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "text-warning-600 border border-warning-600";
+      case "confirmed":
+        return "text-blue-500 border-blue-500";
+      case "exported":
+        return "text-secondary border-secondary";
+      case "complete":
+        return "text-success border-success";
+      case "cancelled":
+        return "text-danger border-danger";
+      default:
+        return "";
+    }
+  };
+  const handleOrderStatusName = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "Chờ xác nhận";
+      case "confirmed":
+        return "Đã xác nhận";
+      case "exported":
+        return "Đang giao hàng";
+      case "complete":
+        return "Giao thành công";
+      case "cancelled":
+        return "Đã huỷ";
+      default:
+        return "";
+    }
+  };
+  const handleFinanceStatus = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "bg-gray-700";
+      case "cancelled":
+        return "bg-danger-50 text-red-600";
+      case "confirmed":
+        return "bg-success-200";
+      default:
+        return "";
+    }
+  };
+  const handleFinanceStatusName = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "Chưa thanh toán";
+      case "cancelled":
+        return "Đã huỷ đơn";
+      case "confirmed":
+        return "Đã thanh toán";
+      default:
+        return "";
+    }
+  };
+  const handlePaymentMethod = (method: string) => {
+    switch (method) {
+      case "cod":
+        return "COD";
+      case "bank_transfer":
+        return "Chuyển khoản";
+      case "debt":
+        return "Công nợ";
+      default:
+        return "";
+    }
+  };
+  const handleCancelStatusByRole = (role: string) => {
+    return ["admin", "ceo"].includes(role);
+  };
+  const handleToggleCheckTransactionOn = (transactionId: string) => {
+    setCheckTransactionModalId(transactionId);
+    setCheckTransactionModal(true);
+  };
+  return (
+    <AnimatePresence>
+      {detailModal && (
+        <motion.div
+          onClick={handleModalOff}
+          className="fixed w-screen h-screen flex justify-end bg-black bg-opacity-70 z-[40] font-open"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          {/* DETAIL */}
+          <motion.div
+            onClick={(e) => e.stopPropagation()}
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "tween", duration: 0.4 }}
+            className="w-[500px] h-full max-h-full overflow-auto bg-[#111111] shadow-md absolute right-0 flex flex-col"
+          >
+            {isLoading ? (
+              <>
+                <LoadingTable className="!h-screen w-full flex justify-center items-center" />
+              </>
+            ) : (
+              <>
+                <div className="flex justify-between bg-[#090909] w-full px-[15px] py-[20px] sticky top-0 left-0 z-10">
+                  <div className="flex flex-col gap-y-[5px]">
+                    <p className="text-[18px]">#{detail?.orderId}</p>
+                    <p className="text-[12px] text-normal">Chi tiết hoá đơn</p>
+                  </div>
+                  <Button
+                    isIconOnly
+                    size="sm"
+                    variant="light"
+                    onPress={handleModalOff}
+                  >
+                    <IoCloseSharp className="text-[20px] text-normal" />
+                  </Button>
+                </div>
+
+                {detail?.transaction.transactionStatus === "pending" && (
+                  <div className="flex items-center px-[15px] py-[20px] gap-x-[10px] bg-gray-700 bg-opacity-30 ">
+                    <IoIosInformationCircleOutline className="text-[20px]" />
+                    <p className="text-[12px]">
+                      Đơn hàng này hiện chưa được thanh toán.
+                      <span
+                        className="text-primary font-semibold cursor-pointer hover:underline"
+                        onClick={() =>
+                          handleToggleCheckTransactionOn(detail.transaction.id)
+                        }
+                      >
+                        Nhấp vào đây để xác nhận
+                      </span>
+                    </p>
+                  </div>
+                )}
+                {detail?.transaction.transactionStatus === "confirmed" && (
+                  <div className="flex items-center px-[15px] py-[20px] gap-x-[10px] bg-success-300 bg-opacity-30">
+                    <IoIosInformationCircleOutline className="text-[20px]" />
+                    <p className="text-[12px]">
+                      Đơn hàng này đã được xác nhận thanh toán
+                    </p>
+                  </div>
+                )}
+                {detail?.transaction.transactionStatus === "cancelled" && (
+                  <div className="flex items-center px-[15px] py-[20px] gap-x-[10px] bg-danger-300 bg-opacity-30">
+                    <IoIosInformationCircleOutline className="text-[20px]" />
+                    <p className="text-[12px]">
+                      Thanh toán thất bại do đơn hàng đã bị huỷ
+                    </p>
+                  </div>
+                )}
+                {/* Attachment */}
+                {detail?.attachment !== null && (
+                  <div className="flex items-center px-[15px] py-[20px] gap-x-[10px] bg-secondary-500 bg-opacity-30 ">
+                    <IoImagesOutline className="text-[20px]" />
+                    <p className="text-[12px]">
+                      Xem phiếu giao hàng.{" "}
+                      <Link
+                        isExternal
+                        href={detail?.attachment}
+                        className="text-[12px]"
+                      >
+                        <span className="text-yellow-400 font-semibold cursor-pointer hover:underline">
+                          Nhấp vào đây để xem
+                        </span>
+                      </Link>
+                    </p>
+                  </div>
+                )}
+                {/* Order Details Section */}
+                <div className="flex px-[15px] py-[25px] gap-x-[25px] border-b border-gray-400-40">
+                  <div className="flex flex-col gap-y-[10px]">
+                    <p className="text-[11px] text-normal">Ngày tạo</p>
+                    <p className="text-[13px]">
+                      {formatDate(detail?.createdAt as string)} lúc{" "}
+                      {formatTime(detail?.createdAt as string)}
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-y-[10px]">
+                    <p className="text-[11px] text-normal">
+                      Trạng thái thanh toán
+                    </p>
+                    <p
+                      className={`text-[10px] py-[2px] px-[10px] rounded-lg ${handleFinanceStatus(
+                        detail?.transaction.transactionStatus as string
+                      )} w-fit`}
+                    >
+                      {handleFinanceStatusName(
+                        detail?.transaction.transactionStatus as string
+                      )}
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-y-[10px]">
+                    <p className="text-[11px] text-normal">Trạng thái</p>
+                    <p
+                      className={`text-[10px] py-[2px] px-[10px] border w-fit rounded-lg ${handleOrderStatus(
+                        detail?.orderStatus as string
+                      )}`}
+                    >
+                      {handleOrderStatusName(detail?.orderStatus as string)}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Customer Info */}
+                <div className="flex flex-col px-[15px] py-[25px] border-b border-gray-400-40">
+                  <div className="flex justify-between">
+                    <p className="text-[11px] text-normal">
+                      Thông tin người đặt
+                    </p>
+                    <Button variant="light" size="sm" isIconOnly>
+                      <LuPen className="text-normal" />
+                    </Button>
+                  </div>
+                  <div className="flex flex-col gap-y-[8px]">
+                    <p className="text-[13px]">{detail?.customerName}</p>
+                    <p className="text-[13px] text-[#467AB9]">
+                      {detail?.customerEmail}
+                    </p>
+                    <p className="text-[13px]">{detail?.customerPhone}</p>
+                  </div>
+                </div>
+                {/* Sales Customer Info */}
+                {detail?.salesCustomer !== null && (
+                  <div className="flex flex-col px-[15px] py-[25px] border-b border-gray-400-40">
+                    <div className="flex justify-between">
+                      <p className="text-[11px] text-normal">
+                        Khách của Sales Team
+                      </p>
+                      <Button variant="light" size="sm" isIconOnly>
+                        <LuPen className="text-normal" />
+                      </Button>
+                    </div>
+                    <div className="flex flex-col gap-y-[8px]">
+                      <p className="text-[13px]">
+                        {detail?.salesCustomer.userName}
+                      </p>
+                      <p className="text-[13px]">
+                        {detail?.salesCustomer.phoneNumber}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Shipping Address */}
+                <div className="flex flex-col px-[15px] py-[25px] border-b border-gray-400-40">
+                  <div className="flex justify-between">
+                    <p className="text-[11px] text-normal">Địa chỉ giao hàng</p>
+                    <Button variant="light" size="sm" isIconOnly>
+                      <LuPen className="text-normal" />
+                    </Button>
+                  </div>
+                  <div className="flex flex-col gap-y-[8px]">
+                    <p className="text-[13px]">
+                      {detail?.shippingAddress.street},{" "}
+                      {detail?.shippingAddress.wardName},{" "}
+                      {detail?.shippingAddress.districtName},{" "}
+                      {detail?.shippingAddress.provinceName}
+                    </p>
+                  </div>
+                </div>
+                {/* Order Items */}
+                <div className="flex flex-col px-[15px] py-[25px] border-b border-gray-400-40">
+                  <p className="text-[11px] text-normal mb-[15px]">Sản phẩm</p>
+                  <div className="flex flex-col gap-y-[15px] mb-[15px]">
+                    {detail?.lineItems.map((item) => (
+                      <LineItem key={item.productId} {...item} />
+                    ))}
+                  </div>
+                  {/* {(detail?.lineItems ?? []).length > 3 && (
+                    <p className="text-[11px] text-normal">
+                      +{(detail?.lineItems ?? []).length - 3} sản phẩm khác
+                    </p>
+                  )} */}
+                </div>
+                {/* Invoice Summary */}
+                <div className="flex flex-col px-[15px] py-[25px] border-b border-gray-400-40">
+                  <p className="text-[11px] text-normal mb-[15px]">Hoá đơn</p>
+                  <div className="flex flex-col gap-y-[10px]">
+                    <div className="flex justify-between">
+                      <p className="text-[13px] font-light text-normal">
+                        Mã thanh toán
+                      </p>
+                      <p className="text-[13px]">#{detail?.transaction.id}</p>
+                    </div>
+                    <div className="flex justify-between">
+                      <p className="text-[13px] font-light text-normal">
+                        Phương thức thanh toán
+                      </p>
+                      <p className="text-[13px]">
+                        {handlePaymentMethod(
+                          detail?.transaction.gateway as string
+                        )}
+                      </p>
+                    </div>
+                    <div className="flex justify-between">
+                      <p className="text-[13px] font-light text-normal">
+                        Tạm tính hoá đơn
+                      </p>
+                      <p className="text-[13px]">
+                        {formatPrice(detail?.totalOrderValue as number)}
+                      </p>
+                    </div>
+                    <div className="flex justify-between">
+                      <p className="text-[13px] font-light text-normal">
+                        Giá trị chiết khấu
+                      </p>
+                      <p className="text-[13px]">
+                        {formatPrice(
+                          (detail?.totalOrderValue ?? 0) -
+                            (detail?.totalPayment ?? 0)
+                        )}
+                      </p>
+                    </div>
+                    <div className="flex justify-between mt-[10px]">
+                      <p className="text-[13px] font-semibold">Tổng</p>
+                      <p className="text-[13px] font-semibold">
+                        {formatPrice(detail?.totalPayment as number)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                {detail?.note && (
+                  <div className="flex flex-col px-[15px] py-[25px]">
+                    <p className="text-[11px] text-normal mb-[15px]">
+                      Ghi chú của khách hàng
+                    </p>
+                    <p className="text-sm">{detail?.note}</p>
+                  </div>
+                )}
+
+                {/* Footer Buttons */}
+
+                <div className="sticky left-0 bottom-0 flex justify-between px-[15px] gap-x-[15px] py-[25px] bg-[#111111] border-t border-gray-400-40">
+                  {detail?.orderStatus === "cancelled" &&
+                    handleCancelStatusByRole(info?.type as string) && (
+                      <p className="text-[13px] text-normal font-light">
+                        Lưu ý: Đối với đơn hàng{" "}
+                        <span className="font-semibold text-danger-400">
+                          Đã Huỷ
+                        </span>{" "}
+                        nếu trạng thái thanh toán là{" "}
+                        <span className="font-semibold text-success-400">
+                          Đã thanh toán
+                        </span>{" "}
+                        thì hãy liên hệ với khách hàng để hoàn tiền.
+                      </p>
+                    )}
+                </div>
+              </>
+            )}
           </motion.div>
         </motion.div>
       )}
