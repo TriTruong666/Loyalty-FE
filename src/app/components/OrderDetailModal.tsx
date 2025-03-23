@@ -1,4 +1,4 @@
-import { Button, Link } from "@heroui/react";
+import { Button, Link, Select, SelectItem } from "@heroui/react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { IoCloseSharp, IoImagesOutline } from "react-icons/io5";
@@ -6,7 +6,7 @@ import { LuPen } from "react-icons/lu";
 import { formatDate, formatPrice, formatTime } from "../utils/format";
 import { RiFileCloseLine } from "react-icons/ri";
 import { MdCheck } from "react-icons/md";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
   cancelOrderModalState,
   checkTransactionModalState,
@@ -23,14 +23,24 @@ import {
   deliveryOrderState,
   detailOrderState,
 } from "../store/orderAtomts";
-import { useGetDetailOrder } from "../hooks/hook";
+import {
+  useGetAllProvince,
+  useGetDetailOrder,
+  useGetDistrictByProvince,
+  useGetWardByDistrict,
+} from "../hooks/hook";
 import { LoadingTable } from "./loading";
 import { LineItem as LineItemProps } from "../interfaces/Order";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import { FiTruck } from "react-icons/fi";
-import { FaFlagCheckered } from "react-icons/fa";
+import { FaFlagCheckered, FaPhone, FaUser } from "react-icons/fa";
 import { userInfoState } from "../store/accountAtoms";
-import { useState } from "react";
+import NormalInput from "./NormalInput";
+import { ChangeEvent, useEffect, useState } from "react";
+
+const updateInfoState = atom(false);
+const updateAddressState = atom(false);
+
 export default function OrderDetailModal() {
   const info = useAtomValue(userInfoState);
   return (
@@ -540,8 +550,9 @@ function AdminOrderDetail() {
 }
 
 function UserOrderDetail() {
-  const [isToggleUpdateInfo, setIsToggleUpdateInfo] = useState(false);
-  const [isToggleUpdateAddress, setIsToggleUpdateAddress] = useState(false);
+  const [isToggleUpdateInfo, setIsToggleUpdateInfo] = useAtom(updateInfoState);
+  const [isToggleUpdateAddress, setIsToggleUpdateAddress] =
+    useAtom(updateAddressState);
   const info = useAtomValue(userInfoState);
   const setCancelModalId = useSetAtom(cancelOrderState);
   const setCancelModal = useSetAtom(cancelOrderModalState);
@@ -550,6 +561,8 @@ function UserOrderDetail() {
   const { data: detail, isLoading } = useGetDetailOrder(orderId);
   const handleModalOff = () => {
     setDetailModal(false);
+    setIsToggleUpdateInfo(false);
+    setIsToggleUpdateAddress(false);
   };
 
   const handleOrderStatus = (status: string) => {
@@ -627,12 +640,11 @@ function UserOrderDetail() {
     setCancelModalId(orderId);
     setCancelModal(true);
   };
-
-  const handleToggleUpdateOrderInfo = () => {
+  const handleToggleUpdateOrderInfoOn = () => {
     setIsToggleUpdateInfo(true);
     setIsToggleUpdateAddress(false);
   };
-  const handleToggleUpdateOrderAddress = () => {
+  const handleToggleUpdateOrderAddressOn = () => {
     setIsToggleUpdateInfo(false);
     setIsToggleUpdateAddress(true);
   };
@@ -764,7 +776,7 @@ function UserOrderDetail() {
                           variant="light"
                           size="sm"
                           isIconOnly
-                          onPress={handleToggleUpdateOrderInfo}
+                          onPress={handleToggleUpdateOrderInfoOn}
                         >
                           <LuPen className="text-normal" />
                         </Button>
@@ -850,7 +862,7 @@ function UserOrderDetail() {
                       variant="light"
                       size="sm"
                       isIconOnly
-                      onPress={handleToggleUpdateOrderAddress}
+                      onPress={handleToggleUpdateOrderAddressOn}
                     >
                       <LuPen className="text-normal" />
                     </Button>
@@ -974,49 +986,229 @@ function UserOrderDetail() {
             )}
           </motion.div>
           {/* UPDATE ORDER USER INFO */}
-          {isToggleUpdateInfo && (
-            <motion.div
-              onClick={(e) => e.stopPropagation()}
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "tween", duration: 0.6 }}
-              className="w-[500px] h-full max-h-full overflow-auto bg-[#222222] shadow-md absolute right-[500px] flex flex-col z-[20]"
-            >
-              <div className="flex justify-between bg-[#191919] w-full px-[15px] py-[20px] sticky top-0 left-0 z-10">
-                <p className="text-[18px]">Update Order</p>
-                <Button isIconOnly size="sm" variant="light">
-                  <IoCloseSharp className="text-[20px] text-normal" />
-                </Button>
-              </div>
-
-              <p className="text-center mt-4">Update order details here...</p>
-            </motion.div>
-          )}
+          <AnimatePresence>
+            {isToggleUpdateInfo && <UpdateOrderInfo />}
+          </AnimatePresence>
 
           {/* UPDATE ORDER USER ADDRESS */}
-          {isToggleUpdateAddress && (
-            <motion.div
-              onClick={(e) => e.stopPropagation()}
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "tween", duration: 0.6 }}
-              className="w-[500px] h-full max-h-full overflow-auto bg-[#222222] shadow-md absolute right-[500px] flex flex-col z-[20]"
-            >
-              <div className="flex justify-between bg-[#191919] w-full px-[15px] py-[20px] sticky top-0 left-0 z-10">
-                <p className="text-[18px]">Update Order</p>
-                <Button isIconOnly size="sm" variant="light">
-                  <IoCloseSharp className="text-[20px] text-normal" />
-                </Button>
-              </div>
-
-              <p className="text-center mt-4">Update order details here...</p>
-            </motion.div>
-          )}
+          <AnimatePresence>
+            {isToggleUpdateAddress && <UpdateOrderAddress />}
+          </AnimatePresence>
         </motion.div>
       )}
     </AnimatePresence>
+  );
+}
+
+function UpdateOrderInfo() {
+  const orderId = useAtomValue(detailOrderState);
+  const { data: detail } = useGetDetailOrder(orderId);
+  const setIsToggleUpdateInfo = useSetAtom(updateInfoState);
+  const setIsToggleUpdateAddress = useSetAtom(updateAddressState);
+
+  const handleToggleUpdateOrderInfoOff = () => {
+    setIsToggleUpdateInfo(false);
+    setIsToggleUpdateAddress(false);
+  };
+
+  const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
+    console.log(e.target.value);
+  };
+
+  return (
+    <motion.div
+      onClick={(e) => e.stopPropagation()}
+      initial={{ x: "100%", opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      exit={{ x: "100%", opacity: 0 }}
+      transition={{ type: "tween", duration: 0.5 }}
+      className="w-[500px] h-full max-h-full overflow-auto bg-[#111111] shadow-md absolute right-[500px] flex flex-col z-[20] border-r border-gray-400-40"
+    >
+      <div className="flex justify-between bg-[#090909] w-full px-[15px] py-[20px] sticky top-0 left-0 z-10">
+        <div className="flex flex-col gap-y-[5px]">
+          <p className="text-[18px]">Chỉnh sửa thông tin</p>
+          <p className="text-[12px] text-normal">Người dùng</p>
+        </div>
+        <Button
+          isIconOnly
+          size="sm"
+          variant="light"
+          onPress={handleToggleUpdateOrderInfoOff}
+        >
+          <IoCloseSharp className="text-[20px] text-normal" />
+        </Button>
+      </div>
+
+      <div className="flex flex-col gap-y-[20px] px-[15px] py-[20px]">
+        <NormalInput
+          onChange={handleOnChange}
+          label="Tên người đặt"
+          placeholder="Nguyen Van A"
+          icon={<FaUser size={20} />}
+        />
+        <NormalInput
+          onChange={handleOnChange}
+          label="Số điện thoại"
+          placeholder="0989878798"
+          max={10}
+          icon={<FaPhone size={20} />}
+        />
+        <Button
+          variant="flat"
+          color="secondary"
+          size="md"
+          className="mt-[20px]"
+        >
+          Cập nhật thông tin
+        </Button>
+      </div>
+    </motion.div>
+  );
+}
+
+function UpdateOrderAddress() {
+  // Phải sài order chứ không phải info
+  const info = useAtomValue(userInfoState);
+  const [isSubmit, setIsSubmit] = useState(false);
+  const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
+  const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
+  const [selectedWard, setSelectedWard] = useState<string | null>(null);
+  const { data: provinces } = useGetAllProvince();
+  const { data: districts } = useGetDistrictByProvince(
+    selectedProvince as string
+  );
+  const { data: wards } = useGetWardByDistrict(selectedDistrict as string);
+  useEffect(() => {
+    if (info?.address) {
+      setSelectedProvince((prev) => prev ?? info.address.provinceCode);
+      setSelectedDistrict((prev) => prev ?? info.address.districtCode);
+      setSelectedWard((prev) => prev ?? info.address.wardCode);
+    }
+  }, [info]);
+  const handleProvinceChange = (provinceCode: string) => {
+    setSelectedProvince(provinceCode);
+    setSelectedDistrict(null);
+    setSelectedWard(null);
+  };
+
+  const handleDistrictChange = (districtCode: string) => {
+    setSelectedDistrict(districtCode);
+    setSelectedWard(null);
+  };
+
+  const handleWardChange = (wardCode: string) => {
+    setSelectedWard(wardCode);
+  };
+  const setIsToggleUpdateInfo = useSetAtom(updateInfoState);
+  const setIsToggleUpdateAddress = useSetAtom(updateAddressState);
+  const handleToggleUpdateOrderAddressOff = () => {
+    setIsToggleUpdateInfo(false);
+    setIsToggleUpdateAddress(false);
+  };
+  return (
+    <motion.div
+      onClick={(e) => e.stopPropagation()}
+      initial={{ x: "100%", opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      exit={{ x: "100%", opacity: 0 }}
+      transition={{ type: "tween", duration: 0.5 }}
+      className="w-[500px] h-full max-h-full overflow-auto bg-[#111111] shadow-md absolute right-[500px] flex flex-col z-[20] border-r border-gray-400-40"
+    >
+      <div className="flex justify-between bg-[#090909] w-full px-[15px] py-[20px] sticky top-0 left-0 z-10">
+        <div className="flex flex-col gap-y-[5px]">
+          <p className="text-[18px]">Chỉnh sửa thông tin</p>
+          <p className="text-[12px] text-normal">Địa chỉ</p>
+        </div>
+        <Button
+          isIconOnly
+          size="sm"
+          variant="light"
+          onPress={handleToggleUpdateOrderAddressOff}
+        >
+          <IoCloseSharp className="text-[20px] text-normal" />
+        </Button>
+      </div>
+      <div className="flex flex-col gap-y-[20px] px-[15px] py-[20px]">
+        <div className="flex flex-col w-full gap-y-2 font-inter">
+          <label
+            htmlFor="date"
+            className="font-semibold text-sm 2xl:text-[12px] mb-1"
+          >
+            Tỉnh / Thành phố
+          </label>
+          <Select
+            isVirtualized
+            variant="underlined"
+            placeholder="Tỉnh / Thành phố"
+            aria-label="Tỉnh / Thành phố"
+            scrollShadowProps={{
+              isEnabled: false,
+            }}
+            selectedKeys={selectedProvince ? [selectedProvince] : []}
+            onSelectionChange={(keys) => {
+              const selectedKey = Array.from(keys)[0] as string;
+              handleProvinceChange(selectedKey);
+            }}
+          >
+            {(provinces ?? []).map((province) => (
+              <SelectItem key={province.code}>{province.fullName}</SelectItem>
+            ))}
+          </Select>
+        </div>
+        <div className="flex flex-col w-full gap-y-2 font-inter">
+          <label
+            htmlFor="date"
+            className="font-semibold text-sm 2xl:text-[12px] mb-1"
+          >
+            Quận / Huyện
+          </label>
+          <Select
+            isVirtualized
+            variant="underlined"
+            placeholder="Quận / Huyện"
+            aria-label="Quận / Huyện"
+            scrollShadowProps={{
+              isEnabled: false,
+            }}
+            selectedKeys={selectedDistrict ? [selectedDistrict] : []}
+            onSelectionChange={(keys) => {
+              const selectedKey = Array.from(keys)[0] as string;
+              handleDistrictChange(selectedKey);
+            }}
+          >
+            {(districts ?? []).map((district) => (
+              <SelectItem key={district.code}>{district.fullName}</SelectItem>
+            ))}
+          </Select>
+        </div>
+        <div className="flex flex-col w-full gap-y-2 font-inter">
+          <label
+            htmlFor="date"
+            className="font-semibold text-sm 2xl:text-[12px] mb-1"
+          >
+            Phường / Xã
+          </label>
+          <Select
+            isVirtualized
+            variant="underlined"
+            placeholder="Phường / Xã"
+            aria-label="Phường / Xã"
+            scrollShadowProps={{
+              isEnabled: false,
+            }}
+            selectedKeys={selectedWard ? [selectedWard] : []}
+            onSelectionChange={(keys) => {
+              const selectedKey = Array.from(keys)[0] as string;
+              handleWardChange(selectedKey);
+            }}
+          >
+            {(wards ?? []).map((ward) => (
+              <SelectItem key={ward.code}>{ward.fullName}</SelectItem>
+            ))}
+          </Select>
+        </div>
+      </div>
+    </motion.div>
   );
 }
 
