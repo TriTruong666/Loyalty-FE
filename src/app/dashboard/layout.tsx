@@ -31,6 +31,7 @@ import UnlockAccountModal from "../components/UnlockAccountModal";
 import ConfirmOrderModal from "../components/ConfirmOrderModal";
 import AttachmentModal from "../components/AttachmentModal";
 import CreateQRModal from "../components/CreateQRModal";
+import DashboardSearchModal from "../components/DashboardSearchModal";
 
 export default function DashboardLayout({
   children,
@@ -75,6 +76,7 @@ export default function DashboardLayout({
   return (
     <div className="flex min-h-screen relative overflow-hidden">
       <Toaster position="top-center" reverseOrder={false} />
+      <DashboardSearchModal />
       <CreateQRModal />
       <UnlockAccountModal />
       <BlockAccountModal />

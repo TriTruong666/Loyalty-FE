@@ -25,6 +25,15 @@ interface UpdateOrderData {
   orderStatus?: string;
   note?: string;
   attachment?: string;
+  customerName?: string;
+  customerPhone?: string;
+  shippingAddress?: UpdateOrderAddress;
+}
+interface UpdateOrderAddress {
+  provinceCode?: string;
+  districtCode?: string;
+  wardCode?: string;
+  street?: string;
 }
 
 export const updateOrderService = async (data: UpdateOrderData) => {

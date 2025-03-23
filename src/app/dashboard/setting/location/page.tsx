@@ -126,7 +126,6 @@ export default function SettingPage() {
   };
 
   const handleStreetChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log(submitLocationData);
     setSubmitLocationData((prev) => ({
       ...prev,
       street: e.target.value,

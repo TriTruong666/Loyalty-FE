@@ -5,7 +5,7 @@ import { IoShieldCheckmarkOutline } from "react-icons/io5";
 import { BsBellFill } from "react-icons/bs";
 import { IoIosSettings } from "react-icons/io";
 import { FaShoppingCart } from "react-icons/fa";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
   cartDropdownState,
   notificationDropdownState,
@@ -15,6 +15,7 @@ import { cartState } from "../store/cartAtoms";
 import { getCartFromStorage } from "../service/cartService";
 import { useGetListNotification } from "../hooks/hook";
 import { userInfoState } from "../store/accountAtoms";
+import { dashboardSearchModalState } from "../store/modalAtoms";
 
 export default function DashboardHeader() {
   return (
@@ -26,6 +27,7 @@ export default function DashboardHeader() {
 }
 
 function SearchBar() {
+  const setSearchModal = useSetAtom(dashboardSearchModalState);
   const placeholderTexts = [
     "Tìm sản phẩm bạn đang cần...",
     "Đơn hàng mà bạn tìm kiếm...",
@@ -60,10 +62,14 @@ function SearchBar() {
     return () => clearTimeout(timeout);
   }, [charIndex, isDeleting, index]);
 
+  const handleToggleSearchModalOn = () => {
+    setSearchModal(true);
+  };
   return (
     <div className="flex items-center w-[600px] 2xl:w-[500px] px-3 py-3 rounded-full gap-x-3 bg-[#222124] transition-all duration-150">
       <IoIosSearch className="text-[24px]" />
       <input
+        onFocus={handleToggleSearchModalOn}
         type="text"
         className="outline-none bg-transparent border-none w-full text-[14px] font-light"
         placeholder={placeholder}

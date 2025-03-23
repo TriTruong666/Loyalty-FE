@@ -8,6 +8,7 @@ import { useGetListNotification } from "../hooks/hook";
 import { Notification as NotificationProps } from "../interfaces/Notification";
 import { formatRelativeTime } from "../utils/format";
 import Link from "next/link";
+import { IoMdNotificationsOutline } from "react-icons/io";
 export default function NotificationDropdown() {
   const isToggleDropdown = useAtomValue(notificationDropdownState);
   const { data: notifications } = useGetListNotification();
@@ -26,13 +27,25 @@ export default function NotificationDropdown() {
           <p className="font-open font-light w-full px-[20px] py-[20px] sticky top-0 left-0 bg-background z-[60]">
             Thông báo
           </p>
-
-          {/* List */}
-          <div className="flex flex-col border-t border-gray-400-40">
-            {notifications?.map((item) => (
-              <NotificationItem key={item.id} {...item} />
-            ))}
-          </div>
+          {notifications?.length === 0 ? (
+            <>
+              <div className="h-[500px] w-full flex flex-col justify-center items-center gap-y-[20px]">
+                <IoMdNotificationsOutline className="text-normal text-[30px]" />
+                <p className="text-normal text-sm font-light">
+                  Hiện tại không có thông báo nào
+                </p>
+              </div>
+            </>
+          ) : (
+            <>
+              {/* List */}
+              <div className="flex flex-col border-t border-gray-400-40">
+                {notifications?.map((item) => (
+                  <NotificationItem key={item.id} {...item} />
+                ))}
+              </div>
+            </>
+          )}
         </motion.div>
       )}
     </AnimatePresence>

@@ -37,6 +37,10 @@ import { FaFlagCheckered, FaPhone, FaUser } from "react-icons/fa";
 import { userInfoState } from "../store/accountAtoms";
 import NormalInput from "./NormalInput";
 import { ChangeEvent, useEffect, useState } from "react";
+import { TbTruck } from "react-icons/tb";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updateOrderService } from "../service/orderService";
+import { showToast } from "../utils/toast";
 
 const updateInfoState = atom(false);
 const updateAddressState = atom(false);
@@ -219,7 +223,6 @@ function AdminOrderDetail() {
     <AnimatePresence>
       {detailModal && (
         <motion.div
-          onClick={handleModalOff}
           className="fixed w-screen h-screen flex justify-end bg-black bg-opacity-70 z-[40] font-open"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -338,11 +341,8 @@ function AdminOrderDetail() {
                     <p className="text-[11px] text-normal">
                       Thông tin người đặt
                     </p>
-                    <Button variant="light" size="sm" isIconOnly>
-                      <LuPen className="text-normal" />
-                    </Button>
                   </div>
-                  <div className="flex flex-col gap-y-[8px]">
+                  <div className="flex flex-col gap-y-[8px] mt-[10px]">
                     <p className="text-[13px]">{detail?.customerName}</p>
                     <p className="text-[13px] text-[#467AB9]">
                       {detail?.customerEmail}
@@ -357,9 +357,6 @@ function AdminOrderDetail() {
                       <p className="text-[11px] text-normal">
                         Khách của Sales Team
                       </p>
-                      <Button variant="light" size="sm" isIconOnly>
-                        <LuPen className="text-normal" />
-                      </Button>
                     </div>
                     <div className="flex flex-col gap-y-[8px]">
                       <p className="text-[13px]">
@@ -376,11 +373,8 @@ function AdminOrderDetail() {
                 <div className="flex flex-col px-[15px] py-[25px] border-b border-gray-400-40">
                   <div className="flex justify-between">
                     <p className="text-[11px] text-normal">Địa chỉ giao hàng</p>
-                    <Button variant="light" size="sm" isIconOnly>
-                      <LuPen className="text-normal" />
-                    </Button>
                   </div>
-                  <div className="flex flex-col gap-y-[8px]">
+                  <div className="flex flex-col gap-y-[8px] mt-[10px]">
                     <p className="text-[13px]">
                       {detail?.shippingAddress.street},{" "}
                       {detail?.shippingAddress.wardName},{" "}
@@ -652,7 +646,6 @@ function UserOrderDetail() {
     <AnimatePresence>
       {detailModal && (
         <motion.div
-          onClick={handleModalOff}
           className="fixed w-screen h-screen flex justify-end bg-black bg-opacity-70 z-[40] font-open"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -772,16 +765,28 @@ function UserOrderDetail() {
                         <p className="text-[11px] text-normal">
                           Thông tin cá nhân
                         </p>
-                        <Button
-                          variant="light"
-                          size="sm"
-                          isIconOnly
-                          onPress={handleToggleUpdateOrderInfoOn}
-                        >
-                          <LuPen className="text-normal" />
-                        </Button>
+                        {detail?.orderStatus === "pending" && (
+                          <Button
+                            variant="light"
+                            size="sm"
+                            isIconOnly
+                            onPress={handleToggleUpdateOrderInfoOn}
+                          >
+                            <LuPen className="text-normal" />
+                          </Button>
+                        )}
+                        {detail?.orderStatus === "confirmed" && (
+                          <Button
+                            variant="light"
+                            size="sm"
+                            isIconOnly
+                            onPress={handleToggleUpdateOrderInfoOn}
+                          >
+                            <LuPen className="text-normal" />
+                          </Button>
+                        )}
                       </div>
-                      <div className="flex flex-col gap-y-[8px]">
+                      <div className="flex flex-col gap-y-[8px] mt-[10px]">
                         <p className="text-[13px]">{detail?.customerName}</p>
                         <p className="text-[13px] text-[#467AB9]">
                           {detail?.customerEmail}
@@ -796,9 +801,6 @@ function UserOrderDetail() {
                           <p className="text-[11px] text-normal">
                             Khách của Sales
                           </p>
-                          <Button variant="light" size="sm" isIconOnly>
-                            <LuPen className="text-normal" />
-                          </Button>
                         </div>
                         <div className="flex flex-col gap-y-[8px]">
                           <p className="text-[13px]">
@@ -823,7 +825,7 @@ function UserOrderDetail() {
                           <LuPen className="text-normal" />
                         </Button>
                       </div>
-                      <div className="flex flex-col gap-y-[8px]">
+                      <div className="flex flex-col gap-y-[8px] mt-[10px]">
                         <p className="text-[13px]">{detail?.customerName}</p>
                         <p className="text-[13px] text-[#467AB9]">
                           {detail?.customerEmail}
@@ -838,9 +840,6 @@ function UserOrderDetail() {
                           <p className="text-[11px] text-normal">
                             Thông tin khách của bạn
                           </p>
-                          <Button variant="light" size="sm" isIconOnly>
-                            <LuPen className="text-normal" />
-                          </Button>
                         </div>
                         <div className="flex flex-col gap-y-[8px]">
                           <p className="text-[13px]">
@@ -858,16 +857,28 @@ function UserOrderDetail() {
                 <div className="flex flex-col px-[15px] py-[25px] border-b border-gray-400-40">
                   <div className="flex justify-between">
                     <p className="text-[11px] text-normal">Địa chỉ giao hàng</p>
-                    <Button
-                      variant="light"
-                      size="sm"
-                      isIconOnly
-                      onPress={handleToggleUpdateOrderAddressOn}
-                    >
-                      <LuPen className="text-normal" />
-                    </Button>
+                    {detail?.orderStatus === "pending" && (
+                      <Button
+                        variant="light"
+                        size="sm"
+                        isIconOnly
+                        onPress={handleToggleUpdateOrderAddressOn}
+                      >
+                        <LuPen className="text-normal" />
+                      </Button>
+                    )}
+                    {detail?.orderStatus === "confirmed" && (
+                      <Button
+                        variant="light"
+                        size="sm"
+                        isIconOnly
+                        onPress={handleToggleUpdateOrderAddressOn}
+                      >
+                        <LuPen className="text-normal" />
+                      </Button>
+                    )}
                   </div>
-                  <div className="flex flex-col gap-y-[8px]">
+                  <div className="flex flex-col gap-y-[8px] mt-[10px]">
                     <p className="text-[13px]">
                       {detail?.shippingAddress.street},{" "}
                       {detail?.shippingAddress.wardName},{" "}
@@ -1001,10 +1012,57 @@ function UserOrderDetail() {
 }
 
 function UpdateOrderInfo() {
+  const [submitData, setSubmitData] = useState({
+    customerName: "",
+    customerPhone: "",
+  });
   const orderId = useAtomValue(detailOrderState);
   const { data: detail } = useGetDetailOrder(orderId);
   const setIsToggleUpdateInfo = useSetAtom(updateInfoState);
   const setIsToggleUpdateAddress = useSetAtom(updateAddressState);
+  const [isSubmit, setIsSubmit] = useState(false);
+
+  useEffect(() => {
+    if (detail?.customerName && detail.customerPhone) {
+      setSubmitData({
+        ...submitData,
+        customerName: detail.customerName || "",
+        customerPhone: detail.customerPhone || "",
+      });
+    }
+  }, [detail]);
+  const queryClient = useQueryClient();
+  const updateOrderInfoMutation = useMutation({
+    mutationKey: ["update-order-info"],
+    mutationFn: updateOrderService,
+    onMutate() {
+      setIsSubmit(true);
+    },
+    onSuccess(data) {
+      if (data.message === "Ok") {
+        queryClient.invalidateQueries({
+          queryKey: ["orders"],
+        });
+        showToast("Cập nhật thông tin người đặt thành công", "success");
+        setIsSubmit(false);
+        setIsToggleUpdateInfo(false);
+        setIsToggleUpdateAddress(false);
+      }
+      setIsSubmit(false);
+    },
+  });
+
+  const handleSubmit = async () => {
+    try {
+      await updateOrderInfoMutation.mutateAsync({
+        orderID: orderId as string,
+        customerName: submitData.customerName as string,
+        customerPhone: submitData.customerPhone as string,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleToggleUpdateOrderInfoOff = () => {
     setIsToggleUpdateInfo(false);
@@ -1012,7 +1070,11 @@ function UpdateOrderInfo() {
   };
 
   const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value);
+    const { name, value } = e.target;
+    setSubmitData({
+      ...submitData,
+      [name]: value,
+    });
   };
 
   return (
@@ -1044,16 +1106,23 @@ function UpdateOrderInfo() {
           onChange={handleOnChange}
           label="Tên người đặt"
           placeholder="Nguyen Van A"
+          defaultValue={submitData?.customerName}
           icon={<FaUser size={20} />}
+          name="customerName"
         />
         <NormalInput
           onChange={handleOnChange}
           label="Số điện thoại"
           placeholder="0989878798"
+          defaultValue={submitData?.customerPhone}
           max={10}
+          name="customerPhone"
           icon={<FaPhone size={20} />}
         />
         <Button
+          isLoading={isSubmit}
+          isDisabled={isSubmit}
+          onPress={handleSubmit}
           variant="flat"
           color="secondary"
           size="md"
@@ -1067,8 +1136,14 @@ function UpdateOrderInfo() {
 }
 
 function UpdateOrderAddress() {
-  // Phải sài order chứ không phải info
-  const info = useAtomValue(userInfoState);
+  const [submitData, setSubmitData] = useState({
+    provinceCode: "",
+    districtCode: "",
+    wardCode: "",
+    street: "",
+  });
+  const orderId = useAtomValue(detailOrderState);
+  const { data: detail } = useGetDetailOrder(orderId);
   const [isSubmit, setIsSubmit] = useState(false);
   const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
   const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
@@ -1078,26 +1153,97 @@ function UpdateOrderAddress() {
     selectedProvince as string
   );
   const { data: wards } = useGetWardByDistrict(selectedDistrict as string);
+  const queryClient = useQueryClient();
+  const updateLocationMutation = useMutation({
+    mutationKey: ["update-order-address"],
+    mutationFn: updateOrderService,
+    onMutate() {
+      setIsSubmit(true);
+    },
+    onSuccess(data) {
+      if (data.message === "Ok") {
+        setIsSubmit(false);
+        queryClient.invalidateQueries({
+          queryKey: ["orders"],
+        });
+        showToast("Thay đổi địa chỉ giao hàng thành công", "success");
+        setIsToggleUpdateInfo(false);
+        setIsToggleUpdateAddress(false);
+      }
+      setIsSubmit(false);
+    },
+  });
   useEffect(() => {
-    if (info?.address) {
-      setSelectedProvince((prev) => prev ?? info.address.provinceCode);
-      setSelectedDistrict((prev) => prev ?? info.address.districtCode);
-      setSelectedWard((prev) => prev ?? info.address.wardCode);
+    if (detail?.shippingAddress) {
+      setSubmitData((prev) => ({
+        provinceCode: prev.provinceCode || detail.shippingAddress.provinceCode,
+        districtCode: prev.districtCode || detail.shippingAddress.districtCode,
+        wardCode: prev.wardCode || detail.shippingAddress.wardCode,
+        street: prev.street || detail.shippingAddress.street,
+      }));
+      setSelectedProvince(
+        (prev) => prev ?? detail.shippingAddress.provinceCode
+      );
+      setSelectedDistrict(
+        (prev) => prev ?? detail.shippingAddress.districtCode
+      );
+      setSelectedWard((prev) => prev ?? detail.shippingAddress.wardCode);
     }
-  }, [info]);
+  }, [detail]);
   const handleProvinceChange = (provinceCode: string) => {
     setSelectedProvince(provinceCode);
     setSelectedDistrict(null);
     setSelectedWard(null);
+    setSubmitData((prev) => ({
+      ...prev,
+      provinceCode,
+      districtCode: "",
+      wardCode: "",
+    }));
   };
 
   const handleDistrictChange = (districtCode: string) => {
     setSelectedDistrict(districtCode);
     setSelectedWard(null);
+    setSubmitData((prev) => ({
+      ...prev,
+      districtCode,
+      wardCode: "",
+    }));
   };
 
   const handleWardChange = (wardCode: string) => {
     setSelectedWard(wardCode);
+    setSubmitData((prev) => ({
+      ...prev,
+      wardCode,
+    }));
+  };
+
+  const handleStreetChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSubmitData((prev) => ({
+      ...prev,
+      street: e.target.value,
+    }));
+  };
+  const handleOnSubmit = async () => {
+    if (
+      submitData.districtCode === "" ||
+      submitData.wardCode === "" ||
+      submitData.street === "" ||
+      submitData.provinceCode === ""
+    ) {
+      showToast("Vui lòng chọn địa chỉ", "error");
+      return;
+    }
+    try {
+      await updateLocationMutation.mutateAsync({
+        orderID: orderId,
+        shippingAddress: submitData,
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
   const setIsToggleUpdateInfo = useSetAtom(updateInfoState);
   const setIsToggleUpdateAddress = useSetAtom(updateAddressState);
@@ -1206,6 +1352,24 @@ function UpdateOrderAddress() {
               <SelectItem key={ward.code}>{ward.fullName}</SelectItem>
             ))}
           </Select>
+          <NormalInput
+            onChange={handleStreetChange}
+            label="Địa chỉ giao hàng"
+            placeholder="Nhập địa chỉ giao hàng"
+            defaultValue={detail?.shippingAddress.street || ""}
+            icon={<TbTruck className="text-[20px]" />}
+          />
+          <Button
+            onPress={handleOnSubmit}
+            variant="flat"
+            color="secondary"
+            size="md"
+            className="mt-[20px]"
+            isDisabled={isSubmit}
+            isLoading={isSubmit}
+          >
+            Cập nhật thông tin
+          </Button>
         </div>
       </div>
     </motion.div>
@@ -1302,7 +1466,6 @@ function StaffOrderDetail() {
     <AnimatePresence>
       {detailModal && (
         <motion.div
-          onClick={handleModalOff}
           className="fixed w-screen h-screen flex justify-end bg-black bg-opacity-70 z-[40] font-open"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -1448,9 +1611,6 @@ function StaffOrderDetail() {
                       <p className="text-[11px] text-normal">
                         Khách của Sales Team
                       </p>
-                      <Button variant="light" size="sm" isIconOnly>
-                        <LuPen className="text-normal" />
-                      </Button>
                     </div>
                     <div className="flex flex-col gap-y-[8px]">
                       <p className="text-[13px]">
@@ -1471,7 +1631,7 @@ function StaffOrderDetail() {
                       <LuPen className="text-normal" />
                     </Button>
                   </div>
-                  <div className="flex flex-col gap-y-[8px]">
+                  <div className="flex flex-col gap-y-[8px] mt-[10px]">
                     <p className="text-[13px]">
                       {detail?.shippingAddress.street},{" "}
                       {detail?.shippingAddress.wardName},{" "}

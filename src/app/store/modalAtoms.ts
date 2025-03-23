@@ -33,3 +33,5 @@ export const unlockAccountModalState = atom(false);
 export const attachmentOrderModalState = atom(false);
 
 export const createQRModalState = atom(false);
+
+export const dashboardSearchModalState = atom(false);

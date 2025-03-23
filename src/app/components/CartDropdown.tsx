@@ -1,6 +1,6 @@
 "use client";
 import { AnimatePresence, motion } from "framer-motion";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtomValue } from "jotai";
 import { cartDropdownState } from "../store/dropdownAtoms";
 import Image from "next/image";
 import { formatPrice } from "../utils/format";
@@ -11,7 +11,7 @@ import { BsCartX } from "react-icons/bs";
 
 export default function CartDropdown() {
   const isToggleDropdown = useAtomValue(cartDropdownState);
-  const [cart, setCart] = useAtom(cartState);
+  const cart = useAtomValue(cartState);
   const subtotalCartValue = useAtomValue(subtotalCartValueAtom);
 
   return (
