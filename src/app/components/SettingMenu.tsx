@@ -17,10 +17,6 @@ export default function SettingMenu() {
       path: "/dashboard/setting/location",
     },
     {
-      name: "Điểm Loyalty",
-      path: "/dashboard/setting/ranking",
-    },
-    {
       name: "Giao diện",
       path: "/dashboard/setting/theme",
     },

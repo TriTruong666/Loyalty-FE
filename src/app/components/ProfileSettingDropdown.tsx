@@ -1,7 +1,7 @@
 "use client";
 import { Button, Switch } from "@heroui/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useAtomValue } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import Link from "next/link";
 import { FC, ReactNode } from "react";
 import { GrHelpBook, GrSun } from "react-icons/gr";
@@ -15,8 +15,10 @@ import { profileSettingDropdownState } from "../store/dropdownAtoms";
 import { logoutService } from "../service/authenticateService";
 import { useMutation } from "@tanstack/react-query";
 import { userInfoState } from "../store/accountAtoms";
+import { dashboardSearchModalState } from "../store/modalAtoms";
 
 export default function ProfileSettingDropdown() {
+  const setSearchModal = useSetAtom(dashboardSearchModalState);
   const userInfo = useAtomValue(userInfoState);
   const isToggleDropdown = useAtomValue(profileSettingDropdownState);
   const logoutMutation = useMutation({
@@ -50,6 +52,9 @@ export default function ProfileSettingDropdown() {
         return "";
     }
   };
+  const handleToggleSearchModalOn = () => {
+    setSearchModal(true);
+  };
   return (
     <div className="">
       <AnimatePresence>
@@ -59,7 +64,7 @@ export default function ProfileSettingDropdown() {
             animate={{ opacity: 1, translateX: 0 }}
             exit={{ opacity: 0, display: "none", translateX: 100 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="fixed flex flex-col w-[300px] 3xl:w-[400px] max-h-[600px] z-[50] border border-gray-400-40 bg-background top-[70px] left-[1210px] 3xl:left-[1450px] 2.5xl:left-[1420px] rounded-[15px] p-[20px] font-open"
+            className="fixed flex flex-col w-[300px] 3xl:w-[400px] max-h-[600px] z-[35] border border-gray-400-40 bg-background top-[70px] left-[1210px] 3xl:left-[1450px] 2.5xl:left-[1420px] rounded-[15px] p-[20px] font-open"
           >
             <div className="flex flex-col">
               <div className="flex justify-between items-center">
@@ -84,8 +89,18 @@ export default function ProfileSettingDropdown() {
                   icon={<IoSettingsOutline className="text-[18px]" />}
                 />
                 <Item
+                  title="Hạng Loyalty"
+                  link="/dashboard/loyalty"
+                  icon={<PiRanking className="text-[18px]" />}
+                />
+                <Item
                   title="Tìm kiếm nhanh"
                   icon={<IoSearchOutline className="text-[18px]" />}
+                  onClick={handleToggleSearchModalOn}
+                />
+                <Item
+                  title="Giới thiệu"
+                  icon={<GrHelpBook className="text-[18px]" />}
                 />
                 <Item
                   title="Chế độ"
@@ -104,14 +119,6 @@ export default function ProfileSettingDropdown() {
                       }
                     ></Switch>
                   }
-                />
-                <Item
-                  title="Hạng Loyalty"
-                  icon={<PiRanking className="text-[18px]" />}
-                />
-                <Item
-                  title="Trợ giúp"
-                  icon={<GrHelpBook className="text-[18px]" />}
                 />
 
                 <Button
@@ -140,12 +147,14 @@ interface ItemProps {
   option?: ReactNode;
   link?: string; //
   title: string;
+  onClick?: () => void;
 }
 
-const Item: FC<ItemProps> = ({ option, link, title, icon }) => {
+const Item: FC<ItemProps> = ({ option, link, title, icon, onClick }) => {
   if (link) {
     return (
       <Button
+        onPress={onClick}
         as={Link}
         href={link}
         variant="light"
@@ -160,7 +169,11 @@ const Item: FC<ItemProps> = ({ option, link, title, icon }) => {
     );
   }
   return (
-    <Button variant="light" className="flex items-center justify-between">
+    <Button
+      variant="light"
+      className="flex items-center justify-between"
+      onPress={onClick}
+    >
       <div className="flex items-center gap-x-[10px]">
         <div className="">{icon}</div>
         <p className="text-sm font-light">{title}</p>

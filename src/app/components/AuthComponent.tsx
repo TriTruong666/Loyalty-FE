@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAtomValue } from "jotai";
 import { userInfoState } from "../store/accountAtoms";
@@ -16,14 +16,21 @@ export default function AuthComponent({
 }: WithAuthProps) {
   const router = useRouter();
   const userInfo = useAtomValue(userInfoState);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!userInfo || !allowedRoles.includes(userInfo.type)) {
+    if (userInfo) {
+      setLoading(false);
+    }
+  }, [userInfo]);
+
+  useEffect(() => {
+    if (!loading && !allowedRoles.includes(userInfo?.type as string)) {
       router.replace("/unauthorized");
     }
-  }, [userInfo, allowedRoles, router]);
+  }, [userInfo, allowedRoles, router, loading]);
 
-  if (!userInfo || !allowedRoles.includes(userInfo.type)) {
+  if (loading || !userInfo || !allowedRoles.includes(userInfo.type)) {
     return null;
   }
 

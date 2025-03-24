@@ -2,9 +2,21 @@
 
 import { IoIosSearch } from "react-icons/io";
 import { AnimatePresence, motion } from "framer-motion";
-import { useAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { dashboardSearchModalState } from "../store/modalAtoms";
-import { useEffect } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
+import {
+  useGetAllBrand,
+  useGetProductByBrand,
+  useSearchProductByKeyword,
+} from "../hooks/hook";
+import { Product as ProductProps } from "@/app/interfaces/Product";
+import { Brand as BrandProps } from "../interfaces/Brand";
+import { Button } from "@heroui/react";
+import { IoCloseOutline } from "react-icons/io5";
+import Image from "next/image";
+import { formatPrice } from "../utils/format";
+import Link from "next/link";
 export default function DashboardSearchModal() {
   const [isToggleModal, setIsToggleModal] = useAtom(dashboardSearchModalState);
   useEffect(() => {
@@ -43,6 +55,18 @@ export default function DashboardSearchModal() {
 }
 
 function UserSearch() {
+  const [search, setSearch] = useState("");
+  const { data: searchProducts } = useSearchProductByKeyword(search);
+  const { data: brands = [] } = useGetAllBrand();
+  const [handle, setHandle] = useState("dr-ciccarelli");
+  const { data: products } = useGetProductByBrand(handle as string, "dangban");
+  const displayedProducts = products?.slice(0, 12);
+  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+  };
+  const handleClearSearchInput = () => {
+    setSearch("");
+  };
   return (
     <div className="flex flex-col font-open">
       {/* Search */}
@@ -50,10 +74,23 @@ function UserSearch() {
         <div className="flex justify-between items-center gap-x-[10px] w-full pr-[10px]">
           <IoIosSearch className="text-[24px]" />
           <input
+            onChange={handleSearch}
+            value={search}
             type="text"
             className="outline-none bg-transparent border-none w-full text-[16px] font-light"
             placeholder="Tìm kiếm sản phẩm"
           />
+          {search.length > 0 && (
+            <Button
+              isIconOnly
+              size="sm"
+              radius="full"
+              variant="flat"
+              onPress={handleClearSearchInput}
+            >
+              <IoCloseOutline className="text-[22px]" />
+            </Button>
+          )}
         </div>
         {/* badge */}
         <span className="px-[8px] py-[4px] rounded-[7px] bg-neutral-700 text-[10px]">
@@ -61,34 +98,128 @@ function UserSearch() {
         </span>
       </div>
       {/* Brand & Product */}
-      <div className="flex border-t border-neutral-700 border-opacity-50">
-        {/* Brand */}
-        <div className="flex flex-col w-[30%] border-r border-neutral-700 border-opacity-50 px-[20px]  py-[15px]">
-          <p className="text-[12px]">Nhãn hàng độc quyền</p>
-          <div className="flex flex-col mt-[15px] gap-y-[10px]">
-            <BrandItem brandName="Easydew" />
-            <BrandItem brandName="Easydew" />
-            <BrandItem brandName="Easydew" />
-            <BrandItem brandName="Easydew" />
-            <BrandItem brandName="Easydew" />
+      {search.length > 0 ? (
+        <>
+          <div className="flex flex-col px-[20px] py-[15px]">
+            <p className="text-[12px]">Từ khoá: {search}</p>
+            {searchProducts?.length === 0 && (
+              <>
+                <div className="h-[400px] overflow-auto gap-y-[10px] py-[20px] flex flex-col items-center justify-center">
+                  <IoIosSearch className="text-[40px]" />
+                  <p>Không tìm thấy sản phẩm nào với từ khoá: {search}</p>
+                </div>
+              </>
+            )}
+            <div className="flex flex-col max-h-[400px] overflow-auto gap-y-[10px] py-[20px]">
+              {searchProducts?.map((product) => (
+                <SearchProductItem key={product.productId} {...product} />
+              ))}
+            </div>
           </div>
-        </div>
-        {/* Products */}
-      </div>
+        </>
+      ) : (
+        <>
+          <div className="flex border-t border-neutral-700 border-opacity-50 max-h-[400px] overflow-auto">
+            {/* Brand */}
+            <div className="flex flex-col w-[30%] border-r border-neutral-700 border-opacity-50 px-[20px] py-[15px]">
+              <p className="text-[12px]">Nhãn hàng độc quyền</p>
+              <div className="flex flex-col mt-[15px] gap-y-[10px]">
+                {brands.map((brand) => (
+                  <BrandItem
+                    key={brand.brandId}
+                    {...brand}
+                    isActive={handle === brand.handle}
+                    onClick={() => setHandle(brand.handle)}
+                  />
+                ))}
+              </div>
+            </div>
+            {/* Products */}
+            <div className="flex flex-col px-[20px] py-[15px] w-[70%] max-h-[400px] overflow-auto">
+              <p className="text-[12px]">Gợi ý</p>
+              <div className="grid grid-cols-4 gap-[15px] mt-[15px]">
+                {displayedProducts?.map((item) => (
+                  <ProductItem key={item.productId} {...item} />
+                ))}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
 
-interface BrandProps {
-  brandName: string;
-}
-
-function BrandItem(props: BrandProps) {
+function BrandItem(
+  props: BrandProps & { isActive: boolean; onClick: () => void }
+) {
   return (
-    <div className="flex py-[12px] px-[15px] bg-neutral-700 bg-opacity-30 rounded-xl cursor-pointer group hover:bg-neutral-700 hover:bg-opacity-70 transition-all duration-300">
-      <p className="text-sm text-normal group-hover:text-foreground transition-all duration-300">
+    <div
+      onClick={props.onClick}
+      className={`flex py-[12px] px-[15px] rounded-xl cursor-pointer group transition-all duration-300 
+        ${
+          props.isActive
+            ? "bg-neutral-700 bg-opacity-80"
+            : "bg-neutral-700 bg-opacity-30 hover:bg-neutral-700 hover:bg-opacity-70"
+        }
+      `}
+    >
+      <p
+        className={`text-sm  group-hover:text-foreground transition-all duration-300 ${
+          props.isActive ? "text-primary" : "text-normal"
+        }`}
+      >
         {props.brandName}
       </p>
     </div>
+  );
+}
+
+function ProductItem(props: ProductProps) {
+  const setModal = useSetAtom(dashboardSearchModalState);
+  return (
+    <div className="flex flex-col justify-center w-full gap-y-[5px]">
+      <Link
+        href={`/dashboard/shop/brand/detail/${props.handle}`}
+        onClick={() => setModal(false)}
+      >
+        <Image
+          alt={props.productName || ""}
+          src={props.imageUrl || ""}
+          width={100}
+          height={100}
+          className="object-cover rounded-lg"
+        />
+      </Link>
+
+      <p className="text-normal text-[12px] text-center">
+        {formatPrice(props.price as number)}
+      </p>
+    </div>
+  );
+}
+
+function SearchProductItem(props: ProductProps) {
+  return (
+    <Link
+      href={`/dashboard/shop/brand/detail/${props.handle}`}
+      className="flex justify-between px-[15px] py-[10px] items-center hover:bg-neutral-700 hover:bg-opacity-30 rounded-lg transition-all duration-300"
+    >
+      <div className="flex items-center gap-x-[10px]">
+        <Image
+          alt={props.productName || ""}
+          src={props.imageUrl || ""}
+          width={60}
+          height={60}
+          className="object-cover rounded-lg"
+        />
+        <div className="flex flex-col">
+          <p className="text-[13px] font-light">{props.productName}</p>
+          <p className="text-[14px] font-semibold">
+            {formatPrice(props.price as number)}
+          </p>
+        </div>
+      </div>
+    </Link>
   );
 }
