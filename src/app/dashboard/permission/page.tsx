@@ -26,6 +26,7 @@ import {
   updateUserNote,
 } from "@/app/service/accountService";
 import { LoadingTable } from "@/app/components/loading";
+import AuthComponent from "@/app/components/AuthComponent";
 const noteModalState = atom<string | null>(null);
 const noteContentState = atom<string | null>(null);
 export default function CEOPermissionPage() {
@@ -39,20 +40,24 @@ export default function CEOPermissionPage() {
   };
 
   return (
-    <div
-      className="flex flex-col font-open py-[20px] overflow-x-hidden"
-      onClick={handleOffModal}
-    >
-      <div className="flex flex-col gap-y-[5px] px-[40px]">
-        <p className="text-[28px] font-light select-none">Xét duyệt đăng ký</p>
-        <p className="text-sm text-normal">
-          CEO có thể xét duyệt tài khoản được tạo tại đây.
-        </p>
+    <AuthComponent allowedRoles={["ceo"]}>
+      <div
+        className="flex flex-col font-open py-[20px] overflow-x-hidden"
+        onClick={handleOffModal}
+      >
+        <div className="flex flex-col gap-y-[5px] px-[40px]">
+          <p className="text-[28px] font-light select-none">
+            Xét duyệt đăng ký
+          </p>
+          <p className="text-sm text-normal">
+            CEO có thể xét duyệt tài khoản được tạo tại đây.
+          </p>
+        </div>
+        <div className="">
+          <Table />
+        </div>
       </div>
-      <div className="">
-        <Table />
-      </div>
-    </div>
+    </AuthComponent>
   );
 }
 

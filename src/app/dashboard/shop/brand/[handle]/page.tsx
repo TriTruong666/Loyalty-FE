@@ -21,6 +21,7 @@ import { showToast } from "@/app/utils/toast";
 import { BsBox2 } from "react-icons/bs";
 import { userInfoState } from "@/app/store/accountAtoms";
 import { MdReportGmailerrorred } from "react-icons/md";
+import AuthComponent from "@/app/components/AuthComponent";
 const layoutState = atom("layout2");
 const ITEMS_PER_LOAD = 8;
 export default function BrandProductShopPage() {
@@ -55,28 +56,33 @@ export default function BrandProductShopPage() {
     );
   }
   return (
-    <div className="flex flex-col font-open py-[20px] h-full overflow-auto">
-      <div className="flex items-center justify-between px-[40px]">
-        <div className="flex flex-col gap-y-1">
-          <p className="text-[28px] font-light select-none">
-            {brandTitle(handle as string)}
-          </p>
-          <p className="text-sm text-normal">
-            Các sản phẩm đến từ nhà{" "}
-            <span className="font-bold text-primary">
+    <AuthComponent allowedRoles={["business", "personal", "sales"]}>
+      <div className="flex flex-col font-open py-[20px] h-full overflow-auto">
+        <div className="flex items-center justify-between px-[40px]">
+          <div className="flex flex-col gap-y-1">
+            <p className="text-[28px] font-light select-none">
               {brandTitle(handle as string)}
-            </span>
-          </p>
+            </p>
+            <p className="text-sm text-normal">
+              Các sản phẩm đến từ nhà{" "}
+              <span className="font-bold text-primary">
+                {brandTitle(handle as string)}
+              </span>
+            </p>
+          </div>
+          <HeroLink
+            href="/dashboard/shop"
+            className="flex items-center gap-x-2"
+          >
+            <GrFormPreviousLink className="text-[18px] text-normal" />
+            <p className="text-sm text-normal">Xem nhãn hàng khác</p>
+          </HeroLink>
         </div>
-        <HeroLink href="/dashboard/shop" className="flex items-center gap-x-2">
-          <GrFormPreviousLink className="text-[18px] text-normal" />
-          <p className="text-sm text-normal">Xem nhãn hàng khác</p>
-        </HeroLink>
+        <div className="flex-1">
+          <ProductSection />
+        </div>
       </div>
-      <div className="flex-1">
-        <ProductSection />
-      </div>
-    </div>
+    </AuthComponent>
   );
 }
 

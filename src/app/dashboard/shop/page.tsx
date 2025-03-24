@@ -1,4 +1,5 @@
 "use client";
+import AuthComponent from "@/app/components/AuthComponent";
 import { useGetAllBrand } from "@/app/hooks/hook";
 import { userInfoState } from "@/app/store/accountAtoms";
 import { useAtomValue } from "jotai";
@@ -20,17 +21,19 @@ export default function ShopPage() {
     );
   }
   return (
-    <div className="flex flex-col font-open py-[20px]">
-      <div className="px-[40px] flex flex-col gap-y-1">
-        <p className="text-[28px] font-light select-none">Mua sắm</p>
-        <p className="text-sm text-normal">
-          Các sản phẩm được hiển thị theo các nhãn hàng.
-        </p>
+    <AuthComponent allowedRoles={["business", "personal", "sales"]}>
+      <div className="flex flex-col font-open py-[20px]">
+        <div className="px-[40px] flex flex-col gap-y-1">
+          <p className="text-[28px] font-light select-none">Mua sắm</p>
+          <p className="text-sm text-normal">
+            Các sản phẩm được hiển thị theo các nhãn hàng.
+          </p>
+        </div>
+        <div className="mt-[40px]">
+          <BrandSection />
+        </div>
       </div>
-      <div className="mt-[40px]">
-        <BrandSection />
-      </div>
-    </div>
+    </AuthComponent>
   );
 }
 
