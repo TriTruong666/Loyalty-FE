@@ -189,6 +189,7 @@ function ProductItem(props: ProductProps) {
           width={100}
           height={100}
           className="object-cover rounded-lg"
+          loading="lazy"
         />
       </Link>
 
@@ -212,6 +213,7 @@ function SearchProductItem(props: ProductProps) {
           width={60}
           height={60}
           className="object-cover rounded-lg"
+          loading="lazy"
         />
         <div className="flex flex-col">
           <p className="text-[13px] font-light">{props.productName}</p>

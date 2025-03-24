@@ -9,6 +9,7 @@ import * as LocationService from "@/app/service/locationService";
 import * as OrderService from "@/app/service/orderService";
 import * as NotificationService from "@/app/service/notificationService";
 import * as AnalyticsService from "@/app/service/analyticsService";
+import * as LoyaltyService from "@/app/service/loyaltyService";
 import { CloudinaryAsset } from "../interfaces/Cloudinary";
 import { Brand } from "../interfaces/Brand";
 import { User } from "../interfaces/Account";
@@ -23,6 +24,7 @@ import {
   AnalyticsData,
   AnalyticsYearlyRevenueData,
 } from "../interfaces/Analytics";
+import { Loyalty } from "../interfaces/Loyalty";
 function useFetch<T>(
   queryKey: any[],
   queryFn: () => Promise<T>,
@@ -201,5 +203,11 @@ export function useGetOrderValueByDaily(from: string, to: string) {
 export function useGetOrderValueByYear() {
   return useFetch<AnalyticsYearlyRevenueData>(["value-yearly"], async () =>
     AnalyticsService.getOrderValueByYear()
+  );
+}
+
+export function useGetLoyaltyInfo(type: string) {
+  return useFetch<Loyalty[]>(["loyalty", type], async () =>
+    LoyaltyService.getLoyaltyInfo(type)
   );
 }
