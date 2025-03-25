@@ -79,6 +79,6 @@ export const totalCartValueAtoms = atom((get) => {
 });
 
 export const estimatePointState = atom((get) => {
-  const subtotal = get(subtotalCartValueAtom);
-  return Math.floor(subtotal / 100000);
+  const total = get(totalCartValueAtoms);
+  return Math.floor(total / 100000);
 });

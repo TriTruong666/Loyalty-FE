@@ -200,7 +200,7 @@ function LoyaltyRankItem(
     <div
       className={`relative flex flex-col py-[30px] border-t border-b border-l border-neutral-700 border-opacity-40 px-[15px] transition-all duration-300 first:border-l last:border-r
       ${
-        props.isPassed && !props.isCurrentRank
+        !props.isPassed && !props.isCurrentRank
           ? "bg-neutral-800 bg-opacity-50 grayscale"
           : ""
       } 
