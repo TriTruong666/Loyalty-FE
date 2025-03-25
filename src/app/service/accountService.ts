@@ -252,3 +252,14 @@ export const unlockAccountService = async (id: string) => {
     console.error(error);
   }
 };
+
+export const getAnonymousRankingService = async (type: string) => {
+  try {
+    const res = await axiosClient.get(
+      `/api/user/anonymousRanking?type=${type}&limit=5`
+    );
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};

@@ -24,7 +24,7 @@ import {
   AnalyticsData,
   AnalyticsYearlyRevenueData,
 } from "../interfaces/Analytics";
-import { Loyalty } from "../interfaces/Loyalty";
+import { Loyalty, Ranking } from "../interfaces/Loyalty";
 function useFetch<T>(
   queryKey: any[],
   queryFn: () => Promise<T>,
@@ -209,5 +209,11 @@ export function useGetOrderValueByYear() {
 export function useGetLoyaltyInfo(type: string) {
   return useFetch<Loyalty[]>(["loyalty", type], async () =>
     LoyaltyService.getLoyaltyInfo(type)
+  );
+}
+
+export function useGetAnonymousRankingService(type: string) {
+  return useFetch<Ranking[]>(["ranking", type], async () =>
+    AccountService.getAnonymousRankingService(type)
   );
 }

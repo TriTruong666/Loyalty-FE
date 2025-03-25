@@ -7,3 +7,9 @@ export interface Loyalty {
   discountPP: number;
   note: string;
 }
+
+export interface Ranking {
+  userID: string;
+  rank: Loyalty;
+  currentPoint: number;
+}
