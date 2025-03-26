@@ -22,3 +22,5 @@ export const dataUpdateProductState = atom<Product>({
   price: 0,
   description: "",
 });
+
+export const productDetailState = atom("");

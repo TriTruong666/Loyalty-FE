@@ -20,7 +20,7 @@ import {
   verifyLoginService,
 } from "./service/authenticateService";
 import { showToast } from "./utils/toast";
-import { useGetUserInfo } from "./hooks/hook";
+import { useGetUserInfo, useWelcomeAccountService } from "./hooks/hook";
 import { Button } from "@heroui/react";
 
 export default function Home() {
@@ -217,45 +217,32 @@ function LoginForm() {
 }
 
 function Participants() {
+  const { data: welcome } = useWelcomeAccountService();
   return (
     <div className="flex flex-col mb-[10px]">
       {/* Stacked Images */}
       <div className="flex">
         <div className="flex xl:mt-[-10px]">
-          <Avatar
-            name="Cty TNHH Trung Hanh"
-            role="Doanh nghiệp"
-            className="-ml-2 first:ml-0"
-          />
-          <Avatar
-            name="Truong Hoang Tri"
-            role="Cá nhân"
-            className="-ml-2 first:ml-0"
-          />
-          <Avatar
-            name="Sang Ngoc"
-            role="Cá nhân"
-            className="-ml-2 first:ml-0"
-          />
-          <Avatar
-            name="Long Châu"
-            role="Doanh nghiệp"
-            className="-ml-2 first:ml-0"
-          />
-          <Avatar
-            name="Pharmacity"
-            role="Doanh nghiệp"
-            className="-ml-2 first:ml-0"
-          />
+          {welcome?.slice(0, 5).map((user, i) => (
+            <Avatar
+              key={i}
+              role={user.type}
+              name={user.name}
+              className="-ml-2 first:ml-0"
+            />
+          ))}
         </div>
       </div>
 
       {/* Verified Message */}
       <div className="flex items-center gap-x-3 mt-2">
         <FaCircleCheck className="dark:text-normal text-black 2xl:text-[14px]" />
-        <p className="text-sm dark:text-normal text-black xl:text-[12px] 2xl:text-[12px]">
-          +36 doanh nghiệp & cá nhân đã tham gia Loyalty.
-        </p>
+        {(welcome?.length as number) > 5 && (
+          <p className="text-sm dark:text-normal text-black xl:text-[12px] 2xl:text-[12px]">
+            +{(welcome?.length as number) - 5} doanh nghiệp & cá nhân đã tham
+            gia Loyalty.
+          </p>
+        )}
       </div>
     </div>
   );

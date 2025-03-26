@@ -12,7 +12,7 @@ import * as AnalyticsService from "@/app/service/analyticsService";
 import * as LoyaltyService from "@/app/service/loyaltyService";
 import { CloudinaryAsset } from "../interfaces/Cloudinary";
 import { Brand } from "../interfaces/Brand";
-import { User } from "../interfaces/Account";
+import { User, Welcome } from "../interfaces/Account";
 import { District, Province, Ward } from "../interfaces/Location";
 import { Order } from "../interfaces/Order";
 import { SalesCustomer } from "../interfaces/SalesCustomer";
@@ -215,5 +215,11 @@ export function useGetLoyaltyInfo(type: string) {
 export function useGetAnonymousRankingService(type: string) {
   return useFetch<Ranking[]>(["ranking", type], async () =>
     AccountService.getAnonymousRankingService(type)
+  );
+}
+
+export function useWelcomeAccountService() {
+  return useFetch<Welcome[]>(["welcome"], async () =>
+    AccountService.welcomeAccountService()
   );
 }

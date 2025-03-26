@@ -263,3 +263,12 @@ export const getAnonymousRankingService = async (type: string) => {
     console.error(error);
   }
 };
+
+export const welcomeAccountService = async () => {
+  try {
+    const res = await axiosClient.get(`api/user/welcome`);
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};

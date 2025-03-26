@@ -20,9 +20,15 @@ import { updateProductService } from "@/app/service/productService";
 import { LuPackageX } from "react-icons/lu";
 import { Select, SelectItem } from "@heroui/react";
 import { useAtomValue, useSetAtom } from "jotai";
-import { dataUpdateProductState } from "@/app/store/productAtoms";
+import {
+  dataUpdateProductState,
+  productDetailState,
+} from "@/app/store/productAtoms";
 import { Product } from "@/app/interfaces/Product";
-import { updateProductModalState } from "@/app/store/modalAtoms";
+import {
+  productDetailModalState,
+  updateProductModalState,
+} from "@/app/store/modalAtoms";
 import { userInfoState } from "@/app/store/accountAtoms";
 
 export default function ProductPage() {
@@ -37,6 +43,8 @@ function ProductTable() {
   const userInfo = useAtomValue(userInfoState);
   const setUpdateModal = useSetAtom(updateProductModalState);
   const setSelectedProduct = useSetAtom(dataUpdateProductState);
+  const setDetailModal = useSetAtom(productDetailModalState);
+  const setDetailModalHandle = useSetAtom(productDetailState);
   const [isUpdating, setIsUpdating] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
@@ -52,14 +60,6 @@ function ProductTable() {
     }
   }, [filteredAllProduct]);
   const queryClient = useQueryClient();
-  // const deleteProductMutation = useMutation({
-  //   mutationKey: ["delete-product"],
-  //   mutationFn: deleteProductService,
-  //   onSuccess() {
-  //     showToast("Xoá thành công", "success");
-  //     queryClient.invalidateQueries({ queryKey: ["products"] });
-  //   },
-  // });
   const updateStatusMutation = useMutation({
     mutationKey: ["update-status"],
     mutationFn: async ({ userId, data }: { userId: string; data: any }) =>
@@ -135,6 +135,10 @@ function ProductTable() {
       title: "Tên Z-A",
     },
   ];
+  const handleToggleDetailModal = (handle: string) => {
+    setDetailModalHandle(handle);
+    setDetailModal(true);
+  };
   if (isLoading || isUpdating) {
     return (
       <>
@@ -275,6 +279,9 @@ function ProductTable() {
                         <p className="group-hover:text-warning">Hết Hàng</p>
                       </DropdownItem>
                       <DropdownItem
+                        onPress={() =>
+                          handleToggleDetailModal(item.handle as string)
+                        }
                         className="group"
                         color="default"
                         startContent={

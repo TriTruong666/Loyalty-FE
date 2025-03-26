@@ -39,3 +39,8 @@ interface Rank {
   discountCustom?: number;
   note: string;
 }
+
+export interface Welcome {
+  name: string;
+  type: string;
+}

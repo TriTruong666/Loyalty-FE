@@ -23,6 +23,11 @@ export const Avatar: FC<AvatarProps> = ({ name, className, role }) => {
   const [toggleInfo, setToggleInfo] = useState(false);
   const color = generateColorFromName(name);
 
+  const roleName: Record<string, string> = {
+    business: "Doanh nghiệp",
+    personal: "Cá nhân",
+  };
+
   return (
     <div className={`${className} relative font-open`}>
       {toggleInfo && (
@@ -34,7 +39,7 @@ export const Avatar: FC<AvatarProps> = ({ name, className, role }) => {
           className="absolute px-[20px] py-[10px] min-w-[200px] rounded-[10px] top-[-70px] left-[-80px] flex flex-col justify-center items-center bg-black border border-gray-600 border-opacity-40"
         >
           <p className="text-sm line-clamp-1 font-semibold">{name}</p>
-          <p className="text-[12px] font-light">{role}</p>
+          <p className="text-[12px] font-light">{roleName[role ?? ""]}</p>
         </motion.div>
       )}
 

@@ -1,7 +1,7 @@
 "use client";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import { Pagination } from "@heroui/pagination";
-import { FaEdit, FaPowerOff } from "react-icons/fa";
+import { FaInbox, FaPowerOff } from "react-icons/fa";
 import {
   Dropdown,
   DropdownItem,
@@ -16,15 +16,14 @@ import { formatPrice } from "@/app/utils/format";
 import { useEffect, useState } from "react";
 import { LoadingTable } from "@/app/components/loading";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  deleteProductService,
-  updateProductService,
-} from "@/app/service/productService";
+import { updateProductService } from "@/app/service/productService";
 import { LuPackageX } from "react-icons/lu";
 import { Select, SelectItem } from "@heroui/react";
-import { useAtomValue } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { Product } from "@/app/interfaces/Product";
 import { userInfoState } from "@/app/store/accountAtoms";
+import { productDetailModalState } from "@/app/store/modalAtoms";
+import { productDetailState } from "@/app/store/productAtoms";
 
 export default function ProductPage() {
   return (
@@ -36,6 +35,8 @@ export default function ProductPage() {
 
 function ProductTable() {
   const userInfo = useAtomValue(userInfoState);
+  const setDetailModal = useSetAtom(productDetailModalState);
+  const setDetailModalHandle = useSetAtom(productDetailState);
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -51,14 +52,6 @@ function ProductTable() {
     }
   }, [filteredAllProduct]);
   const queryClient = useQueryClient();
-  const deleteProductMutation = useMutation({
-    mutationKey: ["delete-product"],
-    mutationFn: deleteProductService,
-    onSuccess() {
-      showToast("Xoá thành công", "success");
-      queryClient.invalidateQueries({ queryKey: ["products"] });
-    },
-  });
   const updateStatusMutation = useMutation({
     mutationKey: ["update-status"],
     mutationFn: async ({ userId, data }: { userId: string; data: any }) =>
@@ -72,6 +65,10 @@ function ProductTable() {
       showToast("Sửa đổi trạng thái thành công", "success");
     },
   });
+  const handleToggleDetailModal = (handle: string) => {
+    setDetailModalHandle(handle);
+    setDetailModal(true);
+  };
   const statusTheme = (status: string) => {
     switch (status) {
       case "hethang":
@@ -107,13 +104,6 @@ function ProductTable() {
         return "text-red-500";
       default:
         return "";
-    }
-  };
-  const handleDelProduct = async (productId: string) => {
-    try {
-      await deleteProductMutation.mutateAsync(productId);
-    } catch (error) {
-      console.error(error);
     }
   };
 
@@ -228,21 +218,6 @@ function ProductTable() {
                     </DropdownTrigger>
                     <DropdownMenu>
                       <DropdownItem
-                        onPress={() =>
-                          handleDelProduct(item.productId as string)
-                        }
-                        className="group"
-                        color="default"
-                        startContent={
-                          <FaEdit className="text-[16px] group-hover:text-danger" />
-                        }
-                        key="delete"
-                      >
-                        <p className="group-hover:text-danger">
-                          Xoá (for test)
-                        </p>
-                      </DropdownItem>
-                      <DropdownItem
                         onPress={() => handleChangeStatusProductToActive(item)}
                         className="group"
                         color="default"
@@ -252,6 +227,19 @@ function ProductTable() {
                         key="change-active"
                       >
                         <p className="group-hover:text-success">Bán lại</p>
+                      </DropdownItem>
+                      <DropdownItem
+                        onPress={() =>
+                          handleToggleDetailModal(item.handle as string)
+                        }
+                        className="group"
+                        color="default"
+                        startContent={
+                          <FaInbox className="text-[16px] group-hover:text-success" />
+                        }
+                        key="show"
+                      >
+                        <p className="group-hover:text-success">Chi tiết</p>
                       </DropdownItem>
                     </DropdownMenu>
                   </Dropdown>
