@@ -54,9 +54,13 @@ export function useGetProductDetailByHandle(handle: string) {
     ProductService.getProductDetailByHandle(handle)
   );
 }
-export function useGetProductByLimit(page: number, mode: string) {
-  return useFetch<Product[]>(["products", page], async () =>
-    ProductService.getProductServiceByLimit(page, mode)
+export function useGetProductByLimit(
+  page: number,
+  mode: string,
+  sortBy: string
+) {
+  return useFetch<Product[]>(["products", page, mode, sortBy], async () =>
+    ProductService.getProductServiceByLimit(page, mode, sortBy)
   );
 }
 export function useSearchProductByKeyword(keyword: string) {

@@ -8,8 +8,11 @@ export const getUserInfo = async () => {
     console.error(error);
 
     if (axios.isAxiosError(error) && error.response?.status === 401) {
-      if (typeof window !== "undefined" && window.location.pathname !== "/") {
-        window.location.href = "/";
+      if (typeof window !== "undefined") {
+        const currentPath = window.location.pathname;
+        if (currentPath !== "/" && currentPath !== "/reset") {
+          window.location.href = "/";
+        }
       }
     }
   }

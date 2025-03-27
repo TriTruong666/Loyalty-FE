@@ -40,8 +40,14 @@ function ProductTable() {
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [sortBy, setSortBy] = useState("name-asc");
+
   const limit = 8;
-  const { data: products, isLoading } = useGetProductByLimit(page, "hetban");
+  const { data: products, isLoading } = useGetProductByLimit(
+    page,
+    "hetban",
+    sortBy
+  );
   const { data: allProduct } = useAllProduct();
   const filteredAllProduct = allProduct?.filter(
     (product) => product.status === "hetban"
@@ -115,14 +121,10 @@ function ProductTable() {
     );
   }
   const productSort = [
-    {
-      key: "nameASC",
-      title: "Tên A-Z",
-    },
-    {
-      key: "nameDESC",
-      title: "Tên Z-A",
-    },
+    { key: "name-asc", title: "Tên A-Z" },
+    { key: "name-desc", title: "Tên Z-A" },
+    { key: "price-lowest", title: "Giá thấp nhất" },
+    { key: "price-highest", title: "Giá cao nhất" },
   ];
   if (products?.length === 0) {
     return (
@@ -140,7 +142,14 @@ function ProductTable() {
     <>
       <div className="flex items-center px-[40px] py-[20px] mt-[10px] justify-end gap-x-4">
         <div className="w-[250px]">
-          <Select placeholder="Sắp xếp" variant="underlined">
+          <Select
+            placeholder="Sắp xếp"
+            variant="underlined"
+            selectedKeys={[sortBy]}
+            onSelectionChange={(keys) =>
+              setSortBy(Array.from(keys)[0] as string)
+            }
+          >
             {productSort.map((item) => (
               <SelectItem key={item.key}>{item.title}</SelectItem>
             ))}

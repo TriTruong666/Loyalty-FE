@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { RiLineChartLine } from "react-icons/ri";
+import { RiLineChartLine, RiRobot3Line } from "react-icons/ri";
 import { usePathname } from "next/navigation";
 import { HiOutlineUser, HiOutlineUserGroup } from "react-icons/hi2";
 import { LuPackage2 } from "react-icons/lu";
@@ -139,6 +139,12 @@ function AdminMenu() {
       typography: ordersLength,
     },
     {
+      name: "Chatbot",
+      icon: RiRobot3Line,
+      path: "/dashboard/chatbot",
+      typography: "Mới",
+    },
+    {
       name: "Thư viện",
       icon: MdOutlinePermMedia,
       path: "/dashboard/media",
@@ -232,7 +238,7 @@ function MenuItem({
   name: string;
   icon: any;
   path: string;
-  typography?: number;
+  typography?: number | string;
 }) {
   const pathName = usePathname();
   const isActive =
@@ -345,6 +351,12 @@ function UserMenu() {
       icon: LuFileText,
       path: "/dashboard/orders",
       typography: ordersLength,
+    },
+    {
+      name: "Chatbot",
+      icon: RiRobot3Line,
+      path: "/dashboard/chatbot",
+      typography: "Mới",
     },
     {
       name: "Thông báo",

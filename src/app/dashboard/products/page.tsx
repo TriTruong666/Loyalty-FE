@@ -41,6 +41,7 @@ export default function ProductPage() {
 
 function ProductTable() {
   const userInfo = useAtomValue(userInfoState);
+
   const setUpdateModal = useSetAtom(updateProductModalState);
   const setSelectedProduct = useSetAtom(dataUpdateProductState);
   const setDetailModal = useSetAtom(productDetailModalState);
@@ -48,8 +49,13 @@ function ProductTable() {
   const [isUpdating, setIsUpdating] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
+  const [sortBy, setSortBy] = useState("name-asc");
   const limit = 8;
-  const { data: products, isLoading } = useGetProductByLimit(page, "dangban");
+  const { data: products, isLoading } = useGetProductByLimit(
+    page,
+    "dangban",
+    sortBy
+  );
   const { data: allProduct } = useAllProduct();
   const filteredAllProduct = allProduct?.filter(
     (product) => product.status === "dangban"
@@ -126,15 +132,12 @@ function ProductTable() {
     setSelectedProduct(data);
   };
   const productSort = [
-    {
-      key: "nameASC",
-      title: "Tên A-Z",
-    },
-    {
-      key: "nameDESC",
-      title: "Tên Z-A",
-    },
+    { key: "name-asc", title: "Tên A-Z" },
+    { key: "name-desc", title: "Tên Z-A" },
+    { key: "price-lowest", title: "Giá thấp nhất" },
+    { key: "price-highest", title: "Giá cao nhất" },
   ];
+
   const handleToggleDetailModal = (handle: string) => {
     setDetailModalHandle(handle);
     setDetailModal(true);
@@ -163,7 +166,14 @@ function ProductTable() {
     <>
       <div className="flex items-center px-[40px] py-[20px] mt-[10px] justify-end gap-x-4">
         <div className="w-[250px]">
-          <Select placeholder="Sắp xếp" variant="underlined">
+          <Select
+            placeholder="Sắp xếp"
+            variant="underlined"
+            selectedKeys={[sortBy]}
+            onSelectionChange={(keys) =>
+              setSortBy(Array.from(keys)[0] as string)
+            }
+          >
             {productSort.map((item) => (
               <SelectItem key={item.key}>{item.title}</SelectItem>
             ))}

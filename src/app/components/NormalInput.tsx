@@ -37,7 +37,7 @@ const NormalInput: FC<NormalInputProps> = ({
           {label}
         </label>
       )}
-      <div className="group flex items-center py-3 px-3 border space-x-4 border-gray-600 border-opacity-20 rounded-md transition-all duration-300 hover:border-opacity-80 focus-within:border-opacity-80 hover:shadow-md focus-within:shadow-md">
+      <div className="group flex items-center py-3 px-3 border gap-x-4 border-gray-600 border-opacity-20 rounded-md transition-all duration-300 hover:border-opacity-80 focus-within:border-opacity-80 hover:shadow-md focus-within:shadow-md">
         <div className="text-gray-700">{icon}</div>
         <input
           id={name}
