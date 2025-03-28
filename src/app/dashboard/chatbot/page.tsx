@@ -11,6 +11,8 @@ import dynamic from "next/dynamic";
 import { ChangeEvent, ReactNode, useState } from "react";
 import { GrCircleInformation } from "react-icons/gr";
 import { RiAttachment2, RiSendPlaneLine } from "react-icons/ri";
+import { IoBookOutline, IoCartOutline } from "react-icons/io5";
+import { MdFaceRetouchingNatural } from "react-icons/md";
 const DynamicLottie = dynamic(() => import("lottie-react"), { ssr: false });
 export default function ChatbotPage() {
   const info = useAtomValue(userInfoState);
@@ -61,39 +63,64 @@ export default function ChatbotPage() {
     const lineBreaks = e.target.value.split("\n").length;
     setRows(lineBreaks > 1 ? Math.min(lineBreaks, 5) : 1);
   };
-  const handleSend = async () => {
-    setRows(1);
-    setRealPrompt(prompt);
-    setPrompt("");
-    if (prompt === "") {
+  const handleSend = async (message = prompt) => {
+    if (!message.trim()) {
       showToast("Vui lòng nhập câu hỏi", "error");
       return;
     }
+    setRows(1);
+    setRealPrompt(message); // Cập nhật realPrompt với message
+    setTimeout(() => {
+      setPrompt("");
+    }, 200);
     try {
       await chatbotMutation.mutateAsync({
         id: numericPart as string,
-        message: prompt,
+        message: message,
       });
     } catch (error) {
       console.error(error);
     }
   };
+
+  const handleSendRecommendPrompt = (mess: string) => {
+    setPrompt(mess);
+    handleSend(mess);
+  };
   const recommendPrompts: RecommendPromptProps[] = [
     {
       icon: <GrCircleInformation className="text-[20px]" />,
       message: "Cho tôi biết một số thông tin về PicareVN Loyalty",
+      onClick() {
+        handleSendRecommendPrompt(
+          "Cho tôi biết một số thông tin về PicareVN Loyalty"
+        );
+      },
     },
     {
-      icon: <GrCircleInformation className="text-[20px]" />,
-      message: "Cho tôi biết một số thông tin về PicareVN Loyalty",
+      icon: <MdFaceRetouchingNatural className="text-[20px]" />,
+      message: "Giới thiệu cho tôi vài sản phẩm sữa rửa mặt",
+      onClick() {
+        handleSendRecommendPrompt(
+          "Giới thiệu cho tôi vài sản phẩm sữa rửa mặt"
+        );
+      },
     },
     {
-      icon: <GrCircleInformation className="text-[20px]" />,
-      message: "Cho tôi biết một số thông tin về PicareVN Loyalty",
+      icon: <IoCartOutline className="text-[20px]" />,
+      message: "Mặt nạ nào có giá ổn định và hiệu quả tốt",
+      onClick() {
+        handleSendRecommendPrompt("Mặt nạ nào có giá ổn định và hiệu quả tốt");
+      },
     },
     {
-      icon: <GrCircleInformation className="text-[20px]" />,
-      message: "Cho tôi biết một số thông tin về PicareVN Loyalty",
+      icon: <IoBookOutline className="text-[20px]" />,
+      message: "Chính sách tích điểm thưởng PicareVN Loyalty",
+      onClick() {
+        handleSendRecommendPrompt(
+          "Chính sách tích điểm thưởng PicareVN Loyalty"
+        );
+      },
     },
   ];
   return (
@@ -144,7 +171,7 @@ export default function ChatbotPage() {
         </div>
       )}
       {/* Prompt input */}
-      <div className="fixed w-[calc(100vw-270px)] bottom-0 py-[30px] bg-background px-[40px] flex flex-col">
+      <div className="fixed w-[calc(100vw-270px)] bottom-0 py-[30px] h-fit bg-background px-[40px] flex flex-col">
         {/* Search */}
         <div className="group flex items-center py-3 px-3 border-[2px] justify-between gap-x-4 border-neutral-600 border-opacity-20 rounded-[15px] transition-all duration-300 hover:border-opacity-80 focus-within:border-opacity-80 hover:shadow-md focus-within:shadow-md">
           <div className=" flex items-center w-[90%]">
@@ -180,7 +207,7 @@ export default function ChatbotPage() {
               radius="full"
               color="default"
               size="md"
-              onPress={handleSend}
+              onPress={() => handleSend()}
             >
               <RiSendPlaneLine className="text-[22px]" />
             </Button>
