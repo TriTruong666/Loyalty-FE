@@ -1,9 +1,13 @@
 import axiosClient from "../utils/axiosClient";
 
-export const getOrderByLimitByStatus = async (page: number, status: string) => {
+export const getOrderByLimitByStatus = async (
+  page: number,
+  status: string,
+  sortBy: string
+) => {
   try {
     const res = await axiosClient.get(
-      `/api/order/limit?limit=8&page=${page}&status=${status}`
+      `/api/order/limit?limit=8&page=${page}&status=${status}&sortBy=${sortBy}`
     );
     return res.data;
   } catch (error) {

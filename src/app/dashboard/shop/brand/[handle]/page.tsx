@@ -22,6 +22,7 @@ import { BsBox2 } from "react-icons/bs";
 import { userInfoState } from "@/app/store/accountAtoms";
 import { MdReportGmailerrorred } from "react-icons/md";
 import AuthComponent from "@/app/components/AuthComponent";
+import { Select, SelectItem } from "@heroui/react";
 const layoutState = atom("layout2");
 const ITEMS_PER_LOAD = 8;
 export default function BrandProductShopPage() {
@@ -89,9 +90,11 @@ export default function BrandProductShopPage() {
 function ProductSection() {
   const params = useParams();
   const handle = params.handle;
+  const [sortBy, setSortBy] = useState("");
   const { data: products, isLoading } = useGetProductByBrand(
     handle as string,
-    "dangban"
+    "dangban",
+    sortBy
   );
   const [displayedProducts, setDisplayedProducts] = useState<ProductProps[]>(
     []
@@ -125,6 +128,12 @@ function ProductSection() {
   const handleChangeLayout = (layout: string) => {
     setLayout(layout);
   };
+  const productSort = [
+    { key: "name-asc", title: "Tên A-Z" },
+    { key: "name-desc", title: "Tên Z-A" },
+    { key: "price-lowest", title: "Giá thấp nhất" },
+    { key: "price-highest", title: "Giá cao nhất" },
+  ];
   if (products?.length === 0) {
     return (
       <div className="w-full h-[550px] flex flex-col justify-center items-center gap-y-[20px]">
@@ -168,6 +177,20 @@ function ProductSection() {
             <TfiLayoutGrid4 className="text-[20px]" />
           </Button>
         </ButtonGroup>
+        <div className="w-[250px]">
+          <Select
+            placeholder="Sắp xếp"
+            variant="underlined"
+            selectedKeys={[sortBy]}
+            onSelectionChange={(keys) =>
+              setSortBy(Array.from(keys)[0] as string)
+            }
+          >
+            {productSort.map((item) => (
+              <SelectItem key={item.key}>{item.title}</SelectItem>
+            ))}
+          </Select>
+        </div>
       </div>
       <div
         className={`grid ${

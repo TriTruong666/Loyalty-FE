@@ -73,10 +73,14 @@ export const deleteProductService = async (productId: string) => {
   }
 };
 
-export const getProductByBrand = async (handle: string, status: string) => {
+export const getProductByBrand = async (
+  handle: string,
+  status: string,
+  sortBy: string
+) => {
   try {
     const res = await axiosClient.get(
-      `/api/product/by-brand-handle/${handle}?status=${status}`
+      `/api/product/by-brand-handle/${handle}?status=${status}&sortBy=${sortBy}`
     );
     return res.data;
   } catch (error) {

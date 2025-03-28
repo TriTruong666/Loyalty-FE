@@ -44,9 +44,13 @@ export function useAllProduct() {
     ProductService.getAllProductService()
   );
 }
-export function useGetProductByBrand(handle: string, status: string) {
-  return useFetch<Product[]>(["products", handle, status], async () =>
-    ProductService.getProductByBrand(handle, status)
+export function useGetProductByBrand(
+  handle: string,
+  status: string,
+  sortBy: string
+) {
+  return useFetch<Product[]>(["products", handle, status, sortBy], async () =>
+    ProductService.getProductByBrand(handle, status, sortBy)
   );
 }
 export function useGetProductDetailByHandle(handle: string) {
@@ -149,9 +153,13 @@ export function useGetWardByDistrict(districtId: string) {
     LocationService.getWardsByDistrictId(districtId)
   );
 }
-export function useGetOrderByLimitByStatus(page: number, status: string) {
-  return useFetch<Order[]>(["orders", page, status], async () =>
-    OrderService.getOrderByLimitByStatus(page, status)
+export function useGetOrderByLimitByStatus(
+  page: number,
+  status: string,
+  sortBy: string
+) {
+  return useFetch<Order[]>(["orders", page, status, sortBy], async () =>
+    OrderService.getOrderByLimitByStatus(page, status, sortBy)
   );
 }
 export function useGetAllOrders() {

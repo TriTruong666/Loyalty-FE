@@ -30,7 +30,7 @@ import {
   createInvoiceService,
   updateOrderService,
 } from "@/app/service/orderService";
-import { Input } from "@heroui/react";
+import { Input, Select, SelectItem } from "@heroui/react";
 import {
   cancelOrderState,
   checkTransactionOrderState,
@@ -70,13 +70,15 @@ function AdminOrderTable() {
   const setCheckTransactionModal = useSetAtom(checkTransactionModalState);
   const setCancelModal = useSetAtom(cancelOrderModalState);
   const setCancelModalId = useSetAtom(cancelOrderState);
+  const [sortBy, setSortBy] = useState("");
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const [isMounted, setIsMounted] = useState(false);
 
   const { data: orders, isLoading } = useGetOrderByLimitByStatus(
     page,
-    "pending"
+    "pending",
+    sortBy
   );
   const limit = 8;
   const { data: allOrders } = useGetAllOrders();
@@ -190,6 +192,11 @@ function AdminOrderTable() {
         return "";
     }
   };
+  const orderSort = [
+    { key: "price-lowest", title: "Hoá đơn thấp nhất" },
+    { key: "price-highest", title: "Hoá đơn cao nhất" },
+  ];
+
   if (isLoading || !isMounted) {
     return (
       <>
@@ -211,29 +218,18 @@ function AdminOrderTable() {
     <div className="flex flex-col">
       <div className="flex items-center px-[40px] py-[20px] mt-[10px] justify-end gap-x-4">
         <div className="w-[250px]">
-          {/* <ThemeProvider value={selectTheme}>
-            <Select
-              label="Sắp xếp"
-              variant="standard"
-              className="font-inter font-semibold"
-            >
-              <Option>Tên khách hàng (A → Z)</Option>
-              <Option>Tên khách hàng (Z → A)</Option>
-            </Select>
-          </ThemeProvider> */}
-        </div>
-        <div className="w-[250px]">
-          {/* <ThemeProvider value={selectTheme}>
-            <Select
-              label="Bộ lọc"
-              variant="standard"
-              className="font-inter font-semibold"
-            >
-              <Option>Bởi trạng thái</Option>
-              <Option>Bởi ID (Tăng dần)</Option>
-              <Option>Bởi ID (Giảm dần)</Option>
-            </Select>
-          </ThemeProvider> */}
+          <Select
+            placeholder="Sắp xếp"
+            variant="underlined"
+            selectedKeys={[sortBy]}
+            onSelectionChange={(keys) =>
+              setSortBy(Array.from(keys)[0] as string)
+            }
+          >
+            {orderSort.map((item) => (
+              <SelectItem key={item.key}>{item.title}</SelectItem>
+            ))}
+          </Select>
         </div>
       </div>
       <div className="flex mt-[20px] flex-col items-center">
@@ -394,6 +390,7 @@ function UserOrderTable() {
   const setCreateQRModal = useSetAtom(createQRModalState);
   const setResponseQR = useSetAtom(responsePaymentState);
   const setQRImage = useSetAtom(qrImageState);
+  const [sortBy, setSortBy] = useState("");
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const [noteData, setNoteData] = useState("");
@@ -401,7 +398,8 @@ function UserOrderTable() {
 
   const { data: orders, isLoading } = useGetOrderByLimitByStatus(
     page,
-    "pending"
+    "pending",
+    sortBy
   );
   const limit = 8;
   const { data: allOrders } = useGetAllOrders();
@@ -575,6 +573,10 @@ function UserOrderTable() {
         return "";
     }
   };
+  const orderSort = [
+    { key: "price-lowest", title: "Hoá đơn thấp nhất" },
+    { key: "price-highest", title: "Hoá đơn cao nhất" },
+  ];
   if (isLoading || !isMounted) {
     return (
       <>
@@ -596,29 +598,18 @@ function UserOrderTable() {
     <div className="flex flex-col" onClick={handleToggleNoteModalOff}>
       <div className="flex items-center px-[40px] py-[20px] mt-[10px] justify-end gap-x-4">
         <div className="w-[250px]">
-          {/* <ThemeProvider value={selectTheme}>
-            <Select
-              label="Sắp xếp"
-              variant="standard"
-              className="font-inter font-semibold"
-            >
-              <Option>Tên khách hàng (A → Z)</Option>
-              <Option>Tên khách hàng (Z → A)</Option>
-            </Select>
-          </ThemeProvider> */}
-        </div>
-        <div className="w-[250px]">
-          {/* <ThemeProvider value={selectTheme}>
-            <Select
-              label="Bộ lọc"
-              variant="standard"
-              className="font-inter font-semibold"
-            >
-              <Option>Bởi trạng thái</Option>
-              <Option>Bởi ID (Tăng dần)</Option>
-              <Option>Bởi ID (Giảm dần)</Option>
-            </Select>
-          </ThemeProvider> */}
+          <Select
+            placeholder="Sắp xếp"
+            variant="underlined"
+            selectedKeys={[sortBy]}
+            onSelectionChange={(keys) =>
+              setSortBy(Array.from(keys)[0] as string)
+            }
+          >
+            {orderSort.map((item) => (
+              <SelectItem key={item.key}>{item.title}</SelectItem>
+            ))}
+          </Select>
         </div>
       </div>
       <div className="flex mt-[20px] flex-col items-center">
@@ -793,13 +784,15 @@ function StaffOrderDetail() {
   const setDetailModalId = useSetAtom(detailOrderState);
   const setCheckTransactionModalId = useSetAtom(checkTransactionOrderState);
   const setCheckTransactionModal = useSetAtom(checkTransactionModalState);
+  const [sortBy, setSortBy] = useState("");
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const [isMounted, setIsMounted] = useState(false);
 
   const { data: orders, isLoading } = useGetOrderByLimitByStatus(
     page,
-    "pending"
+    "pending",
+    sortBy
   );
   const limit = 8;
   const { data: allOrders } = useGetAllOrders();
@@ -904,6 +897,10 @@ function StaffOrderDetail() {
         return "";
     }
   };
+  const orderSort = [
+    { key: "price-lowest", title: "Hoá đơn thấp nhất" },
+    { key: "price-highest", title: "Hoá đơn cao nhất" },
+  ];
   if (isLoading || !isMounted) {
     return (
       <>
@@ -925,29 +922,18 @@ function StaffOrderDetail() {
     <div className="flex flex-col">
       <div className="flex items-center px-[40px] py-[20px] mt-[10px] justify-end gap-x-4">
         <div className="w-[250px]">
-          {/* <ThemeProvider value={selectTheme}>
-            <Select
-              label="Sắp xếp"
-              variant="standard"
-              className="font-inter font-semibold"
-            >
-              <Option>Tên khách hàng (A → Z)</Option>
-              <Option>Tên khách hàng (Z → A)</Option>
-            </Select>
-          </ThemeProvider> */}
-        </div>
-        <div className="w-[250px]">
-          {/* <ThemeProvider value={selectTheme}>
-            <Select
-              label="Bộ lọc"
-              variant="standard"
-              className="font-inter font-semibold"
-            >
-              <Option>Bởi trạng thái</Option>
-              <Option>Bởi ID (Tăng dần)</Option>
-              <Option>Bởi ID (Giảm dần)</Option>
-            </Select>
-          </ThemeProvider> */}
+          <Select
+            placeholder="Sắp xếp"
+            variant="underlined"
+            selectedKeys={[sortBy]}
+            onSelectionChange={(keys) =>
+              setSortBy(Array.from(keys)[0] as string)
+            }
+          >
+            {orderSort.map((item) => (
+              <SelectItem key={item.key}>{item.title}</SelectItem>
+            ))}
+          </Select>
         </div>
       </div>
       <div className="flex mt-[20px] flex-col items-center">

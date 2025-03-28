@@ -99,7 +99,8 @@ export default function ProfileSettingDropdown() {
                   onClick={handleToggleSearchModalOn}
                 />
                 <Item
-                  title="Giới thiệu"
+                  title="Chính sách"
+                  link="/policies"
                   icon={<GrHelpBook className="text-[18px]" />}
                 />
                 <Item

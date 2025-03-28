@@ -49,7 +49,7 @@ function ProductTable() {
   const [isUpdating, setIsUpdating] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
-  const [sortBy, setSortBy] = useState("name-asc");
+  const [sortBy, setSortBy] = useState("");
   const limit = 8;
   const { data: products, isLoading } = useGetProductByLimit(
     page,
