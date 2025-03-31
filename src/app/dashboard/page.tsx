@@ -308,7 +308,7 @@ interface CircleChartProps {
 }
 
 function OrderSummary() {
-  const { data: orders } = useGetOrderByLimitByStatus(1, "pending");
+  const { data: orders } = useGetOrderByLimitByStatus(1, "pending", "");
   const newOrders = orders?.slice(0, 5);
   const { data: allOrders } = useGetAllOrders();
   const pendingOrders = allOrders?.filter(
@@ -518,9 +518,53 @@ function RevenueDetail() {
   const handleBack = () => {
     setProgress(1);
   };
-  const { data: yearly } = useGetOrderValueByYear();
 
-  const data = useMemo(() => {
+  const { data: yearly } = useGetOrderValueByYear();
+  const { to, from } = useMemo(() => {
+    const to = new Date();
+    const from = new Date();
+    from.setDate(to.getDate() - 10);
+    return { to, from };
+  }, []); // Empty dependency array ensures this runs only once
+
+  const formatDate = (date: Date) => date.toISOString().split("T")[0];
+
+  const { data: daily } = useGetOrderValueByDaily(
+    formatDate(from),
+    formatDate(to)
+  );
+
+  const thisDayData = useMemo(() => {
+    if (!daily?.data) return [];
+
+    const startDate = new Date(from);
+    const endDate = new Date(to);
+    const dateMap = new Map();
+
+    daily.data.forEach(({ date, total }) => {
+      dateMap.set(date, total);
+    });
+
+    const result = [];
+    const currentDate = new Date(startDate);
+
+    while (currentDate <= endDate) {
+      const formattedDate = currentDate.toISOString().split("T")[0];
+      const [year, month, day] = formattedDate.split("-");
+      const displayDate = `${day}-${month}-${year}`;
+
+      result.push({
+        date: displayDate,
+        "Doanh thu": dateMap.get(formattedDate) || 0,
+      });
+
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    return result;
+  }, [daily, from, to]);
+
+  const thisMonthdata = useMemo(() => {
     if (!yearly?.data) return [];
 
     return yearly.data.map(({ month, total }) => {
@@ -586,15 +630,15 @@ function RevenueDetail() {
       >
         Quay lại
       </p>
-      <div className="flex justify-between mt-[40px] font-open">
+      <div className="flex justify-between mt-[40px] font-open gap-x-[20px]">
         {/* This month vs last month */}
         <div className="flex justify-between p-[20px] bg-neutral-900 bg-opacity-40 border border-gray-400-40 rounded-xl w-full">
           {/* detail */}
           <div className="flex flex-col justify-between gap-y-[20px]">
-            <p className="font-light text-normal text-[18px]">
+            <p className="font-light text-normal text-[14px]">
               Giá trị đơn hàng tháng này
             </p>
-            <p className="font-semibold text-foreground text-[24px]">
+            <p className="font-semibold text-foreground text-[20px]">
               {formatPrice(currentMonthTotal as number)}
             </p>
             <p className="flex items-center gap-x-[6px]">
@@ -617,7 +661,73 @@ function RevenueDetail() {
           {/* chart */}
           <div className="flex w-[50%]">
             <ResponsiveContainer width="100%" height={140}>
-              <AreaChart data={data}>
+              <AreaChart data={thisMonthdata}>
+                <defs>
+                  {lastMonthTotal > 0 && currentMonthTotal > lastMonthTotal ? (
+                    <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#a4ff66" stopOpacity={0.4} />
+                      <stop offset="95%" stopColor="#a4ff66" stopOpacity={0} />
+                    </linearGradient>
+                  ) : lastMonthTotal > 0 &&
+                    currentMonthTotal < lastMonthTotal ? (
+                    <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#ef4444" stopOpacity={0.4} />
+                      <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                    </linearGradient>
+                  ) : (
+                    <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#9ca3af" stopOpacity={0.4} />
+                      <stop offset="95%" stopColor="#9ca3af" stopOpacity={0} />
+                    </linearGradient>
+                  )}
+                </defs>
+                <Area
+                  type="monotone"
+                  dataKey="Doanh thu"
+                  stroke={
+                    lastMonthTotal > 0 && currentMonthTotal > lastMonthTotal
+                      ? "#a4ff66"
+                      : lastMonthTotal > 0 && currentMonthTotal < lastMonthTotal
+                      ? "#ef4444"
+                      : "#9ca3af"
+                  }
+                  fill="url(#colorUv)"
+                  strokeWidth={2}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+        <div className="flex justify-between p-[20px] bg-neutral-900 bg-opacity-40 border border-gray-400-40 rounded-xl w-full">
+          {/* detail */}
+          <div className="flex flex-col justify-between gap-y-[20px]">
+            <p className="font-light text-normal text-[14px]">
+              Giá trị đơn hàng hôm nay
+            </p>
+            <p className="font-semibold text-foreground text-[20px]">
+              {formatPrice(currentMonthTotal as number)}
+            </p>
+            <p className="flex items-center gap-x-[6px]">
+              {lastMonthTotal > 0 && currentMonthTotal > lastMonthTotal ? (
+                <span className="flex items-center text-primary gap-x-[5px]">
+                  <LuArrowUpRight className="text-[20px]" />
+                  <span>{increasePercentage}</span>
+                </span>
+              ) : lastMonthTotal > 0 && currentMonthTotal < lastMonthTotal ? (
+                <span className="flex items-center text-red-500 gap-x-[5px]">
+                  <LuArrowDownRight className="text-[20px]" />
+                  <span>{increasePercentage}</span>
+                </span>
+              ) : (
+                <span className="text-gray-400">{increasePercentage}</span>
+              )}
+              <span className="text-normal">so với tháng trước</span>
+            </p>
+          </div>
+          {/* chart */}
+          <div className="flex w-[50%]">
+            <ResponsiveContainer width="100%" height={140}>
+              <AreaChart data={thisDayData}>
                 <defs>
                   {lastMonthTotal > 0 && currentMonthTotal > lastMonthTotal ? (
                     <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
