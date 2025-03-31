@@ -32,6 +32,10 @@ export default function PoliciesLayout({
       href: "/policies/huong-dan",
       title: "Hướng dẫn mua hàng",
     },
+    {
+      href: "/policies/mien-tru",
+      title: "Miễn trừ trách nhiệm",
+    },
   ];
   return (
     <div className="flex flex-col relative w-screen min-h-screen">
