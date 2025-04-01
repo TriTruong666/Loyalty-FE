@@ -4,7 +4,7 @@ export default function DoitraPolicyPage() {
   return (
     <div className="flex flex-col relative font-open w-full border-r border-neutral-700 p-4">
       <div className="flex justify-center">
-        <p className="text-[28px] font-bold">Chính sách đổi trả</p>
+        <p className="text-[32px] font-bold">Chính sách đổi trả</p>
       </div>
       <div className="flex flex-col mt-[40px] text-neutral-300">
         <p>Picare cam kết cung cấp sản phẩm Chính hãng.</p>
@@ -52,7 +52,9 @@ export default function DoitraPolicyPage() {
 
         <h3 className="text-xl font-semibold mt-4">Cách thức đổi trả hàng</h3>
         <ul className="list-disc list-inside space-y-2 ml-[20px]">
-          <li>Điền "Phiếu hoàn trả sản phẩm".</li>
+          <li>
+            Điền <span className="font-bold">Phiếu hoàn trả sản phẩm.</span>
+          </li>
           <li>Đóng gói sản phẩm kèm hóa đơn và phiếu hoàn trả.</li>
           <li>
             Gửi về địa chỉ:{" "}
