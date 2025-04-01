@@ -24,7 +24,7 @@ export default function ResponsiveWrapper({
   if (isMobileOrTablet) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-black text-white text-lg font-bold">
-        Not Available on Mobile or Tablet
+        Không hỗ trợ trên thiết bị di động !
       </div>
     );
   }

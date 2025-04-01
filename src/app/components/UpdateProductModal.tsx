@@ -81,7 +81,7 @@ function ProductForm() {
     onMutate() {
       setIsLoading(true);
     },
-    onSuccess(data) {
+    onSuccess() {
       queryClient.invalidateQueries({ queryKey: ["products"] });
       showToast("Cập nhật sản phẩm thành công", "success");
       setUpdateModal(false);

@@ -27,9 +27,11 @@ import {
 import { Product } from "@/app/interfaces/Product";
 import {
   productDetailModalState,
+  updateImageModalState,
   updateProductModalState,
 } from "@/app/store/modalAtoms";
 import { userInfoState } from "@/app/store/accountAtoms";
+import { RiImageAddFill } from "react-icons/ri";
 
 export default function ProductPage() {
   return (
@@ -41,7 +43,7 @@ export default function ProductPage() {
 
 function ProductTable() {
   const userInfo = useAtomValue(userInfoState);
-
+  const setUpdateImageModal = useSetAtom(updateImageModalState);
   const setUpdateModal = useSetAtom(updateProductModalState);
   const setSelectedProduct = useSetAtom(dataUpdateProductState);
   const setDetailModal = useSetAtom(productDetailModalState);
@@ -129,6 +131,10 @@ function ProductTable() {
   };
   const handleUpdateProduct = (data: Product) => {
     setUpdateModal(true);
+    setSelectedProduct(data);
+  };
+  const handleUpdateImageProduct = (data: Product) => {
+    setUpdateImageModal(true);
     setSelectedProduct(data);
   };
   const productSort = [
@@ -266,6 +272,23 @@ function ProductTable() {
                           Xoá (for test)
                         </p>
                       </DropdownItem> */}
+                      {item.imageUrl === "" ? (
+                        <>
+                          <DropdownItem
+                            onPress={() => handleUpdateImageProduct(item)}
+                            className="group"
+                            color="default"
+                            startContent={
+                              <RiImageAddFill className="text-[16px] group-hover:text-foreground" />
+                            }
+                            key="add-image"
+                          >
+                            <p className="group-hover:text-foreground">
+                              Thêm ảnh sản phẩm
+                            </p>
+                          </DropdownItem>
+                        </>
+                      ) : null}
                       <DropdownItem
                         onPress={() => handleUpdateProduct(item)}
                         className="group"

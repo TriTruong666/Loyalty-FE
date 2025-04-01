@@ -29,10 +29,6 @@ export default function PoliciesLayout({
       title: "Hình thức thanh toán",
     },
     {
-      href: "/policies/huong-dan",
-      title: "Hướng dẫn mua hàng",
-    },
-    {
       href: "/policies/mien-tru",
       title: "Miễn trừ trách nhiệm",
     },

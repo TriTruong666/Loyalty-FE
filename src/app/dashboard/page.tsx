@@ -578,13 +578,13 @@ function RevenueDetail() {
     });
   }, [yearly]);
 
-  const { currentMonthTotal, lastMonthTotal, increasePercentage } =
+  const { currentMonthTotal, lastMonthTotal, increasePercentageMonth } =
     useMemo(() => {
       if (!yearly?.data)
         return {
           currentMonthTotal: 0,
           lastMonthTotal: 0,
-          increasePercentage: "N/A",
+          increasePercentageMonth: "N/A",
         };
 
       const today = new Date();
@@ -618,10 +618,53 @@ function RevenueDetail() {
       return {
         currentMonthTotal: currentTotal,
         lastMonthTotal: lastTotal,
-        increasePercentage: percentage,
+        increasePercentageMonth: percentage,
       };
     }, [yearly]);
 
+  const { currentDayTotal, lastDayTotal, increasePercentageDay } =
+    useMemo(() => {
+      if (!daily?.data) {
+        return {
+          currentDayTotal: 0,
+          lastDayTotal: 0,
+          increasePercentageDay: "N/A",
+        };
+      }
+
+      const today = new Date();
+      const formattedToday = formatDate(today);
+      const yesterday = new Date(today);
+      yesterday.setDate(today.getDate() - 1);
+      const formattedYesterday = formatDate(yesterday);
+
+      // Get today's and yesterday's revenue data
+      const todayData = daily.data.find((item) => item.date === formattedToday);
+      const yesterdayData = daily.data.find(
+        (item) => item.date === formattedYesterday
+      );
+
+      const currentTotal = todayData ? todayData.total : 0;
+      const lastTotal = yesterdayData ? yesterdayData.total : 0;
+
+      let percentage = "N/A";
+      if (lastTotal > 0) {
+        percentage = `${(
+          ((currentTotal - lastTotal) / lastTotal) *
+          100
+        ).toFixed(2)}%`;
+      } else if (currentTotal > 0) {
+        percentage = "∞%";
+      } else {
+        percentage = "0%";
+      }
+
+      return {
+        currentDayTotal: currentTotal,
+        lastDayTotal: lastTotal,
+        increasePercentageDay: percentage,
+      };
+    }, [daily]);
   return (
     <div className="flex flex-col">
       <p
@@ -645,15 +688,15 @@ function RevenueDetail() {
               {lastMonthTotal > 0 && currentMonthTotal > lastMonthTotal ? (
                 <span className="flex items-center text-primary gap-x-[5px]">
                   <LuArrowUpRight className="text-[20px]" />
-                  <span>{increasePercentage}</span>
+                  <span>{increasePercentageMonth}</span>
                 </span>
               ) : lastMonthTotal > 0 && currentMonthTotal < lastMonthTotal ? (
                 <span className="flex items-center text-red-500 gap-x-[5px]">
                   <LuArrowDownRight className="text-[20px]" />
-                  <span>{increasePercentage}</span>
+                  <span>{increasePercentageMonth}</span>
                 </span>
               ) : (
-                <span className="text-gray-400">{increasePercentage}</span>
+                <span className="text-gray-400">{increasePercentageMonth}</span>
               )}
               <span className="text-normal">so với tháng trước</span>
             </p>
@@ -705,23 +748,23 @@ function RevenueDetail() {
               Giá trị đơn hàng hôm nay
             </p>
             <p className="font-semibold text-foreground text-[20px]">
-              {formatPrice(currentMonthTotal as number)}
+              {formatPrice(currentDayTotal as number)}
             </p>
             <p className="flex items-center gap-x-[6px]">
-              {lastMonthTotal > 0 && currentMonthTotal > lastMonthTotal ? (
+              {lastDayTotal > 0 && currentDayTotal > lastDayTotal ? (
                 <span className="flex items-center text-primary gap-x-[5px]">
                   <LuArrowUpRight className="text-[20px]" />
-                  <span>{increasePercentage}</span>
+                  <span>{increasePercentageDay}</span>
                 </span>
-              ) : lastMonthTotal > 0 && currentMonthTotal < lastMonthTotal ? (
+              ) : lastDayTotal > 0 && currentDayTotal < lastDayTotal ? (
                 <span className="flex items-center text-red-500 gap-x-[5px]">
                   <LuArrowDownRight className="text-[20px]" />
-                  <span>{increasePercentage}</span>
+                  <span>{increasePercentageDay}</span>
                 </span>
               ) : (
-                <span className="text-gray-400">{increasePercentage}</span>
+                <span className="text-gray-400">{increasePercentageDay}</span>
               )}
-              <span className="text-normal">so với tháng trước</span>
+              <span className="text-normal">so với hôm qua</span>
             </p>
           </div>
           {/* chart */}
@@ -729,13 +772,12 @@ function RevenueDetail() {
             <ResponsiveContainer width="100%" height={140}>
               <AreaChart data={thisDayData}>
                 <defs>
-                  {lastMonthTotal > 0 && currentMonthTotal > lastMonthTotal ? (
+                  {lastDayTotal > 0 && currentDayTotal > lastDayTotal ? (
                     <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#a4ff66" stopOpacity={0.4} />
                       <stop offset="95%" stopColor="#a4ff66" stopOpacity={0} />
                     </linearGradient>
-                  ) : lastMonthTotal > 0 &&
-                    currentMonthTotal < lastMonthTotal ? (
+                  ) : lastDayTotal > 0 && currentDayTotal < lastDayTotal ? (
                     <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#ef4444" stopOpacity={0.4} />
                       <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
@@ -751,9 +793,9 @@ function RevenueDetail() {
                   type="monotone"
                   dataKey="Doanh thu"
                   stroke={
-                    lastMonthTotal > 0 && currentMonthTotal > lastMonthTotal
+                    lastDayTotal > 0 && currentDayTotal > lastDayTotal
                       ? "#a4ff66"
-                      : lastMonthTotal > 0 && currentMonthTotal < lastMonthTotal
+                      : lastDayTotal > 0 && currentDayTotal < lastDayTotal
                       ? "#ef4444"
                       : "#9ca3af"
                   }

@@ -33,6 +33,7 @@ import AttachmentModal from "../components/AttachmentModal";
 import CreateQRModal from "../components/CreateQRModal";
 import DashboardSearchModal from "../components/DashboardSearchModal";
 import ProductDetailModal from "../components/ProductDetailModal";
+import UpdateImageProduct from "../components/UpdateImageProduct";
 
 export default function DashboardLayout({
   children,
@@ -77,6 +78,7 @@ export default function DashboardLayout({
   return (
     <div className="flex min-h-screen relative overflow-hidden">
       <Toaster position="top-center" reverseOrder={false} />
+      <UpdateImageProduct />
       <ProductDetailModal />
       <DashboardSearchModal />
       <CreateQRModal />

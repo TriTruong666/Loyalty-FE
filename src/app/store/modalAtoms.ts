@@ -37,3 +37,5 @@ export const createQRModalState = atom(false);
 export const dashboardSearchModalState = atom(false);
 
 export const productDetailModalState = atom(false);
+
+export const updateImageModalState = atom(false);

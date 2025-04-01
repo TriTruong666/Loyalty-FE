@@ -11,15 +11,25 @@ export default function ThanhtoanPolicyPage() {
         <ul className="list-disc list-inside space-y-2 ml-[20px] mt-[15px]">
           <li>Thanh toán bằng tiền mặt khi nhận hàng (COD)</li>
           <li>Thanh toán bằng chuyển khoản: </li>
-          <ul className="list-disc pl-5 space-y-3 mt-[10px] ml-[30px]"></ul>
-          <li>
-            Cung cấp thông tin hữu ích về sản phẩm và các Chương trình khuyến
-            mãi.
-          </li>
-          <li>
-            Picare có thể chia sẻ tên và địa chỉ của Bạn cho dịch vụ chuyển phát
-            nhanh để có thể giao hàng cho Bạn.
-          </li>
+          <ul className="list-disc pl-5 space-y-3 mt-[10px] ml-[30px]">
+            <li>
+              Ngân hàng thụ hưởng:{" "}
+              <span className="font-bold">Ngân hàng ACB</span>
+            </li>
+            <li>
+              Tài khoản thụ hưởng:{" "}
+              <span className="font-bold">CTY TNHH PICARE VIET NAM</span>
+            </li>
+            <li>
+              Số tài khoản:{" "}
+              <span className="font-bold">PICMS + mã đơn hàng</span>
+            </li>
+            <li>
+              Nội dung:{" "}
+              <span className="font-bold">PicareVN Loyalty + mã đơn hàng</span>
+            </li>
+          </ul>
+          <li>Thanh toán bằng hình thức công nợ</li>
         </ul>
       </div>
     </div>

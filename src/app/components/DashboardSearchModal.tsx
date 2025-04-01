@@ -70,7 +70,11 @@ function UserSearch() {
   const { data: searchProducts } = useSearchProductByKeyword(search);
   const { data: brands = [] } = useGetAllBrand();
   const [handle, setHandle] = useState("dr-ciccarelli");
-  const { data: products } = useGetProductByBrand(handle as string, "dangban");
+  const { data: products } = useGetProductByBrand(
+    handle as string,
+    "dangban",
+    ""
+  );
   const displayedProducts = products?.slice(0, 12);
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
@@ -169,7 +173,11 @@ function AdminSearch() {
   const { data: searchProducts } = useSearchProductByKeyword(search);
   const { data: brands = [] } = useGetAllBrand();
   const [handle, setHandle] = useState("dr-ciccarelli");
-  const { data: products } = useGetProductByBrand(handle as string, "dangban");
+  const { data: products } = useGetProductByBrand(
+    handle as string,
+    "dangban",
+    ""
+  );
   const displayedProducts = products?.slice(0, 12);
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);

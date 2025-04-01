@@ -121,7 +121,7 @@ function QRScan() {
           variant="flat"
           color="secondary"
           size="lg"
-          isDisabled={isLoading}
+          isDisabled={isLoading || url === ""}
           isLoading={isLoading}
           onPress={handleCheckPayment}
         >
