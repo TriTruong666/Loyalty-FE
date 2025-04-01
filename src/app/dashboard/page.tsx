@@ -11,7 +11,7 @@ import {
 import React, { ReactNode, useMemo, useState } from "react";
 import { PiMoneyWavyLight } from "react-icons/pi";
 import { formatPrice } from "../utils/format";
-import { FaRegFileAlt } from "react-icons/fa";
+import { FaRegCreditCard, FaRegFileAlt } from "react-icons/fa";
 import { AiOutlineUser } from "react-icons/ai";
 import {
   LuArrowDownRight,
@@ -29,6 +29,9 @@ import {
   useGetTotalOrderValue,
 } from "../hooks/hook";
 import { atom, useAtom, useSetAtom } from "jotai";
+import { IoMdCheckmark } from "react-icons/io";
+import { TbPigMoney } from "react-icons/tb";
+import { FaRegMoneyBill1 } from "react-icons/fa6";
 
 const dashboardProgressState = atom(1);
 
@@ -112,7 +115,7 @@ function BasicAnalyticsItem(props: BasicAnalyticsItemProps) {
   return (
     <div
       onClick={props.onClick}
-      className="flex justify-between p-[15px] transition-all duration-300 hover:bg-opacity-90 cursor-pointer border border-gray-400-40 rounded-xl bg-neutral-900 bg-opacity-40 font-open"
+      className="w-full flex justify-between p-[15px] transition-all duration-300 hover:bg-opacity-90 cursor-pointer border border-gray-400-40 rounded-xl bg-neutral-900 bg-opacity-40 font-open"
     >
       <div className="flex flex-col gap-y-[10px]">
         <p className="text-normal font-light text-sm">{props.title}</p>
@@ -417,7 +420,7 @@ function OrderSummary() {
       </div>
       {/* chart order status */}
       <div className="flex flex-col justify-between w-[40%] p-[20px] bg-neutral-900 bg-opacity-40 border border-gray-400-40 rounded-xl font-open">
-        <p className="text-sm font-light text-normal">Biểu đồ</p>
+        <p className="text-sm font-light text-normal">Biểu đồ đơn hàng</p>
         <div className="flex items-center">
           <ResponsiveContainer
             width="55%"
@@ -555,7 +558,7 @@ function RevenueDetail() {
 
       result.push({
         date: displayDate,
-        "Doanh thu": dateMap.get(formattedDate) || 0,
+        "Doanh thu ngày": dateMap.get(formattedDate) || 0,
       });
 
       currentDate.setDate(currentDate.getDate() + 1);
@@ -573,7 +576,7 @@ function RevenueDetail() {
 
       return {
         date: displayMonth,
-        "Doanh thu": total,
+        "Doanh thu tháng": total,
       };
     });
   }, [yearly]);
@@ -665,6 +668,34 @@ function RevenueDetail() {
         increasePercentageDay: percentage,
       };
     }, [daily]);
+
+  const revenueStats: BasicAnalyticsItemProps[] = [
+    {
+      icon: <IoMdCheckmark className="text-[16px]" />,
+      title: "Đơn hàng đã thanh toán",
+      type: "money",
+      value: 40000000,
+    },
+    {
+      icon: <FaRegCreditCard className="text-[16px]" />,
+      title: "Đơn hàng chuyển khoản",
+      type: "money",
+      value: 400000000,
+    },
+    {
+      icon: <TbPigMoney className="text-[16px]" />,
+      title: "Đơn hàng công nợ",
+      type: "money",
+      value: 400000000,
+    },
+    {
+      icon: <FaRegMoneyBill1 className="text-[16px]" />,
+      title: "Đơn hàng COD",
+      type: "money",
+      value: 400000000,
+    },
+  ];
+
   return (
     <div className="flex flex-col">
       <p
@@ -726,7 +757,7 @@ function RevenueDetail() {
                 </defs>
                 <Area
                   type="monotone"
-                  dataKey="Doanh thu"
+                  dataKey="Doanh thu tháng"
                   stroke={
                     lastMonthTotal > 0 && currentMonthTotal > lastMonthTotal
                       ? "#a4ff66"
@@ -791,7 +822,7 @@ function RevenueDetail() {
                 </defs>
                 <Area
                   type="monotone"
-                  dataKey="Doanh thu"
+                  dataKey="Doanh thu ngày"
                   stroke={
                     lastDayTotal > 0 && currentDayTotal > lastDayTotal
                       ? "#a4ff66"
@@ -807,6 +838,11 @@ function RevenueDetail() {
           </div>
         </div>
         {/* grid of other revenue */}
+      </div>
+      <div className="grid grid-cols-4 gap-[20px] w-full my-[20px]">
+        {revenueStats.map((item) => (
+          <BasicAnalyticsItem key={item.title} {...item} />
+        ))}
       </div>
     </div>
   );
