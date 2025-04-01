@@ -5,6 +5,7 @@ import "./globals.css";
 import QueryProvider from "./components/QueryProvider";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ThemeProvider } from "./components/ThemeProvider";
+import ResponsiveWrapper from "./components/ResponsiveWrapper";
 
 const interFont = Inter({
   subsets: ["latin"],
@@ -41,7 +42,9 @@ export default function RootLayout({
           <QueryProvider>
             <ThemeProvider>
               <ReactQueryDevtools initialIsOpen={false} />
-              <div>{children}</div>
+              <ResponsiveWrapper>
+                <div>{children}</div>
+              </ResponsiveWrapper>
             </ThemeProvider>
           </QueryProvider>
         </Provider>
