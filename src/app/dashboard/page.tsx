@@ -55,6 +55,7 @@ export default function DashboardPage() {
       title: "Tổng đơn hàng",
       type: "number",
       value: allOrders?.length as number,
+      onClick: () => handleOnClickItem(3),
     },
     {
       icon: <AiOutlineUser className="text-[16px]" />,
@@ -97,6 +98,11 @@ export default function DashboardPage() {
       {progress === 2 && (
         <div className="px-[40px]">
           <RevenueDetail />
+        </div>
+      )}
+      {progress === 3 && (
+        <div className="px-[40px]">
+          <OrderDetail />
         </div>
       )}
     </div>
@@ -844,6 +850,23 @@ function RevenueDetail() {
           <BasicAnalyticsItem key={item.title} {...item} />
         ))}
       </div>
+    </div>
+  );
+}
+
+function OrderDetail() {
+  const setProgress = useSetAtom(dashboardProgressState);
+  const handleBack = () => {
+    setProgress(1);
+  };
+  return (
+    <div className="flex flex-col">
+      <p
+        className="w-fit text-normal text-sm underline cursor-pointer"
+        onClick={handleBack}
+      >
+        Quay lại
+      </p>
     </div>
   );
 }
