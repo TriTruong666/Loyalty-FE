@@ -30,7 +30,7 @@ import {
 } from "../hooks/hook";
 import { atom, useAtom, useSetAtom } from "jotai";
 import { IoMdCheckmark } from "react-icons/io";
-import { TbPigMoney } from "react-icons/tb";
+import { TbFolderCancel, TbPigMoney } from "react-icons/tb";
 import { FaRegMoneyBill1 } from "react-icons/fa6";
 
 const dashboardProgressState = atom(1);
@@ -859,6 +859,59 @@ function OrderDetail() {
   const handleBack = () => {
     setProgress(1);
   };
+  const { data: allOrders } = useGetAllOrders();
+  const pendingOrders = allOrders?.filter(
+    (order) => order.orderStatus === "pending"
+  ).length;
+  const confirmedOrders = allOrders?.filter(
+    (order) => order.orderStatus === "confirmed"
+  ).length;
+  const deliveryOrders = allOrders?.filter(
+    (order) => order.orderStatus === "exported"
+  ).length;
+  const completeOrders = allOrders?.filter(
+    (order) => order.orderStatus === "complete"
+  ).length;
+  const cancelOrders = allOrders?.filter(
+    (order) => order.orderStatus === "cancelled"
+  ).length;
+  const chartData: CircleChartProps = {
+    color: [
+      "hsl(var(--heroui-warning-600))", // Đang chờ
+      "hsl(var(--heroui-primary-600))", // Da xac nhan
+      "hsl(var(--heroui-secondary))", // Đang giao
+      "hsl(var(--heroui-success))", // Đã giao
+      "hsl(var(--heroui-danger))", // Đã huỷ
+    ],
+    category: ["Đang chờ", "Đã xác nhận", "Đang giao", "Đã giao", "Đã huỷ"],
+    chartData: [
+      { name: "Đang chờ", value: pendingOrders as number },
+      { name: "Đã xác nhận", value: confirmedOrders as number },
+      { name: "Đang giao", value: deliveryOrders as number },
+      { name: "Đã giao", value: completeOrders as number },
+      { name: "Đã huỷ", value: cancelOrders as number },
+    ],
+  };
+  const statsKPIList: ProgressKPIStatsProps[] = [
+    {
+      title: "Đơn huỷ",
+      color: "danger",
+      icon: <TbFolderCancel className="text-[18px] text-danger-600" />,
+      progress: 40,
+    },
+    {
+      title: "Đơn thành công",
+      color: "success",
+      icon: <TbFolderCancel className="text-[18px] text-success-600" />,
+      progress: 40,
+    },
+    {
+      title: "Đơn thành công",
+      color: "neutral",
+      icon: <TbFolderCancel className="text-[18px] text-neutral-300" />,
+      progress: 40,
+    },
+  ];
   return (
     <div className="flex flex-col">
       <p
@@ -867,6 +920,153 @@ function OrderDetail() {
       >
         Quay lại
       </p>
+      <div className="flex justify-between mt-[40px] font-open gap-x-[20px]">
+        {/* Pie chart */}
+        <div className="flex flex-col justify-between w-[50%] p-[20px] bg-neutral-900 bg-opacity-40 border border-gray-400-40 rounded-xl font-open">
+          <p className="text-sm font-light text-normal">Biểu đồ đơn hàng</p>
+          <div className="flex items-center">
+            <ResponsiveContainer
+              width="65%"
+              height={270}
+              className="[&_.recharts-surface]:outline-none"
+            >
+              <PieChart>
+                <Pie
+                  data={chartData.chartData}
+                  dataKey="value"
+                  nameKey="name"
+                  innerRadius="68%"
+                  paddingAngle={5}
+                  strokeWidth={0}
+                  animationDuration={1000}
+                  animationEasing="ease"
+                >
+                  {chartData.chartData.map((_, index) => (
+                    <Cell key={`cell-${index}`} fill={chartData.color[index]} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  content={({ label, payload }) => (
+                    <div className="flex h-8 min-w-[120px] items-center gap-x-2 rounded-medium bg-background px-1 text-tiny shadow-small">
+                      <span className="font-medium text-foreground">
+                        {label}
+                      </span>
+                      {payload?.map((p, index) => {
+                        const name = p.name;
+                        const value = p.value;
+                        const category = name;
+                        const colorIndex = chartData.chartData.findIndex(
+                          (item) => item.name === name
+                        );
+                        return (
+                          <div
+                            key={`${index}-${name}`}
+                            className="flex w-full items-center gap-x-2"
+                          >
+                            <div
+                              className="h-2 w-2 flex-none rounded-full"
+                              style={{
+                                backgroundColor: chartData.color[colorIndex],
+                              }}
+                            />
+                            <div className="flex w-full items-center justify-between gap-x-2 pr-1 text-xs text-default-700">
+                              <span className="text-default-500">
+                                {category}
+                              </span>
+                              <span className="font-mono font-medium text-default-700">
+                                {value}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                  cursor={false}
+                />
+                <g>
+                  <text textAnchor="middle" x="50%" y="48%">
+                    <tspan
+                      className="fill-default-500 text-tiny"
+                      dy="-0.5em"
+                      x="50%"
+                    >
+                      Tổng đơn
+                    </tspan>
+                    <tspan
+                      className="fill-foreground text-medium font-semibold"
+                      dy="1.5em"
+                      x="50%"
+                    >
+                      {allOrders?.length}
+                    </tspan>
+                  </text>
+                </g>
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="flex flex-col gap-y-[10px]">
+              {chartData.category.map((category, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <span
+                    className="h-2 w-2 rounded-full"
+                    style={{
+                      backgroundColor: chartData.color[index],
+                    }}
+                  />
+                  <span className="text-normal text-sm">{category}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-col w-[50%] gap-y-[15px]">
+          {statsKPIList.map((item, i) => (
+            <ProgressKPIStats key={i} {...item} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface ProgressKPIStatsProps {
+  icon: ReactNode;
+  title: string;
+  progress: number;
+  color: "neutral" | "success" | "danger";
+}
+
+function ProgressKPIStats(props: ProgressKPIStatsProps) {
+  return (
+    <div className="flex flex-col gap-y-[10px] p-[15px] bg-neutral-900 bg-opacity-40 border border-gray-400-40 rounded-xl font-open">
+      <div className="flex items-center justify-between">
+        <p className="text-normal text-sm">{props.title}</p>
+        <div
+          className={`p-[6px] border ${
+            props.color === "danger" &&
+            "border-danger-100 bg-danger-200 bg-opacity-15"
+          } ${
+            props.color === "success" &&
+            "border-success-100 bg-success-200 bg-opacity-15"
+          } ${
+            props.color === "neutral" &&
+            "border-neutral-600 bg-neutral-200 bg-opacity-15"
+          } rounded-lg`}
+        >
+          {props.icon}
+        </div>
+      </div>
+      <p className="font-bold text-[20px]">{props.progress}%</p>
+      <div className="relative h-[10px] rounded-full w-full bg-neutral-800 bg-opacity-50 mt-[10px]">
+        <div
+          className={`absolute top-0 left-0 ${
+            props.color === "danger" && "bg-danger-300"
+          } ${props.color === "success" && "bg-success-300"} ${
+            props.color === "neutral" && "bg-neutral-300"
+          } h-full rounded-full`}
+          style={{ width: `${props.progress}%` }}
+        ></div>
+      </div>
     </div>
   );
 }
