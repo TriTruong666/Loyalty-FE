@@ -875,6 +875,9 @@ function OrderDetail() {
   const cancelOrders = allOrders?.filter(
     (order) => order.orderStatus === "cancelled"
   ).length;
+  const pendingTransactionOrders = allOrders?.filter(
+    (order) => order?.transaction?.transactionStatus === "pending"
+  ).length;
   const chartData: CircleChartProps = {
     color: [
       "hsl(var(--heroui-warning-600))", // Đang chờ
@@ -892,24 +895,35 @@ function OrderDetail() {
       { name: "Đã huỷ", value: cancelOrders as number },
     ],
   };
+  const progressCancelOrder =
+    ((cancelOrders ?? 0) / (allOrders?.length ?? 1)) * 100;
+  const progressCompleteOrder =
+    ((completeOrders ?? 0) / (allOrders?.length ?? 1)) * 100;
+  const progressPendingTransactionOrder =
+    ((pendingTransactionOrders ?? 0) / (allOrders?.length ?? 1)) * 100;
+  const fixedCancel = Number(progressCancelOrder.toFixed(0));
+  const fixedComplete = Number(progressCompleteOrder.toFixed(0));
+  const fixedPendingTransaction = Number(
+    progressPendingTransactionOrder.toFixed(0)
+  );
   const statsKPIList: ProgressKPIStatsProps[] = [
     {
       title: "Đơn huỷ",
       color: "danger",
       icon: <TbFolderCancel className="text-[18px] text-danger-600" />,
-      progress: 40,
+      progress: fixedCancel,
     },
     {
       title: "Đơn thành công",
       color: "success",
       icon: <TbFolderCancel className="text-[18px] text-success-600" />,
-      progress: 40,
+      progress: fixedComplete,
     },
     {
-      title: "Đơn thành công",
+      title: "Đơn Chưa thanh toán",
       color: "neutral",
       icon: <TbFolderCancel className="text-[18px] text-neutral-300" />,
-      progress: 40,
+      progress: fixedPendingTransaction,
     },
   ];
   return (
