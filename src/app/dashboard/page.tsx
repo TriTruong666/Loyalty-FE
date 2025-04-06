@@ -8,7 +8,7 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import React, { ReactNode, useMemo, useState } from "react";
+import React, { ReactNode, useEffect, useMemo, useState } from "react";
 import { PiMoneyWavyLight } from "react-icons/pi";
 import { formatPrice } from "../utils/format";
 import { FaRegCreditCard, FaRegFileAlt } from "react-icons/fa";
@@ -28,14 +28,17 @@ import {
   useGetOrderValueByYear,
   useGetTotalOrderValue,
 } from "../hooks/hook";
-import { atom, useAtom, useSetAtom } from "jotai";
+import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { IoMdCheckmark } from "react-icons/io";
 import { TbFolderCancel, TbPigMoney } from "react-icons/tb";
 import { FaRegMoneyBill1 } from "react-icons/fa6";
+import { userInfoState } from "../store/accountAtoms";
+import { MdConstruction } from "react-icons/md";
 
 const dashboardProgressState = atom(1);
 
 export default function DashboardPage() {
+  const info = useAtomValue(userInfoState);
   // const { data: websocket } = useWebsocketService();
   const [progress, setProgress] = useAtom(dashboardProgressState);
   const { data: totalValue } = useGetTotalOrderValue();
@@ -71,40 +74,68 @@ export default function DashboardPage() {
     },
   ];
 
+  const handleRole: Record<string, boolean> = {
+    business: true,
+    personal: true,
+    sales: true,
+    staff: true,
+    ceo: false,
+    admin: false,
+  };
+
   const handleOnClickItem = (value: number) => {
     setProgress(value);
   };
-
+  if (handleRole[info?.type as string]) {
+    return (
+      <>
+        <Available />
+      </>
+    );
+  }
   return (
-    <div className="flex flex-col font-open py-[20px]">
-      {progress === 1 && (
-        <>
-          {/* Basic Summary */}
-          <div className="grid grid-cols-4 px-[40px] gap-[20px]">
-            {basicAnalytics.map((item) => (
-              <BasicAnalyticsItem key={item.title} {...item} />
-            ))}
+    <>
+      <div className="flex flex-col font-open py-[20px]">
+        {progress === 1 && (
+          <>
+            {/* Basic Summary */}
+            <div className="grid grid-cols-4 px-[40px] gap-[20px]">
+              {basicAnalytics.map((item) => (
+                <BasicAnalyticsItem key={item.title} {...item} />
+              ))}
+            </div>
+            {/* Revenue Chart */}
+            <div className="flex flex-col px-[40px] mt-[20px]">
+              <RevenueChart />
+            </div>
+            {/* Order Summary */}
+            <div className="flex flex-col px-[40px] mt-[20px]">
+              <OrderSummary />
+            </div>
+          </>
+        )}
+        {progress === 2 && (
+          <div className="px-[40px]">
+            <RevenueDetail />
           </div>
-          {/* Revenue Chart */}
-          <div className="flex flex-col px-[40px] mt-[20px]">
-            <RevenueChart />
+        )}
+        {progress === 3 && (
+          <div className="px-[40px]">
+            <OrderDetail />
           </div>
-          {/* Order Summary */}
-          <div className="flex flex-col px-[40px] mt-[20px]">
-            <OrderSummary />
-          </div>
-        </>
-      )}
-      {progress === 2 && (
-        <div className="px-[40px]">
-          <RevenueDetail />
-        </div>
-      )}
-      {progress === 3 && (
-        <div className="px-[40px]">
-          <OrderDetail />
-        </div>
-      )}
+        )}
+      </div>
+    </>
+  );
+}
+
+function Available() {
+  return (
+    <div className="flex flex-col w-full h-[600px] justify-center items-center font-open gap-y-[10px]">
+      <MdConstruction className="text-[70px] text-normal" />
+      <p className="text-normal text-[18px]">
+        Trang này hiện chưa hoạt động với tài khoản của bạn!!!
+      </p>
     </div>
   );
 }
@@ -292,11 +323,11 @@ function RevenueChart() {
               }}
             />
             <Area
-              type="monotone"
+              type="linear"
               dataKey="Doanh thu"
               stroke="#a4ff66"
               fill="url(#colorUv)"
-              strokeWidth={2}
+              strokeWidth={1}
             />
           </AreaChart>
         </ResponsiveContainer>
@@ -619,7 +650,7 @@ function RevenueDetail() {
           100
         ).toFixed(2)}%`;
       } else if (currentTotal > 0) {
-        percentage = "∞%";
+        percentage = "Tháng trước không có doanh thu";
       } else {
         percentage = "0%";
       }
@@ -661,11 +692,11 @@ function RevenueDetail() {
         percentage = `${(
           ((currentTotal - lastTotal) / lastTotal) *
           100
-        ).toFixed(2)}%`;
+        ).toFixed(2)}% so với hôm qua`;
       } else if (currentTotal > 0) {
-        percentage = "∞%";
+        percentage = "Hôm qua không có doanh thu";
       } else {
-        percentage = "0%";
+        percentage = "0% so với hôm qua";
       }
 
       return {
@@ -702,6 +733,15 @@ function RevenueDetail() {
     },
   ];
 
+  const gradientType =
+    lastDayTotal > 0 && currentDayTotal > lastDayTotal
+      ? "increase"
+      : lastDayTotal > 0 && currentDayTotal < lastDayTotal
+      ? "decrease"
+      : lastDayTotal === 0 && currentDayTotal === 0
+      ? "no revenue"
+      : "default";
+  console.log("Gradient Type:", gradientType);
   return (
     <div className="flex flex-col">
       <p
@@ -762,7 +802,7 @@ function RevenueDetail() {
                   )}
                 </defs>
                 <Area
-                  type="monotone"
+                  type="linear"
                   dataKey="Doanh thu tháng"
                   stroke={
                     lastMonthTotal > 0 && currentMonthTotal > lastMonthTotal
@@ -772,7 +812,7 @@ function RevenueDetail() {
                       : "#9ca3af"
                   }
                   fill="url(#colorUv)"
-                  strokeWidth={2}
+                  strokeWidth={1}
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -801,7 +841,6 @@ function RevenueDetail() {
               ) : (
                 <span className="text-gray-400">{increasePercentageDay}</span>
               )}
-              <span className="text-normal">so với hôm qua</span>
             </p>
           </div>
           {/* chart */}
@@ -809,35 +848,40 @@ function RevenueDetail() {
             <ResponsiveContainer width="100%" height={140}>
               <AreaChart data={thisDayData}>
                 <defs>
-                  {lastDayTotal > 0 && currentDayTotal > lastDayTotal ? (
-                    <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+                  {gradientType === "increase" ? (
+                    <linearGradient id="colorSv" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#a4ff66" stopOpacity={0.4} />
                       <stop offset="95%" stopColor="#a4ff66" stopOpacity={0} />
                     </linearGradient>
-                  ) : lastDayTotal > 0 && currentDayTotal < lastDayTotal ? (
-                    <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+                  ) : gradientType === "decrease" ? (
+                    <linearGradient id="colorSv" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#ef4444" stopOpacity={0.4} />
                       <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
                     </linearGradient>
+                  ) : gradientType === "no revenue" ? (
+                    <linearGradient id="colorSv" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#9ca3af" stopOpacity={0.4} />
+                      <stop offset="95%" stopColor="#9ca3af" stopOpacity={0} />
+                    </linearGradient>
                   ) : (
-                    <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+                    <linearGradient id="colorSv" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#9ca3af" stopOpacity={0.4} />
                       <stop offset="95%" stopColor="#9ca3af" stopOpacity={0} />
                     </linearGradient>
                   )}
                 </defs>
                 <Area
-                  type="monotone"
+                  type="linear"
                   dataKey="Doanh thu ngày"
                   stroke={
-                    lastDayTotal > 0 && currentDayTotal > lastDayTotal
+                    gradientType === "increase"
                       ? "#a4ff66"
-                      : lastDayTotal > 0 && currentDayTotal < lastDayTotal
+                      : gradientType === "decrease"
                       ? "#ef4444"
-                      : "#9ca3af"
+                      : "#9ca3af" // Neutral color for no revenue
                   }
-                  fill="url(#colorUv)"
-                  strokeWidth={2}
+                  fill="url(#colorSv)"
+                  strokeWidth={1}
                 />
               </AreaChart>
             </ResponsiveContainer>

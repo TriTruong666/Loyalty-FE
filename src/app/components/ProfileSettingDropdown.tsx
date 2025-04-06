@@ -52,6 +52,14 @@ export default function ProfileSettingDropdown() {
         return "";
     }
   };
+  const handleRole: Record<string, boolean> = {
+    business: true,
+    personal: true,
+    sales: true,
+    staff: true,
+    ceo: false,
+    admin: false,
+  };
   const handleToggleSearchModalOn = () => {
     setSearchModal(true);
   };
@@ -88,11 +96,14 @@ export default function ProfileSettingDropdown() {
                   link="/dashboard/setting"
                   icon={<IoSettingsOutline className="text-[18px]" />}
                 />
-                <Item
-                  title="Hạng Loyalty"
-                  link="/dashboard/loyalty"
-                  icon={<PiRanking className="text-[18px]" />}
-                />
+                {handleRole[userInfo?.type as string] && (
+                  <Item
+                    title="Hạng Loyalty"
+                    link="/dashboard/loyalty"
+                    icon={<PiRanking className="text-[18px]" />}
+                  />
+                )}
+
                 <Item
                   title="Tìm kiếm nhanh"
                   icon={<IoSearchOutline className="text-[18px]" />}
