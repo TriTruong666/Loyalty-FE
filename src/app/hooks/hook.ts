@@ -22,6 +22,8 @@ import { Notification } from "../interfaces/Notification";
 import {
   AnalyticsDailyRevenueData,
   AnalyticsData,
+  AnalyticsDataGateway,
+  AnalyticsDataTransaction,
   AnalyticsYearlyRevenueData,
 } from "../interfaces/Analytics";
 import { Loyalty, Ranking } from "../interfaces/Loyalty";
@@ -204,6 +206,18 @@ export function useGetTotalOrderValue() {
 export function useGetOrderValueByTime(from: string, to: string) {
   return useFetch<AnalyticsData>(["total-order-value", from, to], async () =>
     AnalyticsService.getOrderValueByTime(from, to)
+  );
+}
+export function useGetOrderValueByTransactionStatus(status: string) {
+  return useFetch<AnalyticsDataTransaction>(
+    ["order-value-by-transaction", status],
+    async () => AnalyticsService.getOrderValueByTransactionStatus(status)
+  );
+}
+export function useGetOrderValueByGateway(gateway: string) {
+  return useFetch<AnalyticsDataGateway>(
+    ["order-value-by-gateway", gateway],
+    async () => AnalyticsService.getOrderValueByGateway(gateway)
   );
 }
 export function useGetOrderValueByDaily(from: string, to: string) {

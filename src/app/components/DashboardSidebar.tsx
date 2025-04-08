@@ -26,6 +26,7 @@ import {
   useGetListNotification,
 } from "../hooks/hook";
 import { IoLockOpenOutline } from "react-icons/io5";
+import ShinyText from "./ShinyText";
 
 export default function DashboardSidebar() {
   const userInfo = useAtomValue(userInfoState);
@@ -59,9 +60,15 @@ export default function DashboardSidebar() {
           <UtilityItem />
         </div> */}
       </div>
-      <p className="text-center text-primary font-light text-[11px] pb-4">
-        Powered by Loyalty™
-      </p>
+      <ShinyText
+        text="Powered by PicareVN™"
+        disabled={false}
+        speed={3}
+        className="text-center font-light text-[12px] pb-4"
+      />
+      {/* <p className="text-center text-primary font-light text-[11px] pb-4">
+      Powered by Loyalty™
+      </p> */}
     </div>
   );
 }

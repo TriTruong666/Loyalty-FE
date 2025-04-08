@@ -52,6 +52,8 @@ function BrandSection() {
         return "/brand4.png";
       case "SEBAME":
         return "/brand5.png";
+      case "PAXMOL":
+        return "/brand6.png";
       default:
         return "";
     }

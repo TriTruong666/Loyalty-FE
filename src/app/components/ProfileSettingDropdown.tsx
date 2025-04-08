@@ -72,7 +72,7 @@ export default function ProfileSettingDropdown() {
             animate={{ opacity: 1, translateX: 0 }}
             exit={{ opacity: 0, display: "none", translateX: 100 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="fixed flex flex-col w-[300px] 3xl:w-[400px] max-h-[600px] z-[35] border border-gray-400-40 bg-background top-[70px] left-[1210px] 3xl:left-[1450px] 2.5xl:left-[1420px] rounded-[15px] p-[20px] font-open"
+            className="fixed flex flex-col w-[300px] 3xl:w-[400px] max-h-[600px] z-[35] border border-gray-400-40 bg-background top-[70px] 2xl:left-[1210px] 3xl:left-[1500px] 2.5xl:left-[1420px] 1.5xl:left-[1020px] rounded-[15px] p-[20px] font-open"
           >
             <div className="flex flex-col">
               <div className="flex justify-between items-center">

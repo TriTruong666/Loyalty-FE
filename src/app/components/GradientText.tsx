@@ -22,7 +22,7 @@ export default function GradientText({
 
   return (
     <div
-      className={`relative mx-auto flex max-w-fit flex-row items-center justify-center rounded-[1.25rem] font-medium backdrop-blur transition-shadow duration-500 overflow-hidden cursor-pointer ${className}`}
+      className={`relative font-open mx-auto flex max-w-fit flex-row items-center justify-center rounded-[1.25rem] font-medium backdrop-blur transition-shadow duration-500 overflow-hidden cursor-pointer ${className}`}
     >
       {showBorder && (
         <div
@@ -58,22 +58,3 @@ export default function GradientText({
     </div>
   );
 }
-
-// tailwind.config.js
-// module.exports = {
-//   theme: {
-//     extend: {
-//       keyframes: {
-//         gradient: {
-//           '0%': { backgroundPosition: '0% 50%' },
-//           '50%': { backgroundPosition: '100% 50%' },
-//           '100%': { backgroundPosition: '0% 50%' },
-//         },
-//       },
-//       animation: {
-//         gradient: 'gradient 8s linear infinite'
-//       },
-//     },
-//   },
-//   plugins: [],
-// };

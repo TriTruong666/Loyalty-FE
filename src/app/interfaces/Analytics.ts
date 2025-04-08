@@ -2,6 +2,16 @@ export interface AnalyticsData {
   data: number | string;
 }
 
+export interface AnalyticsDataGateway {
+  data: {
+    total: number;
+  };
+}
+
+export interface AnalyticsDataTransaction {
+  total: number;
+}
+
 export interface AnalyticsDailyRevenueData {
   data: DailyRevenue[];
 }

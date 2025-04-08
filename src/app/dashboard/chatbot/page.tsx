@@ -13,6 +13,7 @@ import { GrCircleInformation } from "react-icons/gr";
 import { RiAttachment2, RiSendPlaneLine } from "react-icons/ri";
 import { IoBookOutline, IoCartOutline } from "react-icons/io5";
 import { MdFaceRetouchingNatural } from "react-icons/md";
+import GradientText from "@/app/components/GradientText";
 const DynamicLottie = dynamic(() => import("lottie-react"), { ssr: false });
 export default function ChatbotPage() {
   const info = useAtomValue(userInfoState);
@@ -128,9 +129,17 @@ export default function ChatbotPage() {
       {/* Introduce */}
       {realPrompt === "" && (
         <div className="flex flex-col items-center justify-center h-[550px] px-[40px]">
-          <p className="text-[26px] font-bold bg-gradient-to-bl from-[#86efac] via-[#fcd34d] to-[#f9a8d4] bg-clip-text text-transparent">
+          <GradientText
+            colors={["#40ffaa", "#4079ff", "#40ffaa", "#4079ff", "#40ffaa"]}
+            animationSpeed={5}
+            showBorder={false}
+            className="text-[26px] font-bold"
+          >
             Chào mừng đến với Loyalty Chatbot
-          </p>
+          </GradientText>
+          {/* <p className="text-[26px] font-bold bg-gradient-to-bl from-[#86efac] via-[#fcd34d] to-[#f9a8d4] bg-clip-text text-transparent">
+            Loyalty Chatbot
+          </p> */}
           <div className="grid grid-cols-4 mt-[30px] gap-x-[10px]">
             {recommendPrompts.map((prompt, i) => (
               <RecommendPrompt key={i} {...prompt} />

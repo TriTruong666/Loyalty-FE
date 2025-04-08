@@ -41,6 +41,12 @@ export default function BrandProductShopPage() {
         return "Juve Head";
       case "sebamed":
         return "Sebamed";
+      case "nazorel":
+        return "Nazorel";
+      case "elaband":
+        return "Elaband";
+      case "paxmoly":
+        return "Pax Moly";
       default:
         return "";
     }

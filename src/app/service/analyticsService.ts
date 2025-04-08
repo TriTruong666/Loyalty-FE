@@ -39,3 +39,24 @@ export const getOrderValueByYear = async () => {
     console.error(error);
   }
 };
+
+export const getOrderValueByTransactionStatus = async (status: string) => {
+  try {
+    const res = await axiosClient.get(
+      `/api/Analytic/sum-price-by-transaction-status?transactionStatus=${status}`
+    );
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+export const getOrderValueByGateway = async (gateway: string) => {
+  try {
+    const res = await axiosClient.get(
+      `/api/Analytic/sum-price-by-gateway?gateway=${gateway}`
+    );
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};

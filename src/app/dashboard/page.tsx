@@ -8,7 +8,7 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import React, { ReactNode, useEffect, useMemo, useState } from "react";
+import React, { ReactNode, useMemo, useState } from "react";
 import { PiMoneyWavyLight } from "react-icons/pi";
 import { formatPrice } from "../utils/format";
 import { FaRegCreditCard, FaRegFileAlt } from "react-icons/fa";
@@ -25,6 +25,8 @@ import {
   useGetAllOrders,
   useGetOrderByLimitByStatus,
   useGetOrderValueByDaily,
+  useGetOrderValueByGateway,
+  useGetOrderValueByTransactionStatus,
   useGetOrderValueByYear,
   useGetTotalOrderValue,
 } from "../hooks/hook";
@@ -706,30 +708,36 @@ function RevenueDetail() {
       };
     }, [daily]);
 
+  const { data: totalBankTransfer } =
+    useGetOrderValueByGateway("bank_transfer");
+  const { data: totalCOD } = useGetOrderValueByGateway("cod");
+  const { data: totalDebt } = useGetOrderValueByGateway("debt");
+  const { data: totalConfirmed } =
+    useGetOrderValueByTransactionStatus("confirmed");
   const revenueStats: BasicAnalyticsItemProps[] = [
     {
       icon: <IoMdCheckmark className="text-[16px]" />,
       title: "Đơn hàng đã thanh toán",
       type: "money",
-      value: 40000000,
+      value: totalConfirmed?.total as number,
     },
     {
       icon: <FaRegCreditCard className="text-[16px]" />,
       title: "Đơn hàng chuyển khoản",
       type: "money",
-      value: 400000000,
+      value: totalBankTransfer?.data.total as number,
     },
     {
       icon: <TbPigMoney className="text-[16px]" />,
       title: "Đơn hàng công nợ",
       type: "money",
-      value: 400000000,
+      value: totalDebt?.data.total as number,
     },
     {
       icon: <FaRegMoneyBill1 className="text-[16px]" />,
       title: "Đơn hàng COD",
       type: "money",
-      value: 400000000,
+      value: totalCOD?.data.total as number,
     },
   ];
 
