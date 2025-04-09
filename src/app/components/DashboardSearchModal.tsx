@@ -22,6 +22,7 @@ import { formatPrice } from "../utils/format";
 import Link from "next/link";
 import { productDetailState } from "../store/productAtoms";
 import { userInfoState } from "../store/accountAtoms";
+import AnimatedList from "./AnimatedList";
 export default function DashboardSearchModal() {
   const info = useAtomValue(userInfoState);
   const [isToggleModal, setIsToggleModal] = useAtom(dashboardSearchModalState);
@@ -125,18 +126,21 @@ function UserSearch() {
                 </div>
               </>
             )}
-            <div className="flex flex-col max-h-[400px] overflow-auto gap-y-[10px] py-[20px]">
-              {searchProducts?.map((product) => (
-                <UserSearchProductItem key={product.productId} {...product} />
-              ))}
-            </div>
+            <AnimatedList
+              items={
+                searchProducts?.map((product) => (
+                  <UserSearchProductItem key={product.productId} {...product} />
+                )) ?? []
+              }
+              displayScrollbar={true}
+            />
           </div>
         </>
       ) : (
         <>
-          <div className="flex border-t border-neutral-700 border-opacity-50 max-h-[400px] overflow-auto">
+          <div className="flex border-t border-neutral-700 border-opacity-50 max-h-[400px] overflow-hidden">
             {/* Brand */}
-            <div className="flex flex-col w-[30%] border-r border-neutral-700 border-opacity-50 px-[20px] py-[15px]">
+            <div className="flex flex-col w-[30%] border-r border-neutral-700 border-opacity-50 px-[20px] py-[15px] h-[400px] overflow-y-auto">
               <p className="text-[12px]">Nhãn hàng độc quyền</p>
               <div className="flex flex-col mt-[15px] gap-y-[10px]">
                 {brands.map((brand) => (
@@ -149,8 +153,9 @@ function UserSearch() {
                 ))}
               </div>
             </div>
+
             {/* Products */}
-            <div className="flex flex-col px-[20px] py-[15px] w-[70%] max-h-[400px] overflow-auto">
+            <div className="flex flex-col px-[20px] py-[15px] w-[70%] h-[400px] overflow-y-auto">
               <p className="text-[12px]">Gợi ý</p>
               <div className="grid grid-cols-4 gap-[15px] mt-[15px]">
                 {displayedProducts?.map((item) => (
@@ -226,7 +231,7 @@ function AdminSearch() {
       {search.length > 0 ? (
         <>
           <div className="flex flex-col px-[20px] py-[15px]">
-            <p className="text-[12px]">Từ khoá: {search}</p>
+            <p className="text-[12px] pb-[10px]">Từ khoá: {search}</p>
             {searchProducts?.length === 0 && (
               <>
                 <div className="h-[400px] overflow-auto gap-y-[10px] py-[20px] flex flex-col items-center justify-center">
@@ -235,24 +240,28 @@ function AdminSearch() {
                 </div>
               </>
             )}
-            <div className="flex flex-col max-h-[400px] overflow-auto gap-y-[10px] py-[20px]">
-              {searchProducts?.map((product) => (
-                <AdminSearchProductItem
-                  key={product.productId}
-                  {...product}
-                  onClick={() =>
-                    handleToggleDetailModal(product.handle as string)
-                  }
-                />
-              ))}
-            </div>
+            <AnimatedList
+              items={
+                searchProducts?.map((product) => (
+                  <AdminSearchProductItem
+                    key={product.productId}
+                    {...product}
+                    onClick={() =>
+                      handleToggleDetailModal(product.handle as string)
+                    }
+                  />
+                )) ?? []
+              }
+              className="!scrollbar-hide"
+              displayScrollbar={false}
+            />
           </div>
         </>
       ) : (
         <>
-          <div className="flex border-t border-neutral-700 border-opacity-50 max-h-[400px] overflow-auto">
+          <div className="flex border-t border-neutral-700 border-opacity-50 max-h-[400px] overflow-hidden">
             {/* Brand */}
-            <div className="flex flex-col w-[30%] border-r border-neutral-700 border-opacity-50 px-[20px] py-[15px]">
+            <div className="flex flex-col w-[30%] border-r border-neutral-700 border-opacity-50 px-[20px] py-[15px] h-[400px] overflow-y-auto">
               <p className="text-[12px]">Nhãn hàng độc quyền</p>
               <div className="flex flex-col mt-[15px] gap-y-[10px]">
                 {brands.map((brand) => (
@@ -265,8 +274,9 @@ function AdminSearch() {
                 ))}
               </div>
             </div>
+
             {/* Products */}
-            <div className="flex flex-col px-[20px] py-[15px] w-[70%] max-h-[400px] overflow-auto">
+            <div className="flex flex-col px-[20px] py-[15px] w-[70%] h-[400px] overflow-y-auto">
               <p className="text-[12px]">Gợi ý</p>
               <div className="grid grid-cols-4 gap-[15px] mt-[15px]">
                 {displayedProducts?.map((item) => (
@@ -362,7 +372,7 @@ function UserSearchProductItem(props: ProductProps) {
   return (
     <Link
       href={`/dashboard/shop/brand/detail/${props.handle}`}
-      className="flex justify-between px-[15px] py-[10px] items-center hover:bg-neutral-700 hover:bg-opacity-30 rounded-lg transition-all duration-300"
+      className="flex justify-between items-center "
     >
       <div className="flex items-center gap-x-[10px]">
         <Image
@@ -375,7 +385,7 @@ function UserSearchProductItem(props: ProductProps) {
         />
         <div className="flex flex-col">
           <p className="text-[13px] font-light">{props.productName}</p>
-          <p className="text-[14px] font-semibold">
+          <p className="text-[14px] font-semibold text-primary">
             {formatPrice(props.price as number)}
           </p>
         </div>
@@ -388,10 +398,7 @@ function AdminSearchProductItem(
   props: ProductProps & { onClick?: () => void }
 ) {
   return (
-    <div
-      onClick={props.onClick}
-      className="flex justify-between px-[15px] py-[10px] items-center hover:bg-neutral-700 hover:bg-opacity-30 rounded-lg transition-all duration-300 cursor-pointer"
-    >
+    <div onClick={props.onClick} className="flex justify-between items-center">
       <div className="flex items-center gap-x-[10px]">
         <Image
           alt={props.productName || ""}
@@ -403,7 +410,7 @@ function AdminSearchProductItem(
         />
         <div className="flex flex-col">
           <p className="text-[13px] font-light">{props.productName}</p>
-          <p className="text-[14px] font-semibold">
+          <p className="text-[14px] font-semibold text-primary">
             {formatPrice(props.price as number)}
           </p>
         </div>
