@@ -56,7 +56,7 @@ export default function ProfileSettingDropdown() {
     business: true,
     personal: true,
     sales: true,
-    staff: true,
+    staff: false,
     ceo: false,
     admin: false,
   };

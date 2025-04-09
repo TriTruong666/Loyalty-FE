@@ -47,8 +47,8 @@ export default function CartPage() {
   const totalCartValue = useAtomValue(totalCartValueAtoms);
   const [salesCustomerId, setSalesCustomerId] = useAtom(salesCustomerState);
   const [isLoading, setIsLoading] = useState(false);
-  const { data: accounts } = useGetSalesCustomerByLimit(1, 100);
-  const filteredCustomers = accounts?.filter((user) => user.status === false);
+  // const { data: accounts } = useGetSalesCustomerByLimit(1, 100);
+  // const filteredCustomers = accounts?.filter((user) => user.status === false);
   const router = useRouter();
   useEffect(() => {
     if (cart.cartItems.length > 0) return;
@@ -194,7 +194,7 @@ export default function CartPage() {
               </span>
             </p>
           </div>
-          {info?.type === "sales" && (
+          {/* {info?.type === "sales" && (
             <div className="flex items-center gap-x-[15px]">
               <div className="w-[200px]">
                 <Select
@@ -223,7 +223,7 @@ export default function CartPage() {
                 <p className="text-primary">Nhập chiết khấu</p>
               </Button>
             </div>
-          )}
+          )} */}
         </div>
         <div className="flex px-[40px] mt-[40px] justify-between">
           {/* cart */}

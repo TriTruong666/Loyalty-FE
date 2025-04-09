@@ -789,7 +789,7 @@ function StaffOrderDetail() {
 
   const { data: orders, isLoading } = useGetOrderByLimitByStatus(
     page,
-    "pending",
+    "exported",
     sortBy
   );
   const limit = 8;

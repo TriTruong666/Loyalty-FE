@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Provider } from "jotai";
-import { Inter, Open_Sans, Montserrat } from "next/font/google"; // Import Google Fonts
+import { Inter, Open_Sans, Montserrat, Poppins } from "next/font/google"; // Import Google Fonts
 import "./globals.css";
 import QueryProvider from "./components/QueryProvider";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -16,6 +16,12 @@ const interFont = Inter({
 const openFont = Open_Sans({
   subsets: ["latin"],
   variable: "--font-open-sans",
+  weight: ["300", "400", "500", "600", "700", "800"],
+});
+
+const openPoppins = Poppins({
+  subsets: ["latin"],
+  variable: "--font-poppins",
   weight: ["300", "400", "500", "600", "700", "800"],
 });
 
@@ -36,7 +42,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${interFont.variable} ${openFont.variable} ${monseFont.variable} antialiased`}
+        className={`${interFont.variable} ${openFont.variable} ${monseFont.variable} ${openPoppins.variable} antialiased`}
       >
         <Provider>
           <QueryProvider>

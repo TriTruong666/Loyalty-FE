@@ -258,7 +258,7 @@ function AdminOrderDetail() {
                   </Button>
                 </div>
 
-                {detail?.transaction.transactionStatus === "pending" && (
+                {detail?.transaction?.transactionStatus === "pending" && (
                   <div className="flex items-center px-[15px] py-[20px] gap-x-[10px] bg-gray-700 bg-opacity-30 ">
                     <IoIosInformationCircleOutline className="text-[20px]" />
                     <p className="text-[12px]">
@@ -266,7 +266,7 @@ function AdminOrderDetail() {
                     </p>
                   </div>
                 )}
-                {detail?.transaction.transactionStatus === "confirmed" && (
+                {detail?.transaction?.transactionStatus === "confirmed" && (
                   <div className="flex items-center px-[15px] py-[20px] gap-x-[10px] bg-success-300 bg-opacity-30">
                     <IoIosInformationCircleOutline className="text-[20px]" />
                     <p className="text-[12px]">
@@ -274,7 +274,7 @@ function AdminOrderDetail() {
                     </p>
                   </div>
                 )}
-                {detail?.transaction.transactionStatus === "cancelled" && (
+                {detail?.transaction?.transactionStatus === "cancelled" && (
                   <div className="flex items-center px-[15px] py-[20px] gap-x-[10px] bg-danger-300 bg-opacity-30">
                     <IoIosInformationCircleOutline className="text-[20px]" />
                     <p className="text-[12px]">
@@ -315,11 +315,11 @@ function AdminOrderDetail() {
                     </p>
                     <p
                       className={`text-[10px] py-[2px] px-[10px] rounded-lg ${handleFinanceStatus(
-                        detail?.transaction.transactionStatus as string
+                        detail?.transaction?.transactionStatus as string
                       )} w-fit`}
                     >
                       {handleFinanceStatusName(
-                        detail?.transaction.transactionStatus as string
+                        detail?.transaction?.transactionStatus as string
                       )}
                     </p>
                   </div>
@@ -680,7 +680,7 @@ function UserOrderDetail() {
                     <IoCloseSharp className="text-[20px] text-normal" />
                   </Button>
                 </div>
-                {detail?.transaction.transactionStatus === "pending" && (
+                {detail?.transaction?.transactionStatus === "pending" && (
                   <div className="flex items-center px-[15px] py-[20px] gap-x-[10px] bg-gray-700 bg-opacity-30">
                     <IoIosInformationCircleOutline className="text-[20px]" />
                     <p className="text-[12px]">
@@ -688,7 +688,7 @@ function UserOrderDetail() {
                     </p>
                   </div>
                 )}
-                {detail?.transaction.transactionStatus === "confirmed" && (
+                {detail?.transaction?.transactionStatus === "confirmed" && (
                   <div className="flex items-center px-[15px] py-[20px] gap-x-[10px] bg-success-300 bg-opacity-30">
                     <IoIosInformationCircleOutline className="text-[20px]" />
                     <p className="text-[12px]">
@@ -696,7 +696,7 @@ function UserOrderDetail() {
                     </p>
                   </div>
                 )}
-                {detail?.transaction.transactionStatus === "cancelled" && (
+                {detail?.transaction?.transactionStatus === "cancelled" && (
                   <div className="flex items-center px-[15px] py-[20px] gap-x-[10px] bg-danger-300 bg-opacity-30">
                     <IoIosInformationCircleOutline className="text-[20px]" />
                     <p className="text-[12px]">
@@ -737,11 +737,11 @@ function UserOrderDetail() {
                     </p>
                     <p
                       className={`text-[10px] py-[2px] px-[10px] rounded-lg ${handleFinanceStatus(
-                        detail?.transaction.transactionStatus as string
+                        detail?.transaction?.transactionStatus as string
                       )} w-fit`}
                     >
                       {handleFinanceStatusName(
-                        detail?.transaction.transactionStatus as string
+                        detail?.transaction?.transactionStatus as string
                       )}
                     </p>
                   </div>
@@ -1501,7 +1501,7 @@ function StaffOrderDetail() {
                   </Button>
                 </div>
 
-                {detail?.transaction.transactionStatus === "pending" && (
+                {detail?.transaction?.transactionStatus === "pending" && (
                   <div className="flex items-center px-[15px] py-[20px] gap-x-[10px] bg-gray-700 bg-opacity-30 ">
                     <IoIosInformationCircleOutline className="text-[20px]" />
                     <p className="text-[12px]">
@@ -1517,7 +1517,7 @@ function StaffOrderDetail() {
                     </p>
                   </div>
                 )}
-                {detail?.transaction.transactionStatus === "confirmed" && (
+                {detail?.transaction?.transactionStatus === "confirmed" && (
                   <div className="flex items-center px-[15px] py-[20px] gap-x-[10px] bg-success-300 bg-opacity-30">
                     <IoIosInformationCircleOutline className="text-[20px]" />
                     <p className="text-[12px]">
@@ -1525,7 +1525,7 @@ function StaffOrderDetail() {
                     </p>
                   </div>
                 )}
-                {detail?.transaction.transactionStatus === "cancelled" && (
+                {detail?.transaction?.transactionStatus === "cancelled" && (
                   <div className="flex items-center px-[15px] py-[20px] gap-x-[10px] bg-danger-300 bg-opacity-30">
                     <IoIosInformationCircleOutline className="text-[20px]" />
                     <p className="text-[12px]">
@@ -1566,11 +1566,11 @@ function StaffOrderDetail() {
                     </p>
                     <p
                       className={`text-[10px] py-[2px] px-[10px] rounded-lg ${handleFinanceStatus(
-                        detail?.transaction.transactionStatus as string
+                        detail?.transaction?.transactionStatus as string
                       )} w-fit`}
                     >
                       {handleFinanceStatusName(
-                        detail?.transaction.transactionStatus as string
+                        detail?.transaction?.transactionStatus as string
                       )}
                     </p>
                   </div>

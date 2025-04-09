@@ -650,11 +650,11 @@ function RevenueDetail() {
         percentage = `${(
           ((currentTotal - lastTotal) / lastTotal) *
           100
-        ).toFixed(2)}%`;
+        ).toFixed(2)}% so với tháng trước`;
       } else if (currentTotal > 0) {
         percentage = "Tháng trước không có doanh thu";
       } else {
-        percentage = "0%";
+        percentage = "0% so với tháng trước";
       }
 
       return {
@@ -783,7 +783,6 @@ function RevenueDetail() {
               ) : (
                 <span className="text-gray-400">{increasePercentageMonth}</span>
               )}
-              <span className="text-normal">so với tháng trước</span>
             </p>
           </div>
           {/* chart */}

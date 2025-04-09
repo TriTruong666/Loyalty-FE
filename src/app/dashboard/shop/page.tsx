@@ -39,6 +39,30 @@ export default function ShopPage() {
 
 function BrandSection() {
   const { data: brands = [] } = useGetAllBrand();
+  const priorityBrandIds = [
+    "EASYDE",
+    "SEBAME",
+    "DRCICA",
+    "ECLATD",
+    "PAXMOL",
+    "ELABAN",
+    "JUVEHE",
+  ];
+  const sortedBrands = [...brands].sort((a, b) => {
+    const aIndex = priorityBrandIds.indexOf(a.brandId);
+    const bIndex = priorityBrandIds.indexOf(b.brandId);
+
+    // Brand trong danh sách ưu tiên thì đẩy lên đầu
+    if (aIndex !== -1 && bIndex !== -1) {
+      return aIndex - bIndex;
+    } else if (aIndex !== -1) {
+      return -1;
+    } else if (bIndex !== -1) {
+      return 1;
+    } else {
+      return 0;
+    }
+  });
 
   const brandImage = (brandId: string) => {
     switch (brandId) {
@@ -54,6 +78,14 @@ function BrandSection() {
         return "/brand5.png";
       case "PAXMOL":
         return "/brand6.png";
+      case "DERMA":
+        return "/brand7.png";
+      case "ELABAN":
+        return "/brand8.png";
+      case "OPV":
+        return "/brand9.png";
+      case "TAMDUC":
+        return "/brand10.png";
       default:
         return "";
     }
@@ -61,8 +93,8 @@ function BrandSection() {
 
   const totalItems = 16;
   const filledBrands = [
-    ...brands,
-    ...new Array(Math.max(totalItems - brands.length, 0)).fill(null),
+    ...sortedBrands,
+    ...new Array(Math.max(totalItems - sortedBrands.length, 0)).fill(null),
   ];
 
   return (

@@ -83,7 +83,7 @@ function ConfirmDelivery() {
           trước khi giao.
         </p>
       </div>
-      {detail?.transaction.transactionStatus === "pending" && (
+      {detail?.transaction?.transactionStatus === "pending" && (
         <div className="flex items-center border border-warning border-opacity-40 gap-x-[20px] px-[20px] py-[10px] rounded-lg">
           <GrMoney className="text-[30px] text-warning" />
           <p className="text-sm text-warning">

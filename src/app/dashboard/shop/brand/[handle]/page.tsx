@@ -47,6 +47,16 @@ export default function BrandProductShopPage() {
         return "Elaband";
       case "paxmoly":
         return "Pax Moly";
+      case "anastasian":
+        return "Anastasian";
+      case "derma-white":
+        return "Derma White";
+      case "opv-vietnam":
+        return "OPV - Việt Nam";
+      case "sacopha":
+        return "Sacopha";
+      case "tamduc":
+        return "Tâm Đức";
       default:
         return "";
     }

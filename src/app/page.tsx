@@ -39,6 +39,7 @@ export default function Home() {
       {progressState === 1 && (
         <div className="flex h-full">
           <Introduce />
+          <SecondSection />
         </div>
       )}
       {progressState === 2 && (
@@ -47,6 +48,12 @@ export default function Home() {
         </div>
       )}
     </div>
+  );
+}
+
+function SecondSection() {
+  return (
+    <div className="w-[50%] h-full flex justify-center items-center"></div>
   );
 }
 
@@ -76,9 +83,9 @@ function Introduce() {
       <div className="pt-4 xl:pt-1 2xl:pt-2">
         <LoginForm />
       </div>
-      <div className="pt-4 xl:pt-1 2xl:pt-2 mt-[20px] 2xl:mb-[0] mb-[120px]">
+      {/* <div className="pt-4 xl:pt-1 2xl:pt-2 mt-[20px] 2xl:mb-[0] mb-[120px]">
         <Participants />
-      </div>
+      </div> */}
     </div>
   );
 }

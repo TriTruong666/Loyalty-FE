@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@fullpage/react-fullpage": "^0.1.48",
     "@heroui/number-input": "^2.0.6",
     "@heroui/react": "^2.7.5",
     "@internationalized/date": "^3.7.0",
@@ -26,6 +27,7 @@
     "export-to-csv": "^1.4.0",
     "framer-motion": "^12.4.3",
     "generate-password": "^1.7.1",
+    "gsap": "^3.12.7",
     "isomorphic-dompurify": "^2.21.0",
     "jotai": "^2.12.0",
     "lottie-react": "^2.4.1",

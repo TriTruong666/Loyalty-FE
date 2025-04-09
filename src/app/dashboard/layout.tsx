@@ -34,6 +34,7 @@ import CreateQRModal from "../components/CreateQRModal";
 import DashboardSearchModal from "../components/DashboardSearchModal";
 import ProductDetailModal from "../components/ProductDetailModal";
 import UpdateImageProduct from "../components/UpdateImageProduct";
+import WelcomeComponent from "../components/WelcomeComponent";
 
 export default function DashboardLayout({
   children,
@@ -78,6 +79,7 @@ export default function DashboardLayout({
   return (
     <div className="flex min-h-screen relative overflow-hidden">
       <Toaster position="top-center" reverseOrder={false} />
+      {/* <WelcomeComponent /> */}
       <UpdateImageProduct />
       <ProductDetailModal />
       <DashboardSearchModal />
