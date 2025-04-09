@@ -95,7 +95,7 @@ function SalesAccountTable() {
                 Số điện thoại
               </th>
               <th className="col-span-3 text-[12px] text-normal font-light text-start">
-                Khách của
+                Thuộc team
               </th>
             </tr>
           </thead>

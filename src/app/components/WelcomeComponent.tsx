@@ -14,6 +14,19 @@ import ShinyText from "./ShinyText";
 
 export default function WelcomeComponent() {
   const [visibleSection, setVisibleSection] = useState(0);
+  const [showModal, setShowModal] = useState<boolean | null>(true);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const hasSeenModal = localStorage.getItem("hasSeenWelcomeModal");
+      if (!hasSeenModal) {
+        localStorage.setItem("hasSeenWelcomeModal", "true");
+        setShowModal(true);
+      } else {
+        setShowModal(false);
+      }
+    }
+  }, []);
 
   const items = [
     {
@@ -44,7 +57,9 @@ export default function WelcomeComponent() {
     {
       icon: <IoExitOutline size={18} />,
       label: "Dashboard",
-      onClick: () => alert("Archive!"),
+      onClick: () => {
+        setShowModal(false); // Đóng modal khi nhấn vào Dashboard
+      },
     },
   ];
   const sections = [
@@ -191,7 +206,7 @@ export default function WelcomeComponent() {
       });
     };
   }, []);
-
+  if (showModal === null || !showModal) return null;
   return (
     <AnimatePresence>
       <motion.div

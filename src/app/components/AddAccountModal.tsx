@@ -177,6 +177,21 @@ function RegistrationForm() {
     });
     setAccountModalProgress(1);
   };
+  const animals = [
+    { key: "cat", label: "Cat" },
+    { key: "dog", label: "Dog" },
+    { key: "elephant", label: "Elephant" },
+    { key: "lion", label: "Lion" },
+    { key: "tiger", label: "Tiger" },
+    { key: "giraffe", label: "Giraffe" },
+    { key: "dolphin", label: "Dolphin" },
+    { key: "penguin", label: "Penguin" },
+    { key: "zebra", label: "Zebra" },
+    { key: "shark", label: "Shark" },
+    { key: "whale", label: "Whale" },
+    { key: "otter", label: "Otter" },
+    { key: "crocodile", label: "Crocodile" },
+  ];
   return (
     <div className="flex flex-col justify-center items-center gap-y-3 w-full">
       <p className="text-[28px] font-bold font-inter">Nhập thông tin đăng ký</p>
@@ -223,7 +238,25 @@ function RegistrationForm() {
             icon={<RiBuilding2Fill size={20} />}
           />
         )}
-
+        {submitData.type === "sales" && (
+          <div className="flex flex-col w-full gap-y-2 font-inter">
+            <label
+              htmlFor="team"
+              className="font-semibold text-sm 2xl:text-[12px] mb-1"
+            >
+              Team Sales
+            </label>
+            <Select
+              isVirtualized
+              variant="underlined"
+              placeholder="Thuộc team sales"
+            >
+              {animals.map((item) => (
+                <SelectItem key={item.key}>{item.label}</SelectItem>
+              ))}
+            </Select>
+          </div>
+        )}
         {/* date picker */}
         {/* {(submitData.type === "business" || submitData.type === "personal") && (
           <div className="flex flex-col w-full gap-y-2 font-inter">

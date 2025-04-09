@@ -79,7 +79,7 @@ export default function DashboardLayout({
   return (
     <div className="flex min-h-screen relative overflow-hidden">
       <Toaster position="top-center" reverseOrder={false} />
-      {/* <WelcomeComponent /> */}
+      <WelcomeComponent />
       <UpdateImageProduct />
       <ProductDetailModal />
       <DashboardSearchModal />

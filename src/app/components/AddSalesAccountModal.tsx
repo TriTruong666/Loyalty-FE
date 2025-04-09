@@ -85,6 +85,21 @@ export default function AddSalesAccountModal() {
   if (!isToggleModal) {
     return <></>;
   }
+  const animals = [
+    { key: "cat", label: "Cat" },
+    { key: "dog", label: "Dog" },
+    { key: "elephant", label: "Elephant" },
+    { key: "lion", label: "Lion" },
+    { key: "tiger", label: "Tiger" },
+    { key: "giraffe", label: "Giraffe" },
+    { key: "dolphin", label: "Dolphin" },
+    { key: "penguin", label: "Penguin" },
+    { key: "zebra", label: "Zebra" },
+    { key: "shark", label: "Shark" },
+    { key: "whale", label: "Whale" },
+    { key: "otter", label: "Otter" },
+    { key: "crocodile", label: "Crocodile" },
+  ];
   return (
     <div className="fixed w-screen h-screen top-0 left-0 flex items-center justify-center z-50 bg-black bg-opacity-70">
       <div className="w-[700px] bg-black flex flex-col transition-all duration-300 items-center relative py-[40px] px-[40px] rounded-[15px] shadow-[2px_2px_60px_6px_rgba(19,_19,_19,_0.63)]">
@@ -121,18 +136,20 @@ export default function AddSalesAccountModal() {
             />
           </div>
 
-          <div className="w-full">
-            <Select
-              variant="underlined"
-              aria-label="sales"
-              label="Chọn Sales"
-              onSelectionChange={(keys) => {
-                const selectedKey = Array.from(keys)[0] as string;
-                handleOnSelect(selectedKey);
-              }}
+          <div className="flex flex-col w-full gap-y-2 font-inter">
+            <label
+              htmlFor="team"
+              className="font-semibold text-sm 2xl:text-[12px] mb-1"
             >
-              {filteredAccounts.map((user) => (
-                <SelectItem key={user.userId}>{user.userName}</SelectItem>
+              Team Sales
+            </label>
+            <Select
+              isVirtualized
+              variant="underlined"
+              placeholder="Thuộc team sales"
+            >
+              {animals.map((item) => (
+                <SelectItem key={item.key}>{item.label}</SelectItem>
               ))}
             </Select>
           </div>
