@@ -41,7 +41,6 @@ const dashboardProgressState = atom(1);
 
 export default function DashboardPage() {
   const info = useAtomValue(userInfoState);
-  // const { data: websocket } = useWebsocketService();
   const [progress, setProgress] = useAtom(dashboardProgressState);
   const { data: totalValue } = useGetTotalOrderValue();
   const { data: allOrders } = useGetAllOrders();
@@ -80,7 +79,7 @@ export default function DashboardPage() {
     business: true,
     personal: true,
     sales: true,
-    staff: true,
+    staff: false,
     ceo: false,
     admin: false,
   };
