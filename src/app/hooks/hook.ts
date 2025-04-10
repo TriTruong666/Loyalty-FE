@@ -10,6 +10,7 @@ import * as OrderService from "@/app/service/orderService";
 import * as NotificationService from "@/app/service/notificationService";
 import * as AnalyticsService from "@/app/service/analyticsService";
 import * as LoyaltyService from "@/app/service/loyaltyService";
+import * as SalesTeamService from "@/app/service/salesTeamService";
 import { CloudinaryAsset } from "../interfaces/Cloudinary";
 import { Brand } from "../interfaces/Brand";
 import { User, Welcome } from "../interfaces/Account";
@@ -27,6 +28,7 @@ import {
   AnalyticsYearlyRevenueData,
 } from "../interfaces/Analytics";
 import { Loyalty, Ranking } from "../interfaces/Loyalty";
+import { SalesTeam } from "../interfaces/SalesTeam";
 function useFetch<T>(
   queryKey: any[],
   queryFn: () => Promise<T>,
@@ -247,5 +249,10 @@ export function useGetAnonymousRankingService(type: string) {
 export function useWelcomeAccountService() {
   return useFetch<Welcome[]>(["welcome"], async () =>
     AccountService.welcomeAccountService()
+  );
+}
+export function useGetAllSalesTeam() {
+  return useFetch<SalesTeam>(["sales-team"], async () =>
+    SalesTeamService.getAllSalesTeam()
   );
 }

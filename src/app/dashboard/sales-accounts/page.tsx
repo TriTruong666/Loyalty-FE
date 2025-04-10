@@ -117,7 +117,7 @@ function SalesAccountTable() {
                   {user.phoneNumber}
                 </td>
                 <td className="col-span-3 text-[13px] text-start font-semibold">
-                  {user.salePersonName}
+                  {user.salesTeamID}
                 </td>
               </tr>
             ))}

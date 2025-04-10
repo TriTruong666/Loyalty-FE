@@ -720,10 +720,12 @@ function Summary() {
               </p>
             </div>
           )}
-          <div className="flex justify-between">
-            <p className="font-light text-normal">Điểm tích luỹ được</p>
-            <p className="font-bold">{estimatePoint} điểm</p>
-          </div>
+          {info?.type !== "sales" && (
+            <div className="flex justify-between">
+              <p className="font-light text-normal">Điểm tích luỹ được</p>
+              <p className="font-bold">{estimatePoint} điểm</p>
+            </div>
+          )}
           <div className="flex justify-between">
             <p className="font-semibold text-normal">Tổng</p>
             <p className="font-bold text-primary">

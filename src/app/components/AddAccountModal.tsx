@@ -16,6 +16,7 @@ import { dataCreateAccountState } from "../store/accountAtoms";
 import { showToast } from "../utils/toast";
 import {
   useGetAllProvince,
+  useGetAllSalesTeam,
   useGetDistrictByProvince,
   useGetWardByDistrict,
 } from "../hooks/hook";
@@ -134,6 +135,8 @@ function ChooseAccountType() {
 }
 
 function RegistrationForm() {
+  const { data: team } = useGetAllSalesTeam();
+  const salesTeam = team?.data;
   // const [value, setValue] = useState(parseDate("2024-04-04"));
   const [submitData, setSubmitData] = useAtom(dataCreateAccountState);
   const setAccountModalProgress = useSetAtom(createAccountProgress);
@@ -167,6 +170,18 @@ function RegistrationForm() {
       showToast("Vui lòng nhập số điện thoại hợp lệ.", "error");
       return;
     }
+    if (submitData.type === "sales") {
+      if (submitData.teamID === "") {
+        showToast("Vui lòng chọn nhóm bán hàng", "error");
+        return;
+      }
+    }
+    if (submitData.type === "business") {
+      if (submitData.mst === "") {
+        showToast("Vui lòng nhập mã số thuế", "error");
+        return;
+      }
+    }
     setAccountModalProgress(3);
   };
   const handleGoPrev = () => {
@@ -177,21 +192,7 @@ function RegistrationForm() {
     });
     setAccountModalProgress(1);
   };
-  const animals = [
-    { key: "cat", label: "Cat" },
-    { key: "dog", label: "Dog" },
-    { key: "elephant", label: "Elephant" },
-    { key: "lion", label: "Lion" },
-    { key: "tiger", label: "Tiger" },
-    { key: "giraffe", label: "Giraffe" },
-    { key: "dolphin", label: "Dolphin" },
-    { key: "penguin", label: "Penguin" },
-    { key: "zebra", label: "Zebra" },
-    { key: "shark", label: "Shark" },
-    { key: "whale", label: "Whale" },
-    { key: "otter", label: "Otter" },
-    { key: "crocodile", label: "Crocodile" },
-  ];
+
   return (
     <div className="flex flex-col justify-center items-center gap-y-3 w-full">
       <p className="text-[28px] font-bold font-inter">Nhập thông tin đăng ký</p>
@@ -247,12 +248,18 @@ function RegistrationForm() {
               Team Sales
             </label>
             <Select
-              isVirtualized
               variant="underlined"
               placeholder="Thuộc team sales"
+              onSelectionChange={(keys) => {
+                const selectedKey = Array.from(keys)[0] as string;
+                setSubmitData({
+                  ...submitData,
+                  teamID: selectedKey,
+                });
+              }}
             >
-              {animals.map((item) => (
-                <SelectItem key={item.key}>{item.label}</SelectItem>
+              {(salesTeam ?? []).map((item) => (
+                <SelectItem key={item}>{item}</SelectItem>
               ))}
             </Select>
           </div>
@@ -381,6 +388,7 @@ function LocationForm() {
           },
           mst: "",
           type: "",
+          teamID: "",
         });
         showToast("Tạo tài khoản thành công, trạng thái: CHỜ DUYỆT", "success");
         setIsLoadingSubmit(false);

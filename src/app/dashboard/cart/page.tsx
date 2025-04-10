@@ -47,8 +47,7 @@ export default function CartPage() {
   const totalCartValue = useAtomValue(totalCartValueAtoms);
   const [salesCustomerId, setSalesCustomerId] = useAtom(salesCustomerState);
   const [isLoading, setIsLoading] = useState(false);
-  // const { data: accounts } = useGetSalesCustomerByLimit(1, 100);
-  // const filteredCustomers = accounts?.filter((user) => user.status === false);
+  const { data: accounts } = useGetSalesCustomerByLimit(1, 100);
   const router = useRouter();
   useEffect(() => {
     if (cart.cartItems.length > 0) return;
@@ -194,7 +193,7 @@ export default function CartPage() {
               </span>
             </p>
           </div>
-          {/* {info?.type === "sales" && (
+          {info?.type === "sales" && (
             <div className="flex items-center gap-x-[15px]">
               <div className="w-[200px]">
                 <Select
@@ -205,13 +204,17 @@ export default function CartPage() {
                   label="Chọn khách hàng"
                   variant="underlined"
                   size="sm"
+                  disabledKeys={(accounts ?? [])
+                    .filter((user) => user.status === false)
+                    .map((user) => user.customerIDOfSales)}
                 >
-                  {(filteredCustomers ?? []).map((user) => (
+                  {(accounts ?? []).map((user) => (
                     <SelectItem
-                      // value={user.customerIDOfSales}
                       key={user.customerIDOfSales}
+                      textValue={user.userName} // <- RẤT QUAN TRỌNG
                     >
                       {user.userName}
+                      {!user.status && " (Nợ)"}
                     </SelectItem>
                   ))}
                 </Select>
@@ -223,7 +226,7 @@ export default function CartPage() {
                 <p className="text-primary">Nhập chiết khấu</p>
               </Button>
             </div>
-          )} */}
+          )}
         </div>
         <div className="flex px-[40px] mt-[40px] justify-between">
           {/* cart */}
@@ -327,10 +330,14 @@ export default function CartPage() {
                   </p>
                 </div>
               )}
-              <div className="flex justify-between">
-                <p className="font-light text-normal">Điểm tích luỹ được</p>
-                <p className="font-bold">{estimatePoint} điểm</p>
-              </div>
+
+              {info?.type !== "sales" && (
+                <div className="flex justify-between">
+                  <p className="font-light text-normal">Điểm tích luỹ được</p>
+                  <p className="font-bold">{estimatePoint} điểm</p>
+                </div>
+              )}
+
               <div className="flex justify-between">
                 <p className="font-semibold text-normal">Tổng</p>
                 <p className="font-bold text-primary">

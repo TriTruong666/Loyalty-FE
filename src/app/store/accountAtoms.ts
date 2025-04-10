@@ -15,13 +15,14 @@ export const dataCreateAccountState = atom({
   },
   mst: "",
   type: "",
+  teamID: "",
 });
 
 export const dataCreateSalesAccountState = atom({
   userName: "",
   phoneNumber: "",
   mst: "",
-  salePersonID: "",
+  salesTeamID: "",
 });
 
 export const blockAccountState = atom("");

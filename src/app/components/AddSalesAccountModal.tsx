@@ -4,20 +4,19 @@ import { MdLocalPhone } from "react-icons/md";
 import { useAtom } from "jotai";
 import { addSalesAccountModalState } from "../store/modalAtoms";
 import { Button, Select, SelectItem } from "@heroui/react";
-import { useGetAllUser } from "../hooks/hook";
 import { dataCreateSalesAccountState } from "../store/accountAtoms";
 import { ChangeEvent, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createSalesCustomer } from "../service/accountService";
 import { showToast } from "../utils/toast";
 import { RiBuilding2Fill } from "react-icons/ri";
+import { useGetAllSalesTeam } from "../hooks/hook";
 
 export default function AddSalesAccountModal() {
   const [submitData, setSubmitData] = useAtom(dataCreateSalesAccountState);
   const [isSubmit, setIsSubmit] = useState(false);
-  const { data: allSales } = useGetAllUser();
-  const filteredAccounts =
-    allSales?.filter((user) => user.type === "sales") ?? [];
+  const { data: team } = useGetAllSalesTeam();
+  const salesTeam = team?.data;
   const [isToggleModal, setIsToggleModal] = useAtom(addSalesAccountModalState);
   const queryClient = useQueryClient();
   const createMutation = useMutation({
@@ -34,7 +33,7 @@ export default function AddSalesAccountModal() {
         setIsToggleModal(false);
         setSubmitData({
           phoneNumber: "",
-          salePersonID: "",
+          salesTeamID: "",
           mst: "",
           userName: "",
         });
@@ -51,18 +50,12 @@ export default function AddSalesAccountModal() {
       [name]: value,
     });
   };
-  const handleOnSelect = (saleId: string) => {
-    setSubmitData({
-      ...submitData,
-      salePersonID: saleId,
-    });
-  };
   const vietnamPhoneRegex =
     /^(?:\+84|0)(3[2-9]|5[2689]|7[0-9]|8[1-9]|9[0-9])\d{7}$/;
   const handleOnSubmit = async () => {
     if (
       submitData.phoneNumber === "" ||
-      submitData.salePersonID === "" ||
+      submitData.salesTeamID === "" ||
       submitData.userName === "" ||
       submitData.mst === ""
     ) {
@@ -85,21 +78,7 @@ export default function AddSalesAccountModal() {
   if (!isToggleModal) {
     return <></>;
   }
-  const animals = [
-    { key: "cat", label: "Cat" },
-    { key: "dog", label: "Dog" },
-    { key: "elephant", label: "Elephant" },
-    { key: "lion", label: "Lion" },
-    { key: "tiger", label: "Tiger" },
-    { key: "giraffe", label: "Giraffe" },
-    { key: "dolphin", label: "Dolphin" },
-    { key: "penguin", label: "Penguin" },
-    { key: "zebra", label: "Zebra" },
-    { key: "shark", label: "Shark" },
-    { key: "whale", label: "Whale" },
-    { key: "otter", label: "Otter" },
-    { key: "crocodile", label: "Crocodile" },
-  ];
+
   return (
     <div className="fixed w-screen h-screen top-0 left-0 flex items-center justify-center z-50 bg-black bg-opacity-70">
       <div className="w-[700px] bg-black flex flex-col transition-all duration-300 items-center relative py-[40px] px-[40px] rounded-[15px] shadow-[2px_2px_60px_6px_rgba(19,_19,_19,_0.63)]">
@@ -144,12 +123,18 @@ export default function AddSalesAccountModal() {
               Team Sales
             </label>
             <Select
-              isVirtualized
               variant="underlined"
               placeholder="Thuộc team sales"
+              onSelectionChange={(keys) => {
+                const selectedKey = Array.from(keys)[0] as string;
+                setSubmitData({
+                  ...submitData,
+                  salesTeamID: selectedKey,
+                });
+              }}
             >
-              {animals.map((item) => (
-                <SelectItem key={item.key}>{item.label}</SelectItem>
+              {(salesTeam ?? []).map((item) => (
+                <SelectItem key={item}>{item}</SelectItem>
               ))}
             </Select>
           </div>

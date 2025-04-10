@@ -11,6 +11,7 @@ import RotatingText from "./RotatingText";
 import { AnimatePresence, motion } from "framer-motion";
 import GlitchText from "./GlitchText";
 import ShinyText from "./ShinyText";
+import CountUp from "./CountUp";
 
 export default function WelcomeComponent() {
   const [visibleSection, setVisibleSection] = useState(0);
@@ -43,7 +44,7 @@ export default function WelcomeComponent() {
       icon: <IoBookOutline size={18} />,
       label: "Hướng dẫn",
       onClick: () => {
-        const section = document.getElementById("4");
+        const section = document.getElementById("5");
         if (section) {
           section.scrollIntoView({ behavior: "smooth" });
         }
@@ -56,7 +57,7 @@ export default function WelcomeComponent() {
     },
     {
       icon: <IoExitOutline size={18} />,
-      label: "Dashboard",
+      label: "Trở về",
       onClick: () => {
         setShowModal(false); // Đóng modal khi nhấn vào Dashboard
       },
@@ -165,6 +166,30 @@ export default function WelcomeComponent() {
     },
     {
       id: 4,
+      content: (
+        <div className="flex flex-col items-center justify-center gap-6 h-screen">
+          {visibleSection === 4 && (
+            <>
+              <CountUp
+                from={0}
+                to={100}
+                separator=","
+                direction="up"
+                duration={2}
+                delay={2}
+                className="font-bold text-[70px] bg-gradient-to-b from-yellow-500 via-purple-500 to-orange-500 text-transparent bg-clip-text"
+                startWhen={visibleSection === 4}
+              />
+              <p className="text-[24px] text-normal">
+                Khách hàng thân thiết đã tham gia Loyalty, có cả bạn nữa đó ❤️
+              </p>
+            </>
+          )}
+        </div>
+      ),
+    },
+    {
+      id: 5,
       content: (
         <div className="flex flex-col items-center justify-center gap-6 h-screen">
           <ShinyText

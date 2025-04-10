@@ -100,6 +100,7 @@ interface CreateUser {
   address: CreateAddress;
   mst?: string;
   type: string;
+  teamID?: string;
 }
 
 export const createAccountService = async (data: CreateUser) => {
@@ -181,7 +182,7 @@ export const getSalesCustomerByLimit = async (page: number, limit: number) => {
 interface SalesCustomer {
   userName: string;
   phoneNumber: string;
-  salePersonID: string;
+  salesTeamID: string;
   mst: string;
 }
 

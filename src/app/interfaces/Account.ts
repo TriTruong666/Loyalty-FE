@@ -14,6 +14,7 @@ export interface User {
   rank: Rank;
   inDebt: boolean;
   currentPoint: number;
+  teamID?: string;
 }
 
 interface Address {

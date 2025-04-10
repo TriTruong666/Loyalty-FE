@@ -3,7 +3,6 @@ export interface SalesCustomer {
   userName: string;
   phoneNumber: string;
   status: boolean;
-  salePersonID: string;
-  salePersonName: string;
+  salesTeamID: string;
   note?: string;
 }

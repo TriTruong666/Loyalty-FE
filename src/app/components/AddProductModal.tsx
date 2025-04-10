@@ -160,7 +160,6 @@ function ProductForm() {
               Thương hiệu
             </label>
             <Select
-              isVirtualized
               variant="underlined"
               selectedKeys={[submitData.brandId]}
               onSelectionChange={(keys) => {
@@ -186,7 +185,6 @@ function ProductForm() {
               Đơn vị
             </label>
             <Select
-              isVirtualized
               variant="underlined"
               selectedKeys={[submitData.unit]}
               onSelectionChange={(keys) => {
