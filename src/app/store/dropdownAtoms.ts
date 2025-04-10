@@ -7,3 +7,5 @@ export const cartDropdownState = atom(false);
 export const profileSettingDropdownState = atom(false);
 
 export const giftDropdownState = atom(false);
+
+export const searchSalesCustomerDropdownState = atom(false);

@@ -256,3 +256,10 @@ export function useGetAllSalesTeam() {
     SalesTeamService.getAllSalesTeam()
   );
 }
+
+export function useSearchSalesCustomerService(keyword: string, teamID: string) {
+  return useFetch<SalesCustomer[]>(
+    ["search-sales-customer", keyword, teamID],
+    async () => AccountService.searchSalesCustomerService(keyword, teamID)
+  );
+}

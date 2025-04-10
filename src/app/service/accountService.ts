@@ -1,5 +1,7 @@
 import axios from "axios";
 import axiosClient from "../utils/axiosClient";
+import { useAtomValue } from "jotai";
+import { userInfoState } from "../store/accountAtoms";
 export const getUserInfo = async () => {
   try {
     const res = await axiosClient.get("/api/user/userinfo");
@@ -171,7 +173,7 @@ export const getAllSalesCustomer = async () => {
 export const getSalesCustomerByLimit = async (page: number, limit: number) => {
   try {
     const res = await axiosClient.get(
-      `/api/SalesCustomer/limit?limit=${limit}&page=${page}`
+      `/api/salescustomer/limit?limit=${limit}&page=${page}`
     );
     return res.data;
   } catch (error) {
@@ -271,6 +273,20 @@ export const getAnonymousRankingService = async (type: string) => {
 export const welcomeAccountService = async () => {
   try {
     const res = await axiosClient.get(`api/user/welcome`);
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const searchSalesCustomerService = async (
+  keyword: string,
+  teamID: string
+) => {
+  try {
+    const res = await axiosClient.get(
+      `/api/salescustomer/keyword?keyword=${keyword}&teamID=${teamID}`
+    );
     return res.data;
   } catch (error) {
     console.error(error);

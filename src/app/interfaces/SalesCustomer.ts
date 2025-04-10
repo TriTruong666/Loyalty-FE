@@ -5,4 +5,5 @@ export interface SalesCustomer {
   status: boolean;
   salesTeamID: string;
   note?: string;
+  mst?: string;
 }

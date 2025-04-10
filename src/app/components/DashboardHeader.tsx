@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { IoIosSearch } from "react-icons/io";
 import { IoShieldCheckmarkOutline } from "react-icons/io5";
 import { BsBellFill } from "react-icons/bs";
@@ -13,7 +13,7 @@ import {
 } from "../store/dropdownAtoms";
 import { cartState } from "../store/cartAtoms";
 import { getCartFromStorage } from "../service/cartService";
-import { useGetListNotification } from "../hooks/hook";
+import { useAllProduct, useGetListNotification } from "../hooks/hook";
 import { userInfoState } from "../store/accountAtoms";
 import { dashboardSearchModalState } from "../store/modalAtoms";
 
@@ -27,12 +27,19 @@ export default function DashboardHeader() {
 }
 
 function SearchBar() {
+  const { data: products } = useAllProduct();
   const setSearchModal = useSetAtom(dashboardSearchModalState);
-  const placeholderTexts = [
-    "Tìm sản phẩm bạn đang cần...",
-    "Đơn hàng mà bạn tìm kiếm...",
-    "Danh mục nhãn hàng...",
-  ];
+
+  const placeholderTexts = useMemo(() => {
+    if (!products || products.length === 0) return [];
+    const filteredProducts = products.filter(
+      (product) => Number(product.productName?.length) < 80
+    );
+    const shuffled = [...filteredProducts].sort(() => 0.5 - Math.random());
+    const selected = shuffled.slice(0, 10);
+
+    return selected.map((p) => `${p.productName}`);
+  }, [products]);
 
   const [placeholder, setPlaceholder] = useState("");
   const [index, setIndex] = useState(0);
@@ -40,9 +47,11 @@ function SearchBar() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
+    if (placeholderTexts.length === 0) return;
+
     const currentText = placeholderTexts[index];
-    const typingSpeed = isDeleting ? 50 : 100;
-    const delayBeforeDeleting = 4000;
+    const typingSpeed = isDeleting ? 60 : 40;
+    const delayBeforeDeleting = 2000;
 
     const timeout = setTimeout(() => {
       if (!isDeleting && charIndex < currentText.length) {
@@ -60,13 +69,14 @@ function SearchBar() {
     }, typingSpeed);
 
     return () => clearTimeout(timeout);
-  }, [charIndex, isDeleting, index]);
+  }, [charIndex, isDeleting, index, placeholderTexts]);
 
   const handleToggleSearchModalOn = () => {
     setSearchModal(true);
   };
+
   return (
-    <div className="flex items-center w-[600px] 2xl:w-[500px] px-3 py-3 rounded-full gap-x-3 bg-[#222124] transition-all duration-150">
+    <div className="flex items-center 3xl:w-[900px] 2xl:w-[700px] 1.5xl:w-[550px] px-3 py-3 rounded-full gap-x-3 bg-[#222124] transition-all duration-150">
       <IoIosSearch className="text-[24px]" />
       <input
         onFocus={handleToggleSearchModalOn}

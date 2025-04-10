@@ -2,6 +2,7 @@
 import AuthComponent from "@/app/components/AuthComponent";
 import GiftDropdown from "@/app/components/GiftDropdown";
 import { LoadingDashboard } from "@/app/components/loading";
+import SearchSalesCustomerDropdown from "@/app/components/SearchSalesCustomerDropdown";
 import { useGetSalesCustomerByLimit } from "@/app/hooks/hook";
 import {
   CartItem as CartItemProps,
@@ -23,10 +24,13 @@ import {
   totalCartValueAtoms,
 } from "@/app/store/cartAtoms";
 import { salesCustomerState } from "@/app/store/checkoutAtoms";
-import { giftDropdownState } from "@/app/store/dropdownAtoms";
+import {
+  giftDropdownState,
+  searchSalesCustomerDropdownState,
+} from "@/app/store/dropdownAtoms";
 import { formatPrice } from "@/app/utils/format";
 import { showToast } from "@/app/utils/toast";
-import { Link, Button, Input, Select, SelectItem } from "@heroui/react";
+import { Link, Button, Input } from "@heroui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useRouter } from "next/navigation";
@@ -36,6 +40,9 @@ import { FaTrash } from "react-icons/fa";
 export default function CartPage() {
   const [percentModal, setPercentModal] = useState(false);
   const setGiftDropdown = useSetAtom(giftDropdownState);
+  const setSearchSalesCustomerDropdown = useSetAtom(
+    searchSalesCustomerDropdownState
+  );
   const info = useAtomValue(userInfoState);
   const [submitData, setSubmitData] = useState<number>(0);
   const [cart, setCart] = useAtom(cartState);
@@ -45,9 +52,8 @@ export default function CartPage() {
   const discountByDistributionValue = useAtomValue(discountPPState);
   const discountCustomValue = useAtomValue(discountCustomState);
   const totalCartValue = useAtomValue(totalCartValueAtoms);
-  const [salesCustomerId, setSalesCustomerId] = useAtom(salesCustomerState);
+  const salesCustomerId = useAtomValue(salesCustomerState);
   const [isLoading, setIsLoading] = useState(false);
-  const { data: accounts } = useGetSalesCustomerByLimit(1, 100);
   const router = useRouter();
   useEffect(() => {
     if (cart.cartItems.length > 0) return;
@@ -116,18 +122,25 @@ export default function CartPage() {
       console.error(error);
     }
   };
-  const handleChooseSalesCustomer = (customerId: string) => {
-    setSalesCustomerId(customerId);
+  const toggleSearchCustomerDropdown = () => {
+    setSearchSalesCustomerDropdown(true);
+    setGiftDropdown(false);
+    setPercentModal(false);
   };
   const toggleOpenDropdown = () => {
     setGiftDropdown(true);
+    setSearchSalesCustomerDropdown(false);
+    setPercentModal(false);
   };
   const toggleOpenModal = () => {
     setPercentModal(true);
+    setGiftDropdown(false);
+    setSearchSalesCustomerDropdown(false);
   };
   const toggleCloseModal = () => {
     setPercentModal(false);
     setGiftDropdown(false);
+    setSearchSalesCustomerDropdown(false);
   };
   const handleGoToCheckoutSales = () => {
     if (salesCustomerId === "") {
@@ -156,12 +169,13 @@ export default function CartPage() {
   return (
     <AuthComponent allowedRoles={["business", "personal", "sales"]}>
       <div
-        className="flex flex-col font-open py-[20px] mb-[50px]"
+        className="flex flex-col min-h-[calc(100vh-140px)] font-open py-[20px] mb-[50px]"
         onClick={toggleCloseModal}
       >
         <div className="flex justify-between w-full items-center px-[40px] relative">
           {/* gift dropdown */}
           <GiftDropdown />
+          <SearchSalesCustomerDropdown />
           {/* modal */}
           {percentModal && (
             <div
@@ -195,30 +209,26 @@ export default function CartPage() {
           </div>
           {info?.type === "sales" && (
             <div className="flex items-center gap-x-[15px]">
-              <div className="w-[200px]">
-                <Select
-                  onSelectionChange={(keys) => {
-                    const selectedKey = Array.from(keys)[0] as string;
-                    handleChooseSalesCustomer(selectedKey);
-                  }}
-                  label="Chọn khách hàng"
-                  variant="underlined"
-                  size="sm"
-                  disabledKeys={(accounts ?? [])
-                    .filter((user) => user.status === false)
-                    .map((user) => user.customerIDOfSales)}
-                >
-                  {(accounts ?? []).map((user) => (
-                    <SelectItem
-                      key={user.customerIDOfSales}
-                      textValue={user.userName} // <- RẤT QUAN TRỌNG
-                    >
-                      {user.userName}
-                      {!user.status && " (Nợ)"}
-                    </SelectItem>
-                  ))}
-                </Select>
-              </div>
+              {salesCustomerId !== "" ? (
+                <>
+                  <Button
+                    variant="light"
+                    onPress={toggleSearchCustomerDropdown}
+                  >
+                    <p className="text-primary">Chọn khách khác</p>
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    variant="light"
+                    onPress={toggleSearchCustomerDropdown}
+                  >
+                    <p className="text-primary">Chọn khách hàng</p>
+                  </Button>
+                </>
+              )}
+
               <Button variant="light" onPress={toggleOpenDropdown}>
                 <p className="text-primary">Thêm quà tặng</p>
               </Button>
