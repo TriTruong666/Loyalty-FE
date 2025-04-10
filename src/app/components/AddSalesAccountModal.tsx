@@ -56,8 +56,7 @@ export default function AddSalesAccountModal() {
     if (
       submitData.phoneNumber === "" ||
       submitData.salesTeamID === "" ||
-      submitData.userName === "" ||
-      submitData.mst === ""
+      submitData.userName === ""
     ) {
       showToast("Vui lòng nhập đầy đủ thông tin", "error");
       return;
