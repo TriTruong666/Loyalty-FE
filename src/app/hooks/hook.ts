@@ -183,7 +183,7 @@ export function useGetAllSalesCustomer() {
 }
 
 export function useGetSalesCustomerByLimit(page: number, limit: number) {
-  return useFetch<SalesCustomer[]>(["sales-customers", page], async () =>
+  return useFetch<SalesCustomer[]>(["sales-customers", page, limit], async () =>
     AccountService.getSalesCustomerByLimit(page, limit)
   );
 }

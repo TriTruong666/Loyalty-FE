@@ -12,11 +12,15 @@ import { AnimatePresence, motion } from "framer-motion";
 import GlitchText from "./GlitchText";
 import ShinyText from "./ShinyText";
 import CountUp from "./CountUp";
+import { useGetAllCustomerUser, useGetAllSalesCustomer } from "../hooks/hook";
+import FlowingMenu from "./FlowingMenu";
 
 export default function WelcomeComponent() {
   const [visibleSection, setVisibleSection] = useState(0);
   const [showModal, setShowModal] = useState<boolean | null>(true);
-
+  const { data: salesCustomer, isLoading } = useGetAllSalesCustomer();
+  const { data: customers } = useGetAllCustomerUser();
+  const total = Number(salesCustomer?.length) + Number(customers?.length);
   useEffect(() => {
     if (typeof window !== "undefined") {
       const hasSeenModal = localStorage.getItem("hasSeenWelcomeModal");
@@ -44,7 +48,7 @@ export default function WelcomeComponent() {
       icon: <IoBookOutline size={18} />,
       label: "Hướng dẫn",
       onClick: () => {
-        const section = document.getElementById("5");
+        const section = document.getElementById("6");
         if (section) {
           section.scrollIntoView({ behavior: "smooth" });
         }
@@ -61,6 +65,33 @@ export default function WelcomeComponent() {
       onClick: () => {
         setShowModal(false); // Đóng modal khi nhấn vào Dashboard
       },
+    },
+  ];
+  const demoItems = [
+    {
+      link: "https://easydew.vn/",
+      text: "Easydew",
+      image: "/brand2.png",
+    },
+    {
+      link: "https://sebamed.com.vn/",
+      text: "Sebamed",
+      image: "/brand5.png",
+    },
+    {
+      link: "https://drciccarelli.vn/",
+      text: "Dr.Ciccarelli",
+      image: "/brand-dr-ci.png",
+    },
+    {
+      link: "https://shopduocmypham.com/collections/eclat-du-teint?srsltid=AfmBOorRGOS0oYZdp1SLSdSoo8OX_7s-K90O3bwQ8Oc4BtJQ92qWfqTH",
+      text: "Eclat Du Teint",
+      image: "/brand3.png",
+    },
+    {
+      link: "https://shopduocmypham.com/collections/pax-moly?srsltid=AfmBOoqnOZSitRF0_xbjbGp8DCFkHjezlRf4e-0PAdxbP5AMWD5qe80n",
+      text: "Pax Moly",
+      image: "/brand6.png",
     },
   ];
   const sections = [
@@ -172,16 +203,26 @@ export default function WelcomeComponent() {
             <>
               <CountUp
                 from={0}
-                to={100}
+                to={Number(total)}
                 separator=","
                 direction="up"
                 duration={2}
                 delay={2}
                 className="font-bold text-[70px] bg-gradient-to-b from-yellow-500 via-purple-500 to-orange-500 text-transparent bg-clip-text"
-                startWhen={visibleSection === 4}
+                startWhen={visibleSection === 4 && !isLoading}
+                onEnd={() => {
+                  const section = document.getElementById("5");
+                  if (section) {
+                    setTimeout(() => {
+                      section.scrollIntoView({ behavior: "smooth" });
+                    }, 7000);
+                  }
+                }}
               />
               <p className="text-[24px] text-normal">
-                Khách hàng thân thiết đã tham gia Loyalty, có cả bạn nữa đó ❤️
+                Khách hàng thân thiết đã tham gia{" "}
+                <strong className="text-primary">Loyalty</strong>. Có cả bạn nữa
+                đó ❤️
               </p>
             </>
           )}
@@ -193,7 +234,23 @@ export default function WelcomeComponent() {
       content: (
         <div className="flex flex-col items-center justify-center gap-6 h-screen">
           <ShinyText
-            text="Instructions For Use"
+            text="Thương hiệu độc quyền PicareVN"
+            disabled={false}
+            speed={3}
+            className="text-[40px]"
+          />
+          <div className="3xl:h-[660px] 2xl:h-[500px] w-full mt-[30px]">
+            <FlowingMenu items={demoItems} />
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 6,
+      content: (
+        <div className="flex flex-col items-center justify-center gap-6 h-screen">
+          <ShinyText
+            text="Hướng dẫn Loyalty"
             disabled={false}
             speed={3}
             className="text-[50px]"

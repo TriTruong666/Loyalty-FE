@@ -10,7 +10,15 @@ export default {
   ],
   theme: {
     extend: {
+      translate: {
+        "101": "101%",
+      },
+
       keyframes: {
+        marquee: {
+          "0%": { transform: "translateX(0%)" },
+          "100%": { transform: "translateX(-50%)" }, // di chuyển nửa chiều dài nếu nhân đôi content
+        },
         glitch: {
           "0%": { "clip-path": "inset(20% 0 50% 0)" },
           "5%": { "clip-path": "inset(10% 0 60% 0)" },
@@ -45,6 +53,7 @@ export default {
         },
       },
       animation: {
+        marquee: "marquee 15s linear infinite",
         shine: "shine 5s linear infinite",
         gradient: "gradient 8s linear infinite",
         "glitch-after":
