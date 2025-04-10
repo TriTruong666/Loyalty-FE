@@ -33,6 +33,11 @@ export default function Home() {
       }
     }
   });
+  useEffect(() => {
+    if (!info && typeof window !== "undefined") {
+      localStorage.removeItem("hasSeenWelcomeModal");
+    }
+  }, [info]);
   return (
     <div className="font-inter font-light relative w-screen h-screen overflow-hidden">
       <LoginHeader />

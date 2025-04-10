@@ -1,11 +1,14 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import Dock from "./Dock";
 import {
   IoBookOutline,
   IoDiamondOutline,
   IoExitOutline,
   IoInformationCircleOutline,
+  IoPieChartSharp,
+  IoShieldCheckmark,
+  IoSparklesSharp,
 } from "react-icons/io5";
 import RotatingText from "./RotatingText";
 import { AnimatePresence, motion } from "framer-motion";
@@ -14,6 +17,19 @@ import ShinyText from "./ShinyText";
 import CountUp from "./CountUp";
 import { useGetAllCustomerUser, useGetAllSalesCustomer } from "../hooks/hook";
 import FlowingMenu from "./FlowingMenu";
+import { FaCalculator, FaHeart, FaRegCreditCard } from "react-icons/fa";
+import SpotlightCard from "./SpotlightCard";
+import { FaRankingStar } from "react-icons/fa6";
+import { IoIosGift } from "react-icons/io";
+import { TbMoodHappy, TbRobotFace } from "react-icons/tb";
+
+interface FeaturedCardProps {
+  id?: number;
+  icon: ReactNode;
+  title: string;
+  content: string;
+  color?: string;
+}
 
 export default function WelcomeComponent() {
   const [visibleSection, setVisibleSection] = useState(0);
@@ -48,7 +64,7 @@ export default function WelcomeComponent() {
       icon: <IoBookOutline size={18} />,
       label: "Hướng dẫn",
       onClick: () => {
-        const section = document.getElementById("6");
+        const section = document.getElementById("7");
         if (section) {
           section.scrollIntoView({ behavior: "smooth" });
         }
@@ -65,6 +81,73 @@ export default function WelcomeComponent() {
       onClick: () => {
         setShowModal(false); // Đóng modal khi nhấn vào Dashboard
       },
+    },
+  ];
+  const featuredItems: FeaturedCardProps[] = [
+    {
+      id: 1,
+      title: "Tích điểm tự động",
+      content:
+        "Bạn sẽ luôn nhận được điểm thưởng khi mua hàng - mua nhiều thì tích điểm cao đó nha 🤣",
+      icon: <FaCalculator className="text-[28px]" />,
+      color: "rgba(255, 99, 132, 0.3)",
+    },
+    {
+      id: 2,
+      title: "Ưu đãi & Quà tặng?",
+      content:
+        "Tích điểm cao để lấy chiết khấu thôi ư? Không, tụi tui còn tặng quà cho bạn nữa á 💖",
+      icon: <IoIosGift className="text-[28px]" />,
+      color: "rgba(54, 162, 235, 0.3)",
+    },
+    {
+      id: 3,
+      title: "Hệ thống phân hạng",
+      content:
+        "Điểm càng cao thì bạn sẽ được thăng hạng, hạng càng cao thì được `ĐUA TOP` luôn 😜",
+      icon: <FaRankingStar className="text-[28px]" />,
+      color: "rgba(255, 206, 86, 0.3)",
+    },
+    {
+      id: 7,
+      title: "Loyalty Chatbot",
+      content:
+        "Hệ thống có Chatbot riêng để giúp khách hàng tìm kiếm thông tin nhanh chóng, giúp bạn tiết kiệm ⏱️",
+      icon: <TbRobotFace className="text-[28px]" />,
+      color: "rgba(0, 229, 255, 0.3)",
+    },
+    {
+      id: 8,
+      title: "Thanh toán dễ dàng",
+      content:
+        "Hệ thống thanh toán đa dạng, bạn có thể mua hàng mà `TRẢ SAU` cũng được 🫨",
+      icon: <FaRegCreditCard className="text-[28px]" />,
+      color: "rgba(255, 255, 255, 0.3)",
+    },
+    {
+      id: 5,
+      title: "Hỗ trợ 24/7",
+      content:
+        "Không chỉ CSKH chăm sóc bạn đâu, mà chúng tôi còn có cả BOT để hỗ trợ bạn luôn đó 🥰",
+      icon: <FaHeart className="text-[28px]" />,
+      color: "rgba(153, 102, 255, 0.3)",
+    },
+    {
+      id: 4,
+      title: "Bảo mật nâng cao",
+      content:
+        "Hệ thống của Loyalty sẵn sàng bảo vệ bạn trước các cuộc tấn công đánh cắp thông tin 😉",
+      icon: <IoShieldCheckmark className="text-[28px]" />,
+      color: "rgba(75, 192, 192, 0.3)",
+    },
+
+    {
+      id: 6,
+      title: "Trải nghiệm tuyệt vời",
+      content:
+        "Đội ngũ Loyalty tăng trải nghiệm bằng cách thiết kế UI/UX để bạn cảm thấy thoải mái nhất 😎",
+      icon: <IoSparklesSharp className="text-[28px]" />,
+      color: "rgba(255, 159, 64, 0.3)",
     },
   ];
   const demoItems = [
@@ -139,79 +222,25 @@ export default function WelcomeComponent() {
         </div>
       ),
     },
+
     {
       id: 3,
       content: (
-        <div className="flex flex-col items-center justify-center gap-6 h-screen font-open px-[60px]">
-          <motion.p
-            initial={{ opacity: 0, scale: 0.8 }} // Start smaller and transparent
-            animate={visibleSection === 3 ? { opacity: 1, scale: 1 } : {}} // Animate to visible
-            exit={{ opacity: 0, scale: 0.8 }} // Exit animation
-            transition={{ duration: 0.5, ease: "easeOut" }} // Transition settings
-            className="text-[18px] leading-10"
-          >
-            <strong className="font-bold text-primary">PicareVN Loyalty</strong>{" "}
-            là hệ thống chăm sóc khách hàng thân thiết được phát triển nhằm tri
-            ân và gắn kết lâu dài với khách hàng đã và đang tin tưởng sử dụng
-            sản phẩm, dịch vụ của PicareVN. Với mục tiêu mang đến nhiều lợi ích
-            thiết thực, hệ thống này cho phép khách hàng mua sản phẩm với mức
-            giá ưu đãi hơn, đồng thời tích lũy điểm thưởng thông qua mỗi lần mua
-            sắm. Điểm tích lũy có thể được quy đổi thành các mức giảm giá hấp
-            dẫn hoặc các phần quà độc quyền, giúp việc mua sắm trở nên tiết kiệm
-            và thú vị hơn bao giờ hết.
-          </motion.p>
-          <motion.p
-            initial={{ opacity: 0, scale: 0.8 }} // Start smaller and transparent
-            animate={visibleSection === 3 ? { opacity: 1, scale: 1 } : {}} // Animate to visible
-            exit={{ opacity: 0, scale: 0.8 }} // Exit animation
-            transition={{ duration: 0.7, ease: "easeOut" }} // Transition settings
-            className="text-[18px] leading-10"
-          >
-            Đặc biệt,{" "}
-            <strong className="font-bold text-primary">PicareVN Loyalty</strong>{" "}
-            phân chia khách hàng thành nhiều hạng mức (rank) khác nhau như Thành
-            viên <strong className="text-gray-300">Bạc</strong>,{" "}
-            <strong className="text-yellow-400">Vàng</strong>,{" "}
-            <strong className="text-blue-400">Bạch Kim</strong>,… với các quyền
-            lợi tăng dần theo từng cấp độ. Càng mua sắm nhiều, tích điểm cao,
-            khách hàng càng nhanh chóng thăng hạng và được tiếp cận với các
-            chương trình ưu đãi đặc biệt như khuyến mãi riêng, quà tặng sinh
-            nhật, quyền đặt hàng sớm, hay hỗ trợ cá nhân hóa từ đội ngũ chăm sóc
-            khách hàng.
-          </motion.p>
-          <motion.p
-            initial={{ opacity: 0, scale: 0.8 }} // Start smaller and transparent
-            animate={visibleSection === 3 ? { opacity: 1, scale: 1 } : {}} // Animate to visible
-            exit={{ opacity: 0, scale: 0.8 }} // Exit animation
-            transition={{ duration: 0.9, ease: "easeOut" }} // Transition settings
-            className="text-[18px] leading-10"
-          >
-            Chúng tôi tin rằng, với hệ thống Loyalty này, khách hàng không chỉ
-            cảm thấy được trân trọng mà còn có thêm động lực để gắn bó dài lâu
-            cùng thương hiệu. Đây chính là lời cam kết của chúng tôi trong việc
-            không ngừng nâng cao trải nghiệm và giá trị dành cho khách hàng thân
-            thiết.
-          </motion.p>
-        </div>
-      ),
-    },
-    {
-      id: 4,
-      content: (
         <div className="flex flex-col items-center justify-center gap-6 h-screen">
-          {visibleSection === 4 && (
+          {visibleSection === 3 && (
             <>
               <CountUp
                 from={0}
-                to={Number(total)}
+                // to={Number(total)}
+                to={327}
                 separator=","
                 direction="up"
                 duration={2}
                 delay={2}
                 className="font-bold text-[70px] bg-gradient-to-b from-yellow-500 via-purple-500 to-orange-500 text-transparent bg-clip-text"
-                startWhen={visibleSection === 4 && !isLoading}
+                startWhen={visibleSection === 3 && !isLoading}
                 onEnd={() => {
-                  const section = document.getElementById("5");
+                  const section = document.getElementById("4");
                   if (section) {
                     setTimeout(() => {
                       section.scrollIntoView({ behavior: "smooth" });
@@ -230,7 +259,7 @@ export default function WelcomeComponent() {
       ),
     },
     {
-      id: 5,
+      id: 4,
       content: (
         <div className="flex flex-col items-center justify-center gap-6 h-screen">
           <ShinyText
@@ -246,7 +275,85 @@ export default function WelcomeComponent() {
       ),
     },
     {
+      id: 5,
+      content: (
+        <div className="flex flex-col items-center justify-center gap-6 h-screen px-[80px]">
+          <div className="grid grid-cols-4 justify-between w-full gap-[20px]">
+            {(featuredItems ?? []).map((item) => (
+              <SpotlightCard
+                key={item.id}
+                className="custom-spotlight-card"
+                spotlightColor={item.color as string}
+              >
+                <div className="flex flex-col gap-y-[20px] font-inter">
+                  <div className="">{item.icon}</div>
+                  <p className="font-bold text-[22px]">{item.title}</p>
+                  <p className="text-sm text-normal">{item.content}</p>
+                </div>
+              </SpotlightCard>
+            ))}
+          </div>
+        </div>
+      ),
+    },
+    {
       id: 6,
+      content: (
+        <div className="flex flex-col items-center justify-center gap-6 h-screen font-open px-[60px]">
+          <motion.p
+            initial={{ opacity: 0, scale: 0.8 }} // Start smaller and transparent
+            animate={visibleSection === 6 ? { opacity: 1, scale: 1 } : {}} // Animate to visible
+            exit={{ opacity: 0, scale: 0.8 }} // Exit animation
+            transition={{ duration: 0.5, ease: "easeOut" }} // Transition settings
+            className="text-[18px] leading-10"
+          >
+            <strong className="font-bold text-primary">PicareVN Loyalty</strong>{" "}
+            là hệ thống chăm sóc khách hàng thân thiết được phát triển nhằm tri
+            ân và gắn kết lâu dài với khách hàng đã và đang tin tưởng sử dụng
+            sản phẩm, dịch vụ của PicareVN. Với mục tiêu mang đến nhiều lợi ích
+            thiết thực, hệ thống này cho phép khách hàng mua sản phẩm với mức
+            giá ưu đãi hơn, đồng thời tích lũy điểm thưởng thông qua mỗi lần mua
+            sắm. Điểm tích lũy có thể được quy đổi thành các mức giảm giá hấp
+            dẫn hoặc các phần quà độc quyền, giúp việc mua sắm trở nên tiết kiệm
+            và thú vị hơn bao giờ hết.
+          </motion.p>
+          <motion.p
+            initial={{ opacity: 0, scale: 0.8 }} // Start smaller and transparent
+            animate={visibleSection === 6 ? { opacity: 1, scale: 1 } : {}} // Animate to visible
+            exit={{ opacity: 0, scale: 0.8 }} // Exit animation
+            transition={{ duration: 0.7, ease: "easeOut" }} // Transition settings
+            className="text-[18px] leading-10"
+          >
+            Đặc biệt,{" "}
+            <strong className="font-bold text-primary">PicareVN Loyalty</strong>{" "}
+            phân chia khách hàng thành nhiều hạng mức (rank) khác nhau như Thành
+            viên <strong className="text-gray-300">Bạc</strong>,{" "}
+            <strong className="text-yellow-400">Vàng</strong>,{" "}
+            <strong className="text-blue-400">Bạch Kim</strong>,… với các quyền
+            lợi tăng dần theo từng cấp độ. Càng mua sắm nhiều, tích điểm cao,
+            khách hàng càng nhanh chóng thăng hạng và được tiếp cận với các
+            chương trình ưu đãi đặc biệt như khuyến mãi riêng, quà tặng sinh
+            nhật, quyền đặt hàng sớm, hay hỗ trợ cá nhân hóa từ đội ngũ chăm sóc
+            khách hàng.
+          </motion.p>
+          <motion.p
+            initial={{ opacity: 0, scale: 0.8 }} // Start smaller and transparent
+            animate={visibleSection === 6 ? { opacity: 1, scale: 1 } : {}} // Animate to visible
+            exit={{ opacity: 0, scale: 0.8 }} // Exit animation
+            transition={{ duration: 0.9, ease: "easeOut" }} // Transition settings
+            className="text-[18px] leading-10"
+          >
+            Chúng tôi tin rằng, với hệ thống Loyalty này, khách hàng không chỉ
+            cảm thấy được trân trọng mà còn có thêm động lực để gắn bó dài lâu
+            cùng thương hiệu. Đây chính là lời cam kết của chúng tôi trong việc
+            không ngừng nâng cao trải nghiệm và giá trị dành cho khách hàng thân
+            thiết.
+          </motion.p>
+        </div>
+      ),
+    },
+    {
+      id: 7,
       content: (
         <div className="flex flex-col items-center justify-center gap-6 h-screen">
           <ShinyText
