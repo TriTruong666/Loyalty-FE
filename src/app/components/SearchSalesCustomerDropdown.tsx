@@ -12,7 +12,11 @@ import dynamic from "next/dynamic";
 import { useAtomValue, useSetAtom } from "jotai";
 import { showToast } from "../utils/toast";
 import { userInfoState } from "../store/accountAtoms";
-import { salesCustomerState } from "../store/checkoutAtoms";
+import {
+  salesCustomerNameState,
+  salesCustomerPhoneState,
+  salesCustomerState,
+} from "../store/checkoutAtoms";
 import { searchSalesCustomerDropdownState } from "../store/dropdownAtoms";
 const DynamicLottie = dynamic(() => import("lottie-react"), { ssr: false });
 export default function SearchSalesCustomerDropdown() {
@@ -87,8 +91,12 @@ interface AccountItemProps extends SalesCustomerProps {
 
 function AccountItem({ isDebt = false, ...props }: AccountItemProps) {
   const setSubmitData = useSetAtom(salesCustomerState);
+  const setSalesCustomerPhone = useSetAtom(salesCustomerPhoneState);
+  const setSalesCustomerName = useSetAtom(salesCustomerNameState);
   const handleAddCustomer = (customerId: string) => {
     setSubmitData(customerId);
+    setSalesCustomerName(props.userName);
+    setSalesCustomerPhone(props.phoneNumber);
     showToast(`Bạn đã chọn khách ${props.userName}`, "success");
   };
 

@@ -86,6 +86,8 @@ function BrandSection() {
         return "/brand9.png";
       case "TAMDUC":
         return "/brand10.png";
+      case "SACOPH":
+        return "/brand11.png";
       default:
         return "";
     }

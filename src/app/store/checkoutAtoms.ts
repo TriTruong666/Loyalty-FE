@@ -9,6 +9,10 @@ export const paymentMethodState = atom("");
 
 export const salesCustomerState = atom("");
 
+export const salesCustomerNameState = atom("");
+
+export const salesCustomerPhoneState = atom("");
+
 export const userInfoCheckoutState = atom({
   customerName: "",
   customerPhone: "",

@@ -23,7 +23,11 @@ import {
   subtotalCartValueAtom,
   totalCartValueAtoms,
 } from "@/app/store/cartAtoms";
-import { salesCustomerState } from "@/app/store/checkoutAtoms";
+import {
+  salesCustomerNameState,
+  salesCustomerPhoneState,
+  salesCustomerState,
+} from "@/app/store/checkoutAtoms";
 import {
   giftDropdownState,
   searchSalesCustomerDropdownState,
@@ -53,6 +57,8 @@ export default function CartPage() {
   const discountCustomValue = useAtomValue(discountCustomState);
   const totalCartValue = useAtomValue(totalCartValueAtoms);
   const salesCustomerId = useAtomValue(salesCustomerState);
+  const salesCustomerName = useAtomValue(salesCustomerNameState);
+  const salesCustomerPhone = useAtomValue(salesCustomerPhoneState);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   useEffect(() => {
@@ -283,6 +289,22 @@ export default function CartPage() {
           <div className="flex flex-col w-[35%] border border-gray-400-40 p-[20px] rounded-[15px] h-fit">
             <p className="font-light text-[22px] mb-[20px]">Thanh toán</p>
             <div className="flex flex-col gap-y-[20px]">
+              {info?.type === "sales" && (
+                <div className="flex justify-between">
+                  <p className="font-light text-normal">Khách</p>
+                  <p className="font-bold text-end line-clamp-2">
+                    {salesCustomerName || "Chưa chọn khách"}
+                  </p>
+                </div>
+              )}
+              {info?.type === "sales" && (
+                <div className="flex justify-between">
+                  <p className="font-light text-normal">SĐT</p>
+                  <p className="font-bold text-end line-clamp-2">
+                    {salesCustomerPhone || "Chưa chọn khách"}
+                  </p>
+                </div>
+              )}
               <div className="flex justify-between">
                 <p className="font-light text-normal">Tạm tính</p>
                 <p className="font-bold">{formatPrice(subtotalCartValue)}</p>

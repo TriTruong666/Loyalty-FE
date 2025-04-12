@@ -37,6 +37,8 @@ import {
   checkoutState,
   noteCheckoutState,
   paymentMethodState,
+  salesCustomerNameState,
+  salesCustomerPhoneState,
   salesCustomerState,
   shippingAddressState,
   userInfoCheckoutState,
@@ -430,16 +432,24 @@ function LocationForm() {
 function InfomationForm() {
   const info = useAtomValue(userInfoState);
   const [submitInfoData, setSubmitInfoData] = useAtom(userInfoCheckoutState);
-
+  const salesCustomerName = useAtomValue(salesCustomerNameState);
+  const salesCustomerPhone = useAtomValue(salesCustomerPhoneState);
   useEffect(() => {
     if (info && !submitInfoData.customerId) {
       setSubmitInfoData({
-        customerName: info.userName,
-        customerPhone: info.phoneNumber,
+        customerName: info.type === "sales" ? salesCustomerName : info.userName,
+        customerPhone:
+          info.type === "sales" ? salesCustomerPhone : info.phoneNumber,
         customerId: info.userId,
       });
     }
-  }, [info, setSubmitInfoData, submitInfoData.customerId]);
+  }, [
+    info,
+    setSubmitInfoData,
+    submitInfoData.customerId,
+    salesCustomerName,
+    salesCustomerPhone,
+  ]);
 
   const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -460,7 +470,9 @@ function InfomationForm() {
             name="customerName"
             label="Tên khách hàng"
             placeholder="Nhập tên của bạn"
-            defaultValue={info?.userName}
+            defaultValue={
+              info?.type === "sales" ? salesCustomerName : info?.userName
+            }
             icon={<FaRegUser className="text-[20px]" />}
           />
           <NormalInput
@@ -469,7 +481,9 @@ function InfomationForm() {
             name="customerPhone"
             label="Số điện thoại"
             placeholder="Số điện thoại"
-            defaultValue={info?.phoneNumber}
+            defaultValue={
+              info?.type === "sales" ? salesCustomerPhone : info?.phoneNumber
+            }
             icon={<MdOutlineLocalPhone className="text-[20px]" />}
           />
         </div>
