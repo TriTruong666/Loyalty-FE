@@ -26,6 +26,8 @@ import { FaRankingStar } from "react-icons/fa6";
 import { IoIosGift } from "react-icons/io";
 import { TbRobotFace } from "react-icons/tb";
 import Image from "next/image";
+import Squares from "./Squares";
+import GradientText from "./GradientText";
 
 interface FeaturedCardProps {
   id?: number;
@@ -556,13 +558,24 @@ export default function WelcomeComponent() {
     {
       id: 21,
       content: (
-        <div className="flex flex-col items-center justify-center gap-6 h-screen">
-          <ShinyText
-            text=""
-            disabled={false}
-            speed={3}
-            className="text-[50px]"
+        <div className="flex flex-col items-center justify-center gap-6 h-screen relative">
+          <Squares
+            speed={0.5}
+            squareSize={40}
+            direction="diagonal" // up, down, left, right, diagonal
+            borderColor="#404040"
+            hoverFillColor="#a4ff66"
           />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full flex flex-col justify-center items-center">
+            <p className="text-center w-[80%]  bg-gradient-to-r from-orange-500 via-indigo-500 to-green-500 text-transparent bg-clip-text text-[70px] font-semibold cursor-default">
+              A journey of engagement exclusively for businesses.
+            </p>
+            <p className="w-[55%] text-[17px] text-normal font-light text-center font-open">
+              Đội ngũ PicareVN Loyalty xin chân thành cảm ơn sự quan tâm và ủng
+              hộ của khách hàng. Phiên bản đầu tiên có thể gặp lỗi kính mong quý
+              khách thông cảm.
+            </p>
+          </div>
         </div>
       ),
     },
