@@ -6,7 +6,6 @@ import {
   IoDiamondOutline,
   IoExitOutline,
   IoInformationCircleOutline,
-  IoPieChartSharp,
   IoShieldCheckmark,
   IoSparklesSharp,
 } from "react-icons/io5";
@@ -15,13 +14,18 @@ import { AnimatePresence, motion } from "framer-motion";
 import GlitchText from "./GlitchText";
 import ShinyText from "./ShinyText";
 import CountUp from "./CountUp";
-import { useGetAllCustomerUser, useGetAllSalesCustomer } from "../hooks/hook";
 import FlowingMenu from "./FlowingMenu";
-import { FaCalculator, FaHeart, FaRegCreditCard } from "react-icons/fa";
+import {
+  FaArrowDown,
+  FaCalculator,
+  FaHeart,
+  FaRegCreditCard,
+} from "react-icons/fa";
 import SpotlightCard from "./SpotlightCard";
 import { FaRankingStar } from "react-icons/fa6";
 import { IoIosGift } from "react-icons/io";
-import { TbMoodHappy, TbRobotFace } from "react-icons/tb";
+import { TbRobotFace } from "react-icons/tb";
+import Image from "next/image";
 
 interface FeaturedCardProps {
   id?: number;
@@ -34,9 +38,6 @@ interface FeaturedCardProps {
 export default function WelcomeComponent() {
   const [visibleSection, setVisibleSection] = useState(0);
   const [showModal, setShowModal] = useState<boolean | null>(true);
-  const { data: salesCustomer, isLoading } = useGetAllSalesCustomer();
-  const { data: customers } = useGetAllCustomerUser();
-  const total = Number(salesCustomer?.length) + Number(customers?.length);
   useEffect(() => {
     if (typeof window !== "undefined") {
       const hasSeenModal = localStorage.getItem("hasSeenWelcomeModal");
@@ -73,7 +74,12 @@ export default function WelcomeComponent() {
     {
       icon: <IoDiamondOutline size={18} />,
       label: "Loyalty",
-      onClick: () => alert("Profile!"),
+      onClick: () => {
+        const section = document.getElementById("17");
+        if (section) {
+          section.scrollIntoView({ behavior: "smooth" });
+        }
+      },
     },
     {
       icon: <IoExitOutline size={18} />,
@@ -181,7 +187,7 @@ export default function WelcomeComponent() {
     {
       id: 1,
       content: (
-        <div className="flex items-center justify-center gap-x-[15px] h-screen">
+        <div className="flex items-center justify-center gap-x-[15px] h-screen relative">
           <p className="font-bold text-[50px] cursor-default">PicareVN</p>
           <RotatingText
             texts={[
@@ -204,6 +210,7 @@ export default function WelcomeComponent() {
             transition={{ type: "spring", damping: 40, stiffness: 400 }}
             rotationInterval={3000}
           />
+          <ScrollDown />
         </div>
       ),
     },
@@ -238,7 +245,7 @@ export default function WelcomeComponent() {
                 duration={2}
                 delay={2}
                 className="font-bold text-[70px] bg-gradient-to-b from-yellow-500 via-purple-500 to-orange-500 text-transparent bg-clip-text"
-                startWhen={visibleSection === 3 && !isLoading}
+                startWhen={visibleSection === 3}
                 onEnd={() => {
                   const section = document.getElementById("4");
                   if (section) {
@@ -365,6 +372,200 @@ export default function WelcomeComponent() {
         </div>
       ),
     },
+    {
+      id: 8,
+      content: (
+        <div className="flex flex-col items-center justify-center gap-6 h-screen">
+          <Image
+            alt=""
+            src="/59.png"
+            width={1200}
+            height={800}
+            className="!object-fill 2xl:w-[1000px] 2xl:h-[550px] 3xl:w-[1200px] 3xl:h-[650px] 1.5xl:w-[1000px] h-[550px]"
+          />
+        </div>
+      ),
+    },
+    {
+      id: 9,
+      content: (
+        <div className="flex flex-col items-center justify-center gap-6 h-screen">
+          <Image
+            alt=""
+            src="/60.png"
+            width={1200}
+            height={800}
+            className="!object-fill 2xl:w-[1000px] 2xl:h-[550px] 3xl:w-[1200px] 3xl:h-[650px] 1.5xl:w-[1000px] h-[550px]"
+          />
+        </div>
+      ),
+    },
+    {
+      id: 10,
+      content: (
+        <div className="flex flex-col items-center justify-center gap-6 h-screen">
+          <Image
+            alt=""
+            src="/61.png"
+            width={1200}
+            height={800}
+            className="!object-fill 2xl:w-[1000px] 2xl:h-[550px] 3xl:w-[1200px] 3xl:h-[650px] 1.5xl:w-[1000px] h-[550px]"
+          />
+        </div>
+      ),
+    },
+    {
+      id: 11,
+      content: (
+        <div className="flex flex-col items-center justify-center gap-6 h-screen">
+          <Image
+            alt=""
+            src="/62.png"
+            width={1200}
+            height={800}
+            className="!object-fill 2xl:w-[1000px] 2xl:h-[550px] 3xl:w-[1200px] 3xl:h-[650px] 1.5xl:w-[1000px] h-[550px]"
+          />
+        </div>
+      ),
+    },
+    {
+      id: 12,
+      content: (
+        <div className="flex flex-col items-center justify-center gap-6 h-screen">
+          <Image
+            alt=""
+            src="/63.png"
+            width={1200}
+            height={800}
+            className="!object-fill 2xl:w-[1000px] 2xl:h-[550px] 3xl:w-[1200px] 3xl:h-[650px] 1.5xl:w-[1000px] h-[550px]"
+          />
+        </div>
+      ),
+    },
+    {
+      id: 13,
+      content: (
+        <div className="flex flex-col items-center justify-center gap-6 h-screen">
+          <Image
+            alt=""
+            src="/64.png"
+            width={1200}
+            height={800}
+            className="!object-fill 2xl:w-[1000px] 2xl:h-[550px] 3xl:w-[1200px] 3xl:h-[650px] 1.5xl:w-[1000px] h-[550px]"
+          />
+        </div>
+      ),
+    },
+    {
+      id: 14,
+      content: (
+        <div className="flex flex-col items-center justify-center gap-6 h-screen">
+          <Image
+            alt=""
+            src="/65.png"
+            width={1200}
+            height={800}
+            className="!object-fill 2xl:w-[1000px] 2xl:h-[550px] 3xl:w-[1200px] 3xl:h-[650px] 1.5xl:w-[1000px] h-[550px]"
+          />
+        </div>
+      ),
+    },
+    {
+      id: 15,
+      content: (
+        <div className="flex flex-col items-center justify-center gap-6 h-screen">
+          <Image
+            alt=""
+            src="/66.png"
+            width={1200}
+            height={800}
+            className="!object-fill 2xl:w-[1000px] 2xl:h-[550px] 3xl:w-[1200px] 3xl:h-[650px] 1.5xl:w-[1000px] h-[550px]"
+          />
+        </div>
+      ),
+    },
+    {
+      id: 16,
+      content: (
+        <div className="flex flex-col items-center justify-center gap-6 h-screen">
+          <Image
+            alt=""
+            src="/67.png"
+            width={1200}
+            height={800}
+            className="!object-fill 2xl:w-[1000px] 2xl:h-[550px] 3xl:w-[1200px] 3xl:h-[650px] 1.5xl:w-[1000px] h-[550px]"
+          />
+        </div>
+      ),
+    },
+    {
+      id: 17,
+      content: (
+        <div className="flex flex-col items-center justify-center gap-6 h-screen">
+          <ShinyText
+            text="Hệ thống tích điểm"
+            disabled={false}
+            speed={3}
+            className="text-[50px]"
+          />
+        </div>
+      ),
+    },
+    {
+      id: 18,
+      content: (
+        <div className="flex flex-col items-center justify-center gap-6 h-screen">
+          <Image
+            alt=""
+            src="/69.png"
+            width={1200}
+            height={800}
+            className="!object-fill 2xl:w-[1000px] 2xl:h-[550px] 3xl:w-[1200px] 3xl:h-[650px] 1.5xl:w-[1000px] h-[550px]"
+          />
+        </div>
+      ),
+    },
+    {
+      id: 19,
+      content: (
+        <div className="flex flex-col items-center justify-center gap-6 h-screen">
+          <Image
+            alt=""
+            src="/70.png"
+            width={1200}
+            height={800}
+            className="!object-fill 2xl:w-[1000px] 2xl:h-[550px] 3xl:w-[1200px] 3xl:h-[650px] 1.5xl:w-[1000px] h-[550px]"
+          />
+        </div>
+      ),
+    },
+    {
+      id: 20,
+      content: (
+        <div className="flex flex-col items-center justify-center gap-6 h-screen">
+          <Image
+            alt=""
+            src="/71.png"
+            width={1200}
+            height={650}
+            className="!object-fill 2xl:w-[1000px] 2xl:h-[550px] 3xl:w-[1200px] 3xl:h-[650px] 1.5xl:w-[1000px] h-[550px]"
+          />
+        </div>
+      ),
+    },
+    {
+      id: 21,
+      content: (
+        <div className="flex flex-col items-center justify-center gap-6 h-screen">
+          <ShinyText
+            text=""
+            disabled={false}
+            speed={3}
+            className="text-[50px]"
+          />
+        </div>
+      ),
+    },
   ];
 
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -424,15 +625,26 @@ export default function WelcomeComponent() {
         </div>
 
         {/* Dock cố định */}
-        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
-          <Dock
-            items={items}
-            panelHeight={68}
-            baseItemSize={50}
-            magnification={70}
-          />
-        </div>
+        {visibleSection !== 1 && (
+          <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
+            <Dock
+              items={items}
+              panelHeight={68}
+              baseItemSize={50}
+              magnification={70}
+            />
+          </div>
+        )}
       </motion.div>
     </AnimatePresence>
+  );
+}
+
+function ScrollDown() {
+  return (
+    <div className="flex items-center absolute top-0 3xl:bottom-[-500px] 2xl:bottom-[-400px] gap-x-[20px]">
+      <FaArrowDown className="text-[36px] text-neutral-600 text-opacity-30" />
+      <p className="text-[30px] text-neutral-600 text-opacity-30">Kéo xuống</p>
+    </div>
   );
 }
