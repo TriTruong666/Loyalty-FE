@@ -13,7 +13,7 @@ import * as LoyaltyService from "@/app/service/loyaltyService";
 import * as SalesTeamService from "@/app/service/salesTeamService";
 import { CloudinaryAsset } from "../interfaces/Cloudinary";
 import { Brand } from "../interfaces/Brand";
-import { User, Welcome } from "../interfaces/Account";
+import { CountCustomer, User, Welcome } from "../interfaces/Account";
 import { District, Province, Ward } from "../interfaces/Location";
 import { Order } from "../interfaces/Order";
 import { SalesCustomer } from "../interfaces/SalesCustomer";
@@ -261,5 +261,10 @@ export function useSearchSalesCustomerService(keyword: string, teamID: string) {
   return useFetch<SalesCustomer[]>(
     ["search-sales-customer", keyword, teamID],
     async () => AccountService.searchSalesCustomerService(keyword, teamID)
+  );
+}
+export function useCountAllCustomer() {
+  return useFetch<CountCustomer>(["count-customer"], async () =>
+    AccountService.countAllCustomer()
   );
 }

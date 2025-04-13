@@ -45,3 +45,8 @@ export interface Welcome {
   name: string;
   type: string;
 }
+
+export interface CountCustomer {
+  saleCustomer: number;
+  independentCustomer: number;
+}

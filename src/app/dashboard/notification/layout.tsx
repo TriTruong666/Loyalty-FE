@@ -44,19 +44,19 @@ export default function NotificationLayout({
                 {info?.type === "business" && (
                   <p className="text-sm text-normal">
                     Theo dõi thông báo đến tự hệ thống của PicareVN Loyalty, các
-                    khuyến hoặc sự kiện sắp tới.
+                    khuyến mãi hoặc sự kiện sắp tới.
                   </p>
                 )}
                 {info?.type === "sales" && (
                   <p className="text-sm text-normal">
                     Theo dõi thông báo đến tự hệ thống của PicareVN Loyalty, các
-                    khuyến hoặc sự kiện sắp tới.
+                    khuyến mãi hoặc sự kiện sắp tới.
                   </p>
                 )}
                 {info?.type === "personal" && (
                   <p className="text-sm text-normal">
                     Theo dõi thông báo đến tự hệ thống của PicareVN Loyalty, các
-                    khuyến hoặc sự kiện sắp tới.
+                    khuyến mãi hoặc sự kiện sắp tới.
                   </p>
                 )}
               </div>

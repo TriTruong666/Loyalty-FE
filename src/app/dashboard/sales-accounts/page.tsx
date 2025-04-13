@@ -7,6 +7,7 @@ import {
 } from "@/app/hooks/hook";
 import { addSalesAccountModalState } from "@/app/store/modalAtoms";
 import { Pagination } from "@heroui/react";
+import { download, generateCsv, mkConfig } from "export-to-csv";
 import { useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
 import { HiPlusSmall } from "react-icons/hi2";
@@ -16,6 +17,27 @@ export default function SalesAccountPage() {
   const setIsToggleModal = useSetAtom(addSalesAccountModalState);
   const handleToggleModalOn = () => {
     setIsToggleModal(true);
+  };
+  const { data: allAccounts } = useGetAllSalesCustomer();
+  const handleOnDownloadCSV = () => {
+    if (!allAccounts || allAccounts.length === 0) {
+      console.warn("No data available for CSV export.");
+      return;
+    }
+
+    const csvConfig = mkConfig({
+      useKeysAsHeaders: true,
+      filename: "Data khách sales",
+    });
+    const csvData = allAccounts.map((user) => ({
+      id: user.customerIDOfSales,
+      accountName: user.userName,
+      phone: user.phoneNumber,
+      team: user.salesTeamID,
+    }));
+
+    const csv = generateCsv(csvConfig)(csvData);
+    download(csvConfig)(csv);
   };
   return (
     <AuthComponent allowedRoles={["ceo", "admin"]}>
@@ -31,7 +53,10 @@ export default function SalesAccountPage() {
           </div>
           <div className="flex items-center gap-x-3">
             {/* add button */}
-            <div className="flex items-center border border-gray-400-40 px-4 py-[6px] rounded-md cursor-pointer gap-x-2">
+            <div
+              className="flex items-center border border-gray-400-40 px-4 py-[6px] rounded-md cursor-pointer gap-x-2"
+              onClick={handleOnDownloadCSV}
+            >
               <PiExport className="text-[16px] text-foreground" />
               <p className="text-[12px] text-foreground">Xuất CSV</p>
             </div>
@@ -52,7 +77,7 @@ export default function SalesAccountPage() {
 function SalesAccountTable() {
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
-  const limit = 8;
+  const limit = 15;
   const [isMounted, setIsMounted] = useState(false);
 
   const { data: allAccounts } = useGetAllSalesCustomer();

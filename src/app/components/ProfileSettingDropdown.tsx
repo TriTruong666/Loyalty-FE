@@ -16,6 +16,7 @@ import { logoutService } from "../service/authenticateService";
 import { useMutation } from "@tanstack/react-query";
 import { userInfoState } from "../store/accountAtoms";
 import { dashboardSearchModalState } from "../store/modalAtoms";
+import { LuWrench } from "react-icons/lu";
 
 export default function ProfileSettingDropdown() {
   const setSearchModal = useSetAtom(dashboardSearchModalState);
@@ -132,7 +133,11 @@ export default function ProfileSettingDropdown() {
                     ></Switch>
                   }
                 />
-
+                <Item
+                  title="Hỗ trợ kỹ thuật"
+                  link="/support"
+                  icon={<LuWrench className="text-[18px]" />}
+                />
                 <Button
                   onPress={handleLogout}
                   variant="light"

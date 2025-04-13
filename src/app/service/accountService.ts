@@ -1,7 +1,5 @@
 import axios from "axios";
 import axiosClient from "../utils/axiosClient";
-import { useAtomValue } from "jotai";
-import { userInfoState } from "../store/accountAtoms";
 export const getUserInfo = async () => {
   try {
     const res = await axiosClient.get("/api/user/userinfo");
@@ -287,6 +285,14 @@ export const searchSalesCustomerService = async (
     const res = await axiosClient.get(
       `/api/salescustomer/keyword?keyword=${keyword}&teamID=${teamID}`
     );
+    return res.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+export const countAllCustomer = async () => {
+  try {
+    const res = await axiosClient.get(`/api/salescustomer/count-all`);
     return res.data;
   } catch (error) {
     console.error(error);

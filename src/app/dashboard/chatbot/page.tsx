@@ -100,10 +100,10 @@ export default function ChatbotPage() {
     },
     {
       icon: <MdFaceRetouchingNatural className="text-[20px]" />,
-      message: "Giới thiệu cho tôi vài sản phẩm sữa rửa mặt",
+      message: "Mụn đầu đen nên điều trị và chăm sóc như thế nào?",
       onClick() {
         handleSendRecommendPrompt(
-          "Giới thiệu cho tôi vài sản phẩm sữa rửa mặt"
+          "Mụn đầu đen nên điều trị và chăm sóc như thế nào?"
         );
       },
     },
@@ -129,14 +129,9 @@ export default function ChatbotPage() {
       {/* Introduce */}
       {realPrompt === "" && (
         <div className="flex flex-col items-center justify-center h-[550px] px-[40px]">
-          <GradientText
-            colors={["#40ffaa", "#4079ff", "#40ffaa", "#4079ff", "#40ffaa"]}
-            animationSpeed={5}
-            showBorder={false}
-            className="text-[26px] font-bold"
-          >
-            Chào mừng đến với Loyalty Chatbot
-          </GradientText>
+          <p className="bg-gradient-to-br from-indigo-400 via-pink-300 to-blue-100 bg-clip-text text-transparent text-[30px] font-semibold">
+            Chào mừng bạn đến với Loyalty Chatbot
+          </p>
           {/* <p className="text-[26px] font-bold bg-gradient-to-bl from-[#86efac] via-[#fcd34d] to-[#f9a8d4] bg-clip-text text-transparent">
             Loyalty Chatbot
           </p> */}
