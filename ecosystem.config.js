@@ -9,7 +9,7 @@ module.exports = {
       path: "/var/frontends/loyaltyfe",
       "post-setup": "npm install --verbose && npm run build",
       "pre-deploy": "pm2 start npm --name Loyalty-Frontend -- start && pm2 delete Loyalty-Frontend",
-      "post-deploy": "npm run build && pm2 start npm --name Loyalty-Frontend -- start",
+      "post-deploy": "npm i --verbose && npm run build && pm2 start npm --name Loyalty-Frontend -- start",
     },
   },
 };
