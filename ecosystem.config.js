@@ -7,9 +7,9 @@ module.exports = {
       ref: "origin/main",
       repo: "git@github.com:TriTruong666/Loyalty-FE.git",
       path: "/var/frontends/loyaltyfe",
-      "post-setup": "npm install --verbose && npm run build --verbose",
+      "post-setup": "npm install --verbose && npm run build",
       "pre-deploy": "pm2 start npm --name Loyalty-Frontend -- start && pm2 delete Loyalty-Frontend",
-      "post-deploy": "npm i --verbose && npm run build --verbose && pm2 start npm --name Loyalty-Frontend -- start",
+      "post-deploy": "npm i --verbose && npm run build && pm2 start npm --name Loyalty-Frontend -- start",
     },
   },
 };
