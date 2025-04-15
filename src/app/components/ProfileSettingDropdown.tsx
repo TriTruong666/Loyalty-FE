@@ -134,7 +134,7 @@ export default function ProfileSettingDropdown() {
                   }
                 />
                 <Item
-                  title="Hỗ trợ kỹ thuật"
+                  title="Cần hỗ trợ?"
                   link="/support"
                   icon={<LuWrench className="text-[18px]" />}
                 />

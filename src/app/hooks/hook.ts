@@ -117,8 +117,14 @@ export function useGetCustomerUserByLimitByStatus(
 }
 
 export function useGetAllCustomerUser() {
-  return useFetch<User[]>(["customers"], async () =>
-    AccountService.getAllCustomerUser()
+  const userInfo = useAtomValue(userInfoState);
+  const allowedRoles = ["admin", "ceo"];
+  return useFetch<User[]>(
+    ["customers"],
+    async () => AccountService.getAllCustomerUser(),
+    {
+      enabled: !!userInfo && allowedRoles.includes(userInfo.type),
+    }
   );
 }
 
