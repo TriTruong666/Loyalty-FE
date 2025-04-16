@@ -1,12 +1,99 @@
 "use client";
-
+import emailjs from "@emailjs/browser";
 import Link from "next/link";
 import { Toaster } from "react-hot-toast";
-import { IoIosArrowRoundBack, IoMdSend } from "react-icons/io";
+import { IoIosArrowRoundBack, IoIosGlobe, IoMdSend } from "react-icons/io";
 import { Accordion, AccordionItem } from "@heroui/accordion";
-import { ReactNode } from "react";
+import { ChangeEvent, ReactNode, useEffect, useState } from "react";
 import Image from "next/image";
+import { FaFacebook, FaInstagram, FaTiktok } from "react-icons/fa";
+import { useAtomValue } from "jotai";
+import { userInfoState } from "../store/accountAtoms";
+import { showToast } from "../utils/toast";
+import { formatDateTime } from "../utils/format";
+
+const PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
+const SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
+
 export default function SupportPage() {
+  const info = useAtomValue(userInfoState);
+  const [submitData, setSubmitData] = useState({
+    from_name: "",
+    from_email: "",
+    message: "",
+  });
+  useEffect(() => {
+    if (info) {
+      setSubmitData((prev) => ({
+        ...prev,
+        from_name: info?.userName || "",
+        from_email: info?.email || "",
+      }));
+    }
+  }, [info]);
+
+  const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSubmitData({
+      ...submitData,
+      message: e.target.value,
+    });
+  };
+  const handleSendMail = async () => {
+    if (!submitData.message.trim()) {
+      showToast("Vui lòng nhập yêu cầu trước khi gửi", "error");
+      return;
+    }
+    if (!submitData.from_email || !submitData.from_name) {
+      showToast(
+        "Thông tin người dùng chưa sẵn sàng, vui lòng thử lại sau.",
+        "error"
+      );
+      return;
+    }
+
+    const now = new Date().toString();
+    const formattedTime = formatDateTime(now);
+
+    const templateParamsForUser = {
+      from_name: info?.userName,
+      message: submitData.message,
+      email: info?.email,
+    };
+
+    const templateParamsForAdmin = {
+      name: info?.userName,
+      email: info?.email,
+      message: submitData.message,
+      time: formattedTime,
+    };
+    console.log(templateParamsForUser);
+    console.log(templateParamsForAdmin);
+
+    try {
+      // Gửi song song cả 2 email
+      await Promise.all([
+        emailjs.send(
+          SERVICE_ID || "",
+          "template_x3t6svn", // template dành cho khách
+          templateParamsForUser,
+          PUBLIC_KEY || ""
+        ),
+        emailjs.send(
+          SERVICE_ID || "",
+          "template_ou5qjvd", // template dành cho admin
+          templateParamsForAdmin,
+          PUBLIC_KEY || ""
+        ),
+      ]);
+
+      showToast("Yêu cầu của bạn đã được gửi.", "success");
+      setSubmitData({ ...submitData, message: "" });
+    } catch (error) {
+      showToast("Gửi yêu cầu thất bại, vui lòng thử lại.", "error");
+      console.error(error);
+    }
+  };
+
   const handleGoToPolicyDebt = () => {
     if (typeof window !== undefined) {
       window.location.href = "/policies/thanh-toan";
@@ -25,9 +112,16 @@ export default function SupportPage() {
           <ul className="list-disc list-inside space-y-2 ml-[20px] text-normal text-sm">
             <li>Thực hiện tấn công hệ thống nhằm mục đích thay đổi dữ liệu.</li>
             <li>Spam đơn hàng nhưng không mua hàng.</li>
-            <li>Thực hiện tấn công hệ thống nhằm mục đích thay đổi dữ liệu.</li>
-            <li>Thực hiện tấn công hệ thống nhằm mục đích thay đổi dữ liệu.</li>
           </ul>
+          <p className="text-sm text-normal leading-7">
+            Sau khi tài khoản bị khoá, email của bạn sẽ được gửi thông báo, bạn
+            có thể liên hệ cho admin thông qua{" "}
+            <span className="font-semibold text-blue-600">Facebook</span> hoặc
+            gửi mail qua{" "}
+            <span className="underline text-purple-500">
+              tritruonghoang3@gmail.com
+            </span>
+          </p>
         </div>
       ),
     },
@@ -75,14 +169,32 @@ export default function SupportPage() {
       title: "PicareVN Loyalty có thể sử dụng trên thiết bị di động không?",
       content: (
         <div className="flex flex-col w-full gap-y-[25px] pb-[20px]">
-          <p>Hình minh hoạ: </p>
-          <Image
-            alt=""
-            src="/76.png"
-            width={600}
-            height={350}
-            className="object-cover"
-          />
+          <p className="text-sm text-normal leading-7">
+            Hiện tại PicareVN Loyalty{" "}
+            <span className="text-danger-400 font-semibold">chưa hỗ trợ</span>{" "}
+            sử dụng trên thiết bị di động. Tuy nhiên, đây chỉ mới là version đầu
+            tiên nên chúng tôi đang có kế hoạch phát triển thêm phiên bản trên
+            thiết bị di động ở những version sau, bạn có thể tải nó trên{" "}
+            <span className="font-semibold text-foreground">IOS</span> hoặc{" "}
+            <span className="font-semibold text-foreground">Android</span>.
+          </p>
+        </div>
+      ),
+    },
+    {
+      key: 4,
+      title: "Trang này hiện chưa hoạt động với tài khoản của bạn!!!",
+      content: (
+        <div className="flex flex-col w-full gap-y-[25px] pb-[20px]">
+          <p className="text-sm text-normal leading-7">
+            Quý khách hiện tại sẽ không thể sử dụng trang{" "}
+            <span className="text-foreground font-semibold">Tổng quan</span> bởi
+            vì hiện tại chúng tôi vẫn chưa có đủ dữ liệu để thống kê những số
+            liệu cần thiết cho quý khách hàng. Tuy nhiên, những phiên bản tiếp
+            theo chúng tôi sẽ hoàn thành trang{" "}
+            <span className="text-foreground font-semibold">Tổng quan</span> cho
+            quý khách.
+          </p>
         </div>
       ),
     },
@@ -107,6 +219,68 @@ export default function SupportPage() {
             sử dụng website Loyalty. Nếu bạn có bất kỳ câu hỏi nào có thể gửi
             ticket cho chùng tôi hoặc liên hệ:{" "}
           </p>
+          <ul className="flex items-center list-none mt-[30px]">
+            <li className="relative mx-2 group">
+              <a
+                href="https://shopduocmypham.com/"
+                aria-label="picare"
+                data-social="picare"
+                className="relative flex justify-center items-center w-12 h-12 bg-white text-gray-600 transition-all duration-300 ease-in-out group-hover:text-white group-hover:shadow-lg overflow-hidden"
+              >
+                <div className="absolute bottom-0 left-0 w-full h-0 bg-green-600 transition-all duration-300 ease-in-out group-hover:h-full z-0" />
+                <IoIosGlobe className="z-10 text-[26px]" />
+              </a>
+
+              <div className="absolute top-[-30px] left-1/2 transform -translate-x-1/2 text-white bg-black rounded-full py-[2px] px-[10px] text-sm opacity-0 transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:top-[-50px]">
+                PicareVN
+              </div>
+            </li>
+            <li className="relative mx-2 group">
+              <a
+                href="https://www.facebook.com/PiCareShopDuocMyPhamCaoCap"
+                aria-label="facebook"
+                data-social="facebook"
+                className="relative flex justify-center items-center w-12 h-12 bg-white text-gray-600 transition-all duration-300 ease-in-out group-hover:text-white group-hover:shadow-lg overflow-hidden"
+              >
+                <div className="absolute bottom-0 left-0 w-full h-0 bg-blue-700 transition-all duration-300 ease-in-out group-hover:h-full z-0" />
+                <FaFacebook className="z-10 text-[26px]" />
+              </a>
+
+              <div className="absolute top-[-30px] left-1/2 transform -translate-x-1/2 text-white bg-black rounded-full py-[2px] px-[10px] text-sm opacity-0 transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:top-[-50px]">
+                Facebook
+              </div>
+            </li>
+            <li className="relative mx-2 group">
+              <a
+                href="https://www.tiktok.com/@picare.vn"
+                aria-label="tiktok"
+                data-social="tiktok"
+                className="relative flex justify-center items-center w-12 h-12  bg-white text-gray-600 transition-all duration-300 ease-in-out group-hover:text-white group-hover:shadow-lg overflow-hidden"
+              >
+                <div className="absolute bottom-0 left-0 w-full h-0 bg-black transition-all duration-300  7890 ease-in-out group-hover:h-full z-0" />
+                <FaTiktok className="z-10 text-[26px]" />
+              </a>
+
+              <div className="absolute top-[-30px] left-1/2 transform -translate-x-1/2 text-white bg-black rounded-full py-[2px] px-[10px] text-sm opacity-0 transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:top-[-50px]">
+                Tiktok
+              </div>
+            </li>
+            <li className="relative mx-2 group">
+              <a
+                href="https://www.instagram.com/htriii2603"
+                aria-label="ig"
+                data-social="ig"
+                className="relative flex justify-center items-center w-12 h-12 bg-white text-gray-600 transition-all duration-300 ease-in-out group-hover:text-white group-hover:shadow-lg overflow-hidden"
+              >
+                <div className="absolute bottom-0 left-0 w-full h-0 bg-pink-500 transition-all duration-300 ease-in-out group-hover:h-full z-0" />
+                <FaInstagram className="z-10 text-[26px]" />
+              </a>
+
+              <div className="absolute top-[-30px] left-1/2 transform -translate-x-1/2 text-white bg-black rounded-full py-[2px] px-[10px] text-sm opacity-0 transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:top-[-50px]">
+                Instagram
+              </div>
+            </li>
+          </ul>
         </div>
         <Accordion variant="light">
           {accordionList.map((item) => (
@@ -133,12 +307,18 @@ export default function SupportPage() {
           {/* input */}
           <input
             type="text"
+            name="message"
+            value={submitData.message}
+            onChange={handleOnChange}
             placeholder="Nhập miêu tả yêu cầu..."
             className="flex-1 h-12 rounded-md px-[20px] outline-none bg-transparent border border-neutral-800 border-opacity-45 hover:border-white/20 focus:border-white/20 duration-300 transition-all"
           />
 
           {/* button */}
-          <button className="h-12 w-[130px] group/button relative inline-flex items-center justify-center overflow-hidden rounded-md bg-gray-800/30 backdrop-blur-lg px-6 text-base font-semibold text-white transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-xl hover:shadow-gray-600/50 border border-neutral-800 border-opacity-45 hover:border-white/20 ">
+          <button
+            onClick={handleSendMail}
+            className="h-12 w-[130px] group/button relative inline-flex items-center justify-center overflow-hidden rounded-md bg-gray-800/30 backdrop-blur-lg px-6 text-base font-semibold text-white transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-xl hover:shadow-gray-600/50 border border-neutral-800 border-opacity-45 hover:border-white/20 "
+          >
             <span className="text-lg">
               <IoMdSend className="text-[22px]" />
             </span>
