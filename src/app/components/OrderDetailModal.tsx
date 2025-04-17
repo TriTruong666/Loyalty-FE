@@ -891,15 +891,15 @@ function UserOrderDetail() {
                 <div className="flex flex-col px-[15px] py-[25px] border-b border-gray-400-40">
                   <p className="text-[11px] text-normal mb-[15px]">Sản phẩm</p>
                   <div className="flex flex-col gap-y-[15px] mb-[15px]">
-                    {detail?.lineItems.slice(0, 3).map((item) => (
+                    {detail?.lineItems.map((item) => (
                       <LineItem key={item.productId} {...item} />
                     ))}
                   </div>
-                  {(detail?.lineItems ?? []).length > 3 && (
+                  {/* {(detail?.lineItems ?? []).length > 3 && (
                     <p className="text-[11px] text-normal">
                       +{(detail?.lineItems ?? []).length - 3} sản phẩm khác
                     </p>
-                  )}
+                  )} */}
                 </div>
                 {/* Invoice Summary */}
                 <div className="flex flex-col px-[15px] py-[25px] border-b border-gray-400-40">

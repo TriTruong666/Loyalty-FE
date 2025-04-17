@@ -26,7 +26,7 @@ export default function PoliciesLayout({
     },
     {
       href: "/policies/thanh-toan",
-      title: "Hình thức thanh toán",
+      title: "Chính sách thanh toán",
     },
     {
       href: "/policies/mien-tru",

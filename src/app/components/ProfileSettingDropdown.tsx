@@ -56,7 +56,7 @@ export default function ProfileSettingDropdown() {
   const handleRole: Record<string, boolean> = {
     business: true,
     personal: true,
-    sales: true,
+    sales: false,
     staff: false,
     ceo: false,
     admin: false,

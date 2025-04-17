@@ -30,7 +30,7 @@ export default function GiftDropdown() {
           animate={{ opacity: 1, translateX: 0 }}
           exit={{ opacity: 0, display: "none", translateX: 100 }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="fixed flex flex-col w-[300px] bg-background left-[60%] top-[105px] border border-gray-400-40 z-[20] font-open"
+          className="fixed flex flex-col w-[300px] bg-background 1.5xl:left-[65%] 3xl:left-[75%] 2xl:left-[68%] top-[105px] border border-gray-400-40 z-[20] font-open"
         >
           {/* search */}
           <div className="w-full">

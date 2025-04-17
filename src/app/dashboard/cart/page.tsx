@@ -183,7 +183,7 @@ export default function CartPage() {
           <GiftDropdown />
           <SearchSalesCustomerDropdown />
           {/* modal */}
-          {percentModal && (
+          {/* {percentModal && (
             <div
               onClick={(e) => e.stopPropagation()}
               className=" absolute 3xl:left-[80%] z-[1000] 2xl:left-[62%] top-[7px] w-[300px] p-[10px] bg-default-50 rounded-[15px]  modal-content"
@@ -202,16 +202,32 @@ export default function CartPage() {
                 variant="underlined"
               />
             </div>
-          )}
+          )} */}
 
           <div className="flex flex-col  gap-y-[5px] select-none">
             <p className="text-[28px] font-light ">Giỏ hàng của bạn</p>
-            <p className="text-sm text-normal">
-              Chọn những sản phẩm tốt nhất và bạn có thể xem chiết khấu{" "}
-              <span className="font-bold text-white underline cursor-pointer">
-                Tại đây
-              </span>
-            </p>
+            {info?.type === "sales" ? (
+              <>
+                <p className="text-sm text-normal">
+                  Chọn những sản phẩm tốt nhất và bạn có thể nhập chiết khấu cho
+                  từng sản phẩm{" "}
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="text-sm text-normal">
+                  Chọn những sản phẩm tốt nhất và bạn có thể xem chiết khấu{" "}
+                  <a
+                    href="/14.png"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-bold text-white underline cursor-pointer"
+                  >
+                    Tại đây
+                  </a>
+                </p>
+              </>
+            )}
           </div>
           {info?.type === "sales" && (
             <div className="flex items-center gap-x-[15px]">
@@ -238,9 +254,9 @@ export default function CartPage() {
               <Button variant="light" onPress={toggleOpenDropdown}>
                 <p className="text-primary">Thêm quà tặng</p>
               </Button>
-              <Button onPress={toggleOpenModal} variant="light" className="">
+              {/* <Button onPress={toggleOpenModal} variant="light" className="">
                 <p className="text-primary">Nhập chiết khấu</p>
-              </Button>
+              </Button> */}
             </div>
           )}
         </div>

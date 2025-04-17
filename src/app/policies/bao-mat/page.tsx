@@ -7,7 +7,7 @@ export default function BaomatPolicyPage() {
         <p className="text-[32px] font-bold">Chính sách bảo mật thông tin</p>
       </div>
       <div className="flex flex-col mt-[40px] text-neutral-300">
-        <p>
+        <p className="leading-7">
           Mục đích và phạm vi thu thập thông tin cá nhân Picare cam kết không
           cung cấp hay chia sẻ bất cứ thông tin cá nhân nào của khách hàng cho
           bên thứ ba. Trong quá trình bán hàng, Picare thực hiện thu nhập thông
@@ -31,7 +31,7 @@ export default function BaomatPolicyPage() {
           </li>
         </ul>
         <h3>Thông tin cá nhân thu thập</h3>
-        <p>
+        <p className="leading-8">
           Khi bạn đăng ký tài khoản với Picare, thông tin cá nhân mà chúng tôi
           thu thập bao gồm: Họ và tên, email; khi Bạn đặt hàng chúng tôi thu
           thập thêm thông tin về số điện thoại, địa chỉ, địa chỉ giao hàng.
