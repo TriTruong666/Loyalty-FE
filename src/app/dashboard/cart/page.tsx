@@ -34,13 +34,13 @@ import {
 } from "@/app/store/dropdownAtoms";
 import { formatPrice } from "@/app/utils/format";
 import { showToast } from "@/app/utils/toast";
-import { Link, Button, Input } from "@heroui/react";
+import { Link, Button, Input, NumberInput } from "@heroui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
 import { BsCartX } from "react-icons/bs";
-import { FaTrash } from "react-icons/fa";
+import { FaPercent, FaTrash } from "react-icons/fa";
 export default function CartPage() {
   const [percentModal, setPercentModal] = useState(false);
   const setGiftDropdown = useSetAtom(giftDropdownState);
@@ -183,26 +183,24 @@ export default function CartPage() {
           <GiftDropdown />
           <SearchSalesCustomerDropdown />
           {/* modal */}
-          {/* {percentModal && (
-            <div
-              onClick={(e) => e.stopPropagation()}
-              className=" absolute 3xl:left-[80%] z-[1000] 2xl:left-[62%] top-[7px] w-[300px] p-[10px] bg-default-50 rounded-[15px]  modal-content"
-            >
-              <Input
-                type="number"
-                onChange={handleOnChange}
-                onKeyDown={handleKeyDown}
-                startContent={
-                  <div className="pointer-events-none flex items-center">
-                    <span className="text-normal text-small">%</span>
-                  </div>
-                }
-                placeholder="Chiết khấu"
-                size="sm"
-                variant="underlined"
-              />
-            </div>
-          )} */}
+          {/* <div
+            onClick={(e) => e.stopPropagation()}
+            className=" absolute 3xl:left-[80%] z-[1000] 2xl:left-[62%] top-[7px] w-[300px] p-[10px] bg-default-50 rounded-[15px]  modal-content"
+          >
+            <Input
+              type="number"
+              onChange={handleOnChange}
+              onKeyDown={handleKeyDown}
+              startContent={
+                <div className="pointer-events-none flex items-center">
+                  <span className="text-normal text-small">%</span>
+                </div>
+              }
+              placeholder="Chiết khấu"
+              size="sm"
+              variant="underlined"
+            />
+          </div> */}
 
           <div className="flex flex-col  gap-y-[5px] select-none">
             <p className="text-[28px] font-light ">Giỏ hàng của bạn</p>
@@ -370,14 +368,14 @@ export default function CartPage() {
                   </p>
                 </div>
               )}
-              {info?.type === "sales" && (
+              {/* {info?.type === "sales" && (
                 <div className="flex justify-between">
                   <p className="font-light text-normal">Chiết khẩu tuỳ chỉnh</p>
                   <p className="font-bold">
                     {(info?.rank.discountCustom as number) * 100}%
                   </p>
                 </div>
-              )}
+              )} */}
 
               {info?.type !== "sales" && (
                 <div className="flex justify-between">
@@ -423,6 +421,7 @@ export default function CartPage() {
 }
 
 const CartItem = (props: CartItemProps) => {
+  const info = useAtomValue(userInfoState);
   const [quantity, setQuantity] = useState<number | string>(props.quantity);
 
   const setCart = useSetAtom(cartState);
@@ -443,7 +442,7 @@ const CartItem = (props: CartItemProps) => {
     const value = e.target.value;
 
     if (value === "") {
-      setQuantity(""); // Cho phép xóa input
+      setQuantity("");
       return;
     }
 
@@ -475,7 +474,7 @@ const CartItem = (props: CartItemProps) => {
     }
   };
   return (
-    <div className="flex pl-[20px] border-l-[2px]">
+    <div className="flex pl-[20px] border-l-[2px] relative">
       <div className="flex flex-col justify-between w-[70%] gap-y-[10px]">
         <p className="text-sm max-w-[95%] line-clamp-2">
           {props.product.productName}
@@ -518,7 +517,18 @@ const CartItem = (props: CartItemProps) => {
           {formatPrice(props.product.price as number)}
         </p>
 
-        <div className="flex">
+        <div className="flex items-center gap-x-[10px]">
+          {/* {info?.type === "sales" && (
+            <Button isIconOnly variant="light" size="md" color="secondary">
+              <FaPercent className="text-[16px]" />
+            </Button>
+          )} */}
+          <NumberInput
+            variant="underlined"
+            size="sm"
+            className="max-w-[250px]"
+            placeholder="Enter the amount"
+          />
           <Button
             isIconOnly
             variant="light"
