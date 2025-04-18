@@ -481,10 +481,17 @@ const CartItem = (props: CartItemProps) => {
         </div>
       </div>
       <div className="flex flex-col justify-between w-[30%] items-end">
-        <p className="text-[15px] text-primary font-bold w-fit">
-          {formatPrice(props.product.price as number)} (-
-          {(discount * 100).toFixed(1)}%)
-        </p>
+        {info?.type !== "sales" && (
+          <p className="text-[15px] text-primary font-bold w-fit">
+            {formatPrice(props.product.price as number)}
+          </p>
+        )}
+        {info?.type === "sales" && (
+          <p className="text-[15px] text-primary font-bold w-fit">
+            {formatPrice(props.product.price as number)} (-
+            {(discount * 100).toFixed(1)}%)
+          </p>
+        )}
 
         <div className="flex items-center gap-x-[10px]">
           {!toggleDiscountInput && (
