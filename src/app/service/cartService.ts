@@ -1,5 +1,6 @@
 import { Cart } from "../interfaces/Cart";
 import { Product } from "../interfaces/Product";
+import { showToast } from "../utils/toast";
 
 export const getCartFromStorage = (): Cart => {
   if (typeof window === "undefined") return { cartItems: [], gifts: [] };
@@ -38,6 +39,7 @@ export const addToCart = (
             id: crypto.randomUUID(),
             product,
             quantity,
+            discount: 0,
           },
         ],
       };
@@ -117,6 +119,27 @@ export const updateCartItemQuantity = (
       cartItems: updatedCartItems,
       gifts: updatedGifts,
     };
+    saveCartToStorage(updatedCart);
+    return updatedCart;
+  });
+};
+
+export const updateCartItemDiscount = (
+  itemId: string,
+  discount: number, // giá trị từ 0 tới 1
+  setCart: (update: (prevCart: Cart) => Cart) => void
+) => {
+  if (discount < 0 || discount > 1) {
+    showToast("Chiết khấu phải nằm trong khoảng từ 0% đến 100%", "error");
+    return;
+  }
+
+  setCart((prevCart) => {
+    const updatedCartItems = prevCart.cartItems.map((item) =>
+      item.id === itemId ? { ...item, discount } : item
+    );
+
+    const updatedCart = { ...prevCart, cartItems: updatedCartItems };
     saveCartToStorage(updatedCart);
     return updatedCart;
   });

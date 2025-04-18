@@ -10,6 +10,7 @@ export interface CartItem {
   id: string;
   product: Product;
   quantity: number;
+  discount?: number;
 }
 
 export interface GiftItem {

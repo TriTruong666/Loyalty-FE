@@ -18,7 +18,6 @@ export const uploadFileService = async (file: File): Promise<string | null> => {
       `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
       formData
     );
-    console.log(res.data);
     return res.data.url;
   } catch (error) {
     console.error("Lỗi khi tải ảnh lên Cloudinary:", error);

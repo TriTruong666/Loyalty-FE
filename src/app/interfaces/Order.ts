@@ -40,6 +40,7 @@ export interface LineItem {
   status: string;
   amount: number;
   brand: Brand;
+  discount?: number;
 }
 interface Brand {
   brandId: string;

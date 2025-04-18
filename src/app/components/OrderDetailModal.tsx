@@ -93,7 +93,7 @@ const LineItem = (props: LineItemProps) => {
           className="object-cover rounded-lg"
         />
         <div className="flex flex-col gap-y-[5px]">
-          <p className="text-[11px] line-clamp-2">{props.productName}</p>
+          <p className="text-[11px] line-clamp-2 max">{props.productName}</p>
           <p className="text-[9px] text-normal">{props.brand.brandName}</p>
         </div>
       </div>
@@ -104,6 +104,12 @@ const LineItem = (props: LineItemProps) => {
         <p className="text-[12px] font-light text-foreground">
           {formatPrice(props.price)}
         </p>
+        {Number(props.discount) > 0 && (
+          <p className="text-[12px] font-light text-foreground">
+            (-
+            {(props.discount as number) * 100}%)
+          </p>
+        )}
       </div>
     </div>
   );
@@ -235,7 +241,7 @@ function AdminOrderDetail() {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "tween", duration: 0.4 }}
-            className="w-[500px] h-full max-h-full overflow-auto bg-[#111111] shadow-md absolute right-0 flex flex-col"
+            className="2xl:w-[600px] 1.5xl:w-[650px] 3xl:w-[700px] h-full max-h-full overflow-auto bg-[#111111] shadow-md absolute right-0 flex flex-col"
           >
             {isLoading ? (
               <>
@@ -658,7 +664,7 @@ function UserOrderDetail() {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "tween", duration: 0.4 }}
-            className="w-[500px] h-full max-h-full overflow-auto bg-[#111111] shadow-md absolute right-0 flex flex-col z-[30]"
+            className="2xl:w-[600px] 1.5xl:w-[650px] 3xl:w-[700px] h-full max-h-full overflow-auto bg-[#111111] shadow-md absolute right-0 flex flex-col z-[30]"
           >
             {isLoading ? (
               <>
@@ -821,9 +827,26 @@ function UserOrderDetail() {
                         <p className="text-[11px] text-normal">
                           Thông tin của bạn
                         </p>
-                        <Button variant="light" size="sm" isIconOnly>
-                          <LuPen className="text-normal" />
-                        </Button>
+                        {detail?.orderStatus === "pending" && (
+                          <Button
+                            variant="light"
+                            size="sm"
+                            isIconOnly
+                            onPress={handleToggleUpdateOrderInfoOn}
+                          >
+                            <LuPen className="text-normal" />
+                          </Button>
+                        )}
+                        {detail?.orderStatus === "confirmed" && (
+                          <Button
+                            variant="light"
+                            size="sm"
+                            isIconOnly
+                            onPress={handleToggleUpdateOrderInfoOn}
+                          >
+                            <LuPen className="text-normal" />
+                          </Button>
+                        )}
                       </div>
                       <div className="flex flex-col gap-y-[8px] mt-[10px]">
                         <p className="text-[13px]">{detail?.customerName}</p>
@@ -1084,7 +1107,7 @@ function UpdateOrderInfo() {
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: "100%", opacity: 0 }}
       transition={{ type: "tween", duration: 0.5 }}
-      className="w-[500px] h-full max-h-full overflow-auto bg-[#111111] shadow-md absolute right-[500px] flex flex-col z-[20] border-r border-gray-400-40"
+      className="w-[500px] h-full max-h-full overflow-auto bg-[#111111] shadow-md absolute 3xl:right-[700px] 2xl:right-[600px] 1.5xl:right-[650px] flex flex-col z-[20] border-r border-gray-400-40"
     >
       <div className="flex justify-between bg-[#090909] w-full px-[15px] py-[20px] sticky top-0 left-0 z-10">
         <div className="flex flex-col gap-y-[5px]">
@@ -1258,7 +1281,7 @@ function UpdateOrderAddress() {
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: "100%", opacity: 0 }}
       transition={{ type: "tween", duration: 0.5 }}
-      className="w-[500px] h-full max-h-full overflow-auto bg-[#111111] shadow-md absolute right-[500px] flex flex-col z-[20] border-r border-gray-400-40"
+      className="w-[500px] h-full max-h-full overflow-auto bg-[#111111] shadow-md absolute 3xl:right-[700px] 2xl:right-[600px] 1.5xl:right-[650px] flex flex-col z-[20] border-r border-gray-400-40"
     >
       <div className="flex justify-between bg-[#090909] w-full px-[15px] py-[20px] sticky top-0 left-0 z-10">
         <div className="flex flex-col gap-y-[5px]">
@@ -1478,7 +1501,7 @@ function StaffOrderDetail() {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "tween", duration: 0.4 }}
-            className="w-[500px] h-full max-h-full overflow-auto bg-[#111111] shadow-md absolute right-0 flex flex-col"
+            className="2xl:w-[600px] 1.5xl:w-[650px] 3xl:w-[700px] h-full max-h-full overflow-auto bg-[#111111] shadow-md absolute right-0 flex flex-col"
           >
             {isLoading ? (
               <>

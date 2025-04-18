@@ -154,7 +154,6 @@ function Table() {
   useEffect(() => {
     if (filteredAllAccounts) {
       setTotalPage(Math.ceil(filteredAllAccounts.length / limit));
-      console.log(totalPage);
     }
   }, [filteredAllAccounts]);
   const handleToggleNoteModal = (userId: string) => {

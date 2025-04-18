@@ -748,7 +748,6 @@ function RevenueDetail() {
       : lastDayTotal === 0 && currentDayTotal === 0
       ? "no revenue"
       : "default";
-  console.log("Gradient Type:", gradientType);
   return (
     <div className="flex flex-col">
       <p

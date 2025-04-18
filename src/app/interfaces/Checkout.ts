@@ -8,6 +8,7 @@ interface ShippingAddress {
 export interface LineItem {
   productID: string;
   amount: number;
+  discount?: number;
 }
 export interface Gift {
   productID: string;

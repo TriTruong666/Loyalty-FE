@@ -16,20 +16,15 @@ export const subtotalCartValueAtom = atom((get) => {
 });
 
 export const discountCustomState = atom((get) => {
-  const info = get(userInfoState);
   const cart = get(cartState);
 
-  if (!info || !info.rank) return 0;
+  const totalCustomDiscount = cart.cartItems.reduce((total, item) => {
+    const discount = item.discount ?? 0;
+    const price = item.product.price ?? 0;
+    return total + price * item.quantity * discount;
+  }, 0);
 
-  const discountPercent =
-    info.type === "sales" ? info.rank.discountCustom ?? 0 : 0;
-
-  const subtotal = cart.cartItems.reduce(
-    (total, item) => total + (item.product.price ?? 0) * item.quantity,
-    0
-  );
-
-  return subtotal * discountPercent;
+  return totalCustomDiscount;
 });
 
 export const discountUniqueState = atom((get) => {

@@ -34,26 +34,30 @@ export const checkoutState = atom<Checkout | null>((get) => {
   const address = get(shippingAddressState);
   const info = get(userInfoCheckoutState);
   const note = get(noteCheckoutState);
-  const user = get(userInfoState);
-  const discountCustom = user?.rank.discountCustom;
   const salesCustomer = get(salesCustomerState);
-
+  const user = get(userInfoState);
+  const salesCustomerName = get(salesCustomerNameState);
+  const salesCustomerPhone = get(salesCustomerPhoneState);
   if (
     paymentMethod === "" ||
     address.districtCode === "" ||
     address.provinceCode === "" ||
     address.street === "" ||
-    address.wardCode === "" ||
-    info.customerName === "" ||
-    info.customerPhone === ""
+    address.wardCode === ""
   )
     return null;
-
+  if (user?.type !== "sales") {
+    if (info.customerName === "" || info.customerPhone === "") return null;
+  }
+  if (user?.type === "sales") {
+    if (salesCustomerName === "" && salesCustomerPhone === "") return null;
+  }
   return {
     lineItems: cart.cartItems
       .map((item) => ({
         productID: item.product.productId ?? "",
         amount: item.quantity,
+        discount: item.discount,
       }))
       .filter((item) => item.productID !== ""),
     gifts: cart.gifts
@@ -67,6 +71,5 @@ export const checkoutState = atom<Checkout | null>((get) => {
     customerIDOfSales: salesCustomer,
     note,
     customer: info,
-    discountCustom,
   };
 });

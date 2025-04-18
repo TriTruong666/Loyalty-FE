@@ -1,16 +1,14 @@
 "use client";
 import AuthComponent from "@/app/components/AuthComponent";
 import GiftDropdown from "@/app/components/GiftDropdown";
-import { LoadingDashboard } from "@/app/components/loading";
 import SearchSalesCustomerDropdown from "@/app/components/SearchSalesCustomerDropdown";
-import { useGetSalesCustomerByLimit } from "@/app/hooks/hook";
 import {
   CartItem as CartItemProps,
   GiftItem as GiftItemProps,
 } from "@/app/interfaces/Cart";
-import { updateCustomPercent } from "@/app/service/accountService";
 import {
   removeFromCart,
+  updateCartItemDiscount,
   updateCartItemQuantity,
 } from "@/app/service/cartService";
 import { userInfoState } from "@/app/store/accountAtoms";
@@ -35,20 +33,17 @@ import {
 import { formatPrice } from "@/app/utils/format";
 import { showToast } from "@/app/utils/toast";
 import { Link, Button, Input, NumberInput } from "@heroui/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
 import { BsCartX } from "react-icons/bs";
 import { FaPercent, FaTrash } from "react-icons/fa";
 export default function CartPage() {
-  const [percentModal, setPercentModal] = useState(false);
   const setGiftDropdown = useSetAtom(giftDropdownState);
   const setSearchSalesCustomerDropdown = useSetAtom(
     searchSalesCustomerDropdownState
   );
   const info = useAtomValue(userInfoState);
-  const [submitData, setSubmitData] = useState<number>(0);
   const [cart, setCart] = useAtom(cartState);
   const subtotalCartValue = useAtomValue(subtotalCartValueAtom);
   const estimatePoint = useAtomValue(estimatePointState);
@@ -59,7 +54,6 @@ export default function CartPage() {
   const salesCustomerId = useAtomValue(salesCustomerState);
   const salesCustomerName = useAtomValue(salesCustomerNameState);
   const salesCustomerPhone = useAtomValue(salesCustomerPhoneState);
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   useEffect(() => {
     if (cart.cartItems.length > 0) return;
@@ -70,28 +64,27 @@ export default function CartPage() {
     });
   }, [cart.cartItems, setCart]);
 
-  const queryClient = useQueryClient();
-  const updatePercentMutation = useMutation({
-    mutationKey: ["update-percent"],
-    mutationFn: async ({
-      userId,
-      discountCustom,
-    }: {
-      userId: string;
-      discountCustom: number;
-    }) => updateCustomPercent(userId, { discountCustom: discountCustom }),
-    onMutate() {
-      setIsLoading(true);
-    },
-    onSuccess(data) {
-      if (data.message === "Updated Successfully") {
-        showToast("Cập nhật chiết khấu thành công", "success");
-        setIsLoading(false);
-        setPercentModal(false);
-        queryClient.invalidateQueries({ queryKey: ["user-info"] });
-      }
-    },
-  });
+  // const updatePercentMutation = useMutation({
+  //   mutationKey: ["update-percent"],
+  //   mutationFn: async ({
+  //     userId,
+  //     discountCustom,
+  //   }: {
+  //     userId: string;
+  //     discountCustom: number;
+  //   }) => updateCustomPercent(userId, { discountCustom: discountCustom }),
+  //   onMutate() {
+  //     setIsLoading(true);
+  //   },
+  //   onSuccess(data) {
+  //     if (data.message === "Updated Successfully") {
+  //       showToast("Cập nhật chiết khấu thành công", "success");
+  //       setIsLoading(false);
+  //       setPercentModal(false);
+  //       queryClient.invalidateQueries({ queryKey: ["user-info"] });
+  //     }
+  //   },
+  // });
 
   const filterCartUnique = cart.cartItems.filter(
     (item) => item.product.brand?.type === "docquyen"
@@ -99,52 +92,15 @@ export default function CartPage() {
   const filterCartDistribution = cart.cartItems.filter(
     (item) => item.product.brand?.type === "phanphoi"
   );
-  const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value;
-    const parsedValue = parseFloat(inputValue);
-    const discount = parsedValue / 100;
-    setSubmitData(discount);
-  };
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleSubmitChangePercent();
-    }
-  };
-  const handleSubmitChangePercent = async () => {
-    if (submitData > 0.5) {
-      showToast("Mức chiết khấu không được vượt quá 50%", "error");
-      return;
-    }
-    if (submitData < 0) {
-      showToast("Không thể đặt mức chiết khấu dưới 0%", "error");
-      return;
-    }
-    try {
-      await updatePercentMutation.mutateAsync({
-        discountCustom: submitData,
-        userId: info?.userId as string,
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  };
   const toggleSearchCustomerDropdown = () => {
     setSearchSalesCustomerDropdown(true);
     setGiftDropdown(false);
-    setPercentModal(false);
   };
   const toggleOpenDropdown = () => {
     setGiftDropdown(true);
     setSearchSalesCustomerDropdown(false);
-    setPercentModal(false);
-  };
-  const toggleOpenModal = () => {
-    setPercentModal(true);
-    setGiftDropdown(false);
-    setSearchSalesCustomerDropdown(false);
   };
   const toggleCloseModal = () => {
-    setPercentModal(false);
     setGiftDropdown(false);
     setSearchSalesCustomerDropdown(false);
   };
@@ -163,13 +119,6 @@ export default function CartPage() {
           Giỏ hàng của bạn đang trống, vui lòng thêm sản phẩm vào giỏ.
         </p>
       </div>
-    );
-  }
-  if (isLoading) {
-    return (
-      <>
-        <LoadingDashboard />
-      </>
     );
   }
   return (
@@ -368,15 +317,6 @@ export default function CartPage() {
                   </p>
                 </div>
               )}
-              {/* {info?.type === "sales" && (
-                <div className="flex justify-between">
-                  <p className="font-light text-normal">Chiết khẩu tuỳ chỉnh</p>
-                  <p className="font-bold">
-                    {(info?.rank.discountCustom as number) * 100}%
-                  </p>
-                </div>
-              )} */}
-
               {info?.type !== "sales" && (
                 <div className="flex justify-between">
                   <p className="font-light text-normal">Điểm tích luỹ được</p>
@@ -421,6 +361,10 @@ export default function CartPage() {
 }
 
 const CartItem = (props: CartItemProps) => {
+  const [toggleDiscountInput, setToggleDiscountInput] = useState(false);
+  const [discount, setDiscount] = useState<number>(0); // decimal 0 - 1
+  const [discountInput, setDiscountInput] = useState<string>(""); // text input
+
   const info = useAtomValue(userInfoState);
   const [quantity, setQuantity] = useState<number | string>(props.quantity);
 
@@ -452,6 +396,10 @@ const CartItem = (props: CartItemProps) => {
       updateCartItemQuantity(props.id, newQuantity, setCart);
     }
   };
+  useEffect(() => {
+    setDiscount(props.discount ?? 0);
+    setDiscountInput(String((props.discount ?? 0) * 100));
+  }, [props.discount]);
 
   const unitProduct = (unit: string) => {
     switch (unit) {
@@ -473,6 +421,26 @@ const CartItem = (props: CartItemProps) => {
         return "Miếng";
     }
   };
+  const handleDiscountUpdate = () => {
+    const value = parseFloat(discountInput);
+    const decimalDiscount = Math.min(Math.max(value / 100, 0), 1);
+
+    if (isNaN(value)) {
+      showToast("Vui lòng nhập số hợp lệ", "error");
+      return;
+    }
+
+    if (decimalDiscount > 0.5) {
+      showToast("Mức chiết khấu tối đa cho từng sản phẩm là 50%", "error");
+      return;
+    }
+
+    setDiscount(decimalDiscount);
+    updateCartItemDiscount(props.id, decimalDiscount, setCart);
+    showToast("Đã cập nhật chiết khấu", "success");
+    setToggleDiscountInput(false);
+  };
+
   return (
     <div className="flex pl-[20px] border-l-[2px] relative">
       <div className="flex flex-col justify-between w-[70%] gap-y-[10px]">
@@ -514,21 +482,48 @@ const CartItem = (props: CartItemProps) => {
       </div>
       <div className="flex flex-col justify-between w-[30%] items-end">
         <p className="text-[15px] text-primary font-bold w-fit">
-          {formatPrice(props.product.price as number)}
+          {formatPrice(props.product.price as number)} (-
+          {(discount * 100).toFixed(1)}%)
         </p>
 
         <div className="flex items-center gap-x-[10px]">
-          {/* {info?.type === "sales" && (
-            <Button isIconOnly variant="light" size="md" color="secondary">
-              <FaPercent className="text-[16px]" />
-            </Button>
-          )} */}
-          <NumberInput
-            variant="underlined"
-            size="sm"
-            className="max-w-[250px]"
-            placeholder="Enter the amount"
-          />
+          {!toggleDiscountInput && (
+            <>
+              {info?.type === "sales" && (
+                <Button
+                  isIconOnly
+                  variant="light"
+                  size="md"
+                  color="secondary"
+                  onPress={() => setToggleDiscountInput(true)}
+                >
+                  <FaPercent className="text-[16px]" />
+                </Button>
+              )}
+            </>
+          )}
+
+          {toggleDiscountInput && (
+            <Input
+              variant="underlined"
+              size="sm"
+              className="max-w-[250px]"
+              placeholder="Nhập chiết khấu (%)"
+              type="text"
+              onChange={(e) => {
+                const value = e.target.value;
+                if (/^\d*\.?\d*$/.test(value)) {
+                  setDiscountInput(value);
+                }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleDiscountUpdate();
+                }
+              }}
+            />
+          )}
+
           <Button
             isIconOnly
             variant="light"

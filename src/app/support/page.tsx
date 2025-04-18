@@ -66,8 +66,6 @@ export default function SupportPage() {
       message: submitData.message,
       time: formattedTime,
     };
-    console.log(templateParamsForUser);
-    console.log(templateParamsForAdmin);
 
     try {
       // Gửi song song cả 2 email

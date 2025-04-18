@@ -130,7 +130,6 @@ function SalesLocationForm() {
   }, []);
 
   const handleProvinceChange = (provinceCode: string) => {
-    console.log(submitLocationData);
     setSelectedProvince(provinceCode);
     setSelectedDistrict(null);
     setSelectedWard(null);
@@ -143,7 +142,6 @@ function SalesLocationForm() {
   };
 
   const handleDistrictChange = (districtCode: string) => {
-    console.log(submitLocationData);
     setSelectedDistrict(districtCode);
     setSelectedWard(null);
     setSubmitLocationData((prev) => ({
@@ -154,7 +152,6 @@ function SalesLocationForm() {
   };
 
   const handleWardChange = (wardCode: string) => {
-    console.log(submitLocationData);
     setSelectedWard(wardCode);
     setSubmitLocationData((prev) => ({
       ...prev,
@@ -325,7 +322,6 @@ function LocationForm() {
   };
 
   const handleStreetChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log(submitLocationData);
     setSubmitLocationData((prev) => ({
       ...prev,
       street: e.target.value,
@@ -624,7 +620,6 @@ function Summary() {
   });
   const handleSubmit = async () => {
     if (submitData === null) {
-      console.log(submitData);
       showToast("Vui lòng kiểm tra lại thông tin còn thiếu.", "error");
       return;
     }
@@ -724,14 +719,6 @@ function Summary() {
             <div className="flex justify-between">
               <p className="font-light text-normal">Giá trị chiết khấu</p>
               <p className="font-bold">{formatPrice(discountCustomValue)}</p>
-            </div>
-          )}
-          {info?.type === "sales" && (
-            <div className="flex justify-between">
-              <p className="font-light text-normal">Chiết khẩu tuỳ chỉnh</p>
-              <p className="font-bold">
-                {(info?.rank.discountCustom as number) * 100}%
-              </p>
             </div>
           )}
           {info?.type !== "sales" && (

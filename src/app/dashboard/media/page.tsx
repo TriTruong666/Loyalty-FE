@@ -77,10 +77,9 @@ function MediaTable() {
     onMutate() {
       setIsDeleting(true);
     },
-    onSuccess(data) {
+    onSuccess() {
       setIsDeleting(false);
       queryClient.invalidateQueries({ queryKey: ["assets"] });
-      console.log(data);
       showToast("Xoá ảnh thành công", "success");
     },
   });
